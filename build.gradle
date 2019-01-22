@@ -6,6 +6,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
     }
 }
@@ -18,6 +19,7 @@ group 'Menteia'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'kotlin'
+apply plugin: 'kotlinx-serialization'
 apply plugin: "io.spring.dependency-management"
 
 sourceCompatibility = 1.8
@@ -25,6 +27,7 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencyManagement {
@@ -35,8 +38,10 @@ dependencyManagement {
 
 dependencies {
     compile 'software.amazon.awssdk:dynamodb'
+    compile 'software.amazon.awssdk:lambda'
     compile 'software.amazon.awssdk:polly'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
 }
