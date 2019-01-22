@@ -39,4 +39,9 @@ data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>) {
             }
         }
     }
+
+    override fun toString(): String {
+        if (opcioj.isEmpty()) return radiko
+        return "$radiko ${opcioj.map { it.toString() }.joinToString(" ")}"
+    }
 }

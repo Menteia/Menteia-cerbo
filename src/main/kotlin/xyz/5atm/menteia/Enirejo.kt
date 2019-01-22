@@ -1,8 +1,14 @@
 package xyz.`5atm`.menteia
 
-import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import paroli
+import xyz.`5atm`.menteia.cerbo.Cerbo
 
 fun main(args: Array<String>) {
-    paroli(SintaksoArbo.konstrui("sagi to sevara nevum fori sira"))
+    var vico = readLine()
+    while (vico != null) {
+        val elirarbo = Cerbo.trakti(vico)
+        paroli(elirarbo)
+        println(elirarbo)
+        vico = readLine()
+    }
 }

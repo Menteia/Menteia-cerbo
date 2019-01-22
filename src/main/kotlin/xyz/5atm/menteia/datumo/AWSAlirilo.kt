@@ -37,7 +37,7 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
             val ipa = igiIPA(vortoj.joinToString(" "))
             xmlRadiko.addElement("phoneme")
                     .addAttribute("alphabet", "ipa")
-                    .addAttribute("ph", ipa.joinToString(" "))
+                    .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
             when (it) {
                 "!longapaŭzo" -> xmlRadiko.addElement("break")
                 "!paŭzo" -> xmlRadiko.addElement("break").addAttribute("strength", "weak")
@@ -48,11 +48,13 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
         }
     }
     if (vortoj.isNotEmpty()) {
+        val ipa = igiIPA(vortoj.joinToString(" "))
         xmlRadiko.addElement("phoneme")
                 .addAttribute("alphabet", "ipa")
-                .addAttribute("ph", igiIPA(vortoj.joinToString(" ")).joinToString(" "))
+                .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
     }
     val petoXML = xml.asXML()
+    println(petoXML)
     polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
             .outputFormat(OutputFormat.OGG_VORBIS)
             .text(petoXML)
@@ -65,6 +67,14 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
             )
     )
 
+}
+
+private fun pravigiIPA(vortoj: List<String>, ipa: List<String>): List<String> {
+    val vortaro = Vortaro.alporti()
+    return ipa.mapIndexed { index, s ->
+        val elparolo = vortaro[vortoj[index]]?.elparolo
+        elparolo ?: s
+    }
 }
 
 @Serializable
@@ -94,7 +104,7 @@ private fun igiIPA(vortoj: String): List<String> {
     }
 }
 
-data class Vorto(val vorto: String, val valenco: Int, val antaŭpaŭzo: Boolean, val interpaŭzo: Boolean)
+data class Vorto(val vorto: String, val valenco: Int, val antaŭpaŭzo: Boolean, val interpaŭzo: Boolean, val elparolo: String?)
 
 object Vortaro {
     private val vortaro: MutableMap<String, Vorto> = mutableMapOf()
@@ -113,7 +123,8 @@ object Vortaro {
                     vorto = vorto,
                     valenco = it["valenco"]!!.n().toInt(),
                     antaŭpaŭzo = it["antaŭpaŭzo"]?.bool() ?: false,
-                    interpaŭzo = it["interpaŭzo"]?.bool() ?: false
+                    interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
+                    elparolo = it["elparolo"]?.s()
             )
             vortaro[vorto] = datumo
         }
