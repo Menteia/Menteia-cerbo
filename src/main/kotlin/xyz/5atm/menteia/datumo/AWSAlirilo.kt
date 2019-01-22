@@ -2,6 +2,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
 import org.dom4j.DocumentHelper
+import org.dom4j.QName
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -25,8 +26,11 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
             .build()
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
-            .addElement("amazon:effect")
+            .addElement(QName("amazon:effect"))
             .addAttribute("vocal-tract-length", "+7%")
+            .addElement("prosody")
+            .addAttribute("rate", "70%")
+            .addAttribute("volume", "+6dB")
     val vortoj = mutableListOf<String>()
     arbo.traversi(kunPaŭzoj = true).forEach {
         if (it.startsWith("!")) {
@@ -39,7 +43,14 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
                 "!paŭzo" -> xmlRadiko.addElement("break").addAttribute("strength", "weak")
             }
             vortoj.clear()
+        } else {
+            vortoj.add(it)
         }
+    }
+    if (vortoj.isNotEmpty()) {
+        xmlRadiko.addElement("phoneme")
+                .addAttribute("alphabet", "ipa")
+                .addAttribute("ph", igiIPA(vortoj.joinToString(" ")).joinToString(" "))
     }
     val petoXML = xml.asXML()
     polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
@@ -61,7 +72,7 @@ data class Peto(val IPA: String)
 
 @Serializable
 data class Respondenhavo(
-        val ĈuFinita: Boolean = false,
+        val ĈuValida: Boolean = false,
         val Kialo: String = "",
         val IPA: List<String> = listOf()
 )
@@ -76,7 +87,7 @@ private fun igiIPA(vortoj: String): List<String> {
             .build()
     )
     val enhavo = JSON.parse(Respondenhavo.serializer(), respondo.payload().asUtf8String())
-    if (enhavo.ĈuFinita) {
+    if (enhavo.ĈuValida) {
         return enhavo.IPA
     } else {
         throw Exception(enhavo.Kialo)
