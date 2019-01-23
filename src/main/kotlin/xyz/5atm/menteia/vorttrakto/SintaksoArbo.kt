@@ -35,7 +35,7 @@ data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>) {
                 if (kunPaŭzoj and vorto.interpaŭzo) {
                     yield("!paŭzo")
                 }
-                yieldAll(it.traversi())
+                yieldAll(it.traversi(kunPaŭzoj))
             }
         }
     }
