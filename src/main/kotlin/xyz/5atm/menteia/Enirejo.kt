@@ -1,8 +1,11 @@
 package xyz.`5atm`.menteia
 
 import kotlinx.coroutines.runBlocking
+import xyz.`5atm`.menteia.datumo.getThermostatAlt
 import paroli
 import xyz.`5atm`.menteia.cerbo.Cerbo
+import xyz.`5atm`.menteia.datumo.forecast
+import java.util.*
 
 fun main(args: Array<String>) {
     runBlocking {

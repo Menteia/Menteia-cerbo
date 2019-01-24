@@ -16,7 +16,12 @@ data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>) {
             val vorto = vortaro[sekva] ?: throw Exception("$sekva ne estas en la vortaro")
             val valenco = vorto.valenco
             return SintaksoArbo(sekva, (0 until valenco).map {
-                konstrui(frazo, vortoj)
+                try {
+                    konstrui(frazo, vortoj)
+                } catch (e: Exception) {
+                    println("Eraro okazis post $sekva")
+                    throw e
+                }
             })
         }
     }

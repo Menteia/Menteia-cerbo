@@ -8,6 +8,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import java.lang.Exception
+import java.util.*
 
 @Serializable
 data class Main(
@@ -36,14 +37,14 @@ data class Clouds(val all: Float)
 data class Wind(val speed: Float, val deg: Float)
 
 @Serializable
-data class Snow(val `3h`: Float)
+data class Snow(@Optional val `3h`: Float = 0F)
 
 @Serializable
-data class Rain(val `3h`: Float)
+data class Rain(@Optional val `3h`: Float = 0F)
 
 @Serializable
 data class Raportano(
-        val dt: Int,
+        val dt: Long,
         val main: Main,
         val weather: Array<Weather>,
         val clouds: Clouds,
@@ -57,12 +58,31 @@ data class Raportano(
 data class Raporto(val list: Array<Raportano>)
 
 internal suspend fun current(loko: Int): Raportano {
-    val (request, response, result) = Fuel.get(
+    val (_, _, result) = Fuel.get(
             "https://api.openweathermap.org/data/2.5/weather",
             listOf("id" to loko, "appid" to Sekretoj.OpenWeatherMapKey, "units" to "metric")
     ).awaitStringResponse()
     return result.fold(
             { data -> JSON.nonstrict.parse(Raportano.serializer(), data) },
             { error -> throw error.exception }
+    )
+}
+
+internal suspend fun forecast(loko: Int, dato: Calendar): Raportano? {
+    val (_, _, result) = Fuel.get(
+            "https://api.openweathermap.org/data/2.5/forecast",
+            listOf("id" to loko, "appid" to Sekretoj.OpenWeatherMapKey, "units" to "metric")
+    ).awaitStringResponse()
+    val ts = (dato.timeInMillis + dato.timeZone.getOffset(dato.timeInMillis)) / 1000
+    return result.fold(
+            { data ->
+                val raporto: Raporto = JSON.nonstrict.parse(Raporto.serializer(), data)
+                raporto.list.forEach {
+                    if (it.dt == ts) {
+                        return it
+                    }
+                }
+                null
+            }, { error -> throw error.exception }
     )
 }

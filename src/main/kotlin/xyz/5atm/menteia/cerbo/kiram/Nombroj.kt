@@ -1,5 +1,6 @@
 package xyz.`5atm`.menteia.cerbo.kiram
 
+import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import java.util.*
 
 object Nombroj {
@@ -32,5 +33,23 @@ object Nombroj {
             }
             return sb.toString()
         }
+    }
+
+    fun legiNombron(arbo: SintaksoArbo): Int {
+        var nombro = 0
+        arbo.traversi().forEach {
+            val cifero = partnombroj.indexOf(it)
+            if (cifero == -1) {
+                val cifero2 = nombroj.indexOf(it)
+                if (cifero2 == -1) {
+                    throw Exception("Ne povas kompreni $it en $arbo")
+                } else {
+                    return nombro * 10 + cifero2
+                }
+            } else {
+                nombro = nombro * 10 + cifero
+            }
+        }
+        throw Exception("Ne povas kompreni ${arbo}")
     }
 }
