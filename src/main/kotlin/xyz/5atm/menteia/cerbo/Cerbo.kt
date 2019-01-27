@@ -3,7 +3,7 @@ package xyz.`5atm`.menteia.cerbo
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.ʃanam.Tempo
 import xyz.`5atm`.menteia.cerbo.lumina.Vetero
-import xyz.`5atm`.menteia.klisemi
+import xyz.`5atm`.menteia.objektoj
 import java.lang.Exception
 
 object Cerbo {
@@ -17,7 +17,7 @@ object Cerbo {
             }
             return SintaksoArbo.konstrui(respondo)
         } catch (e: Exception) {
-            print(e)
+            e.printStackTrace()
             return SintaksoArbo("veguna", listOf())
         }
     }
@@ -46,10 +46,8 @@ object Cerbo {
         return "to ${eniro} ${respondo}"
     }
 
-    suspend fun koDes(objekto: SintaksoArbo, eco: SintaksoArbo): String {
-        return when (objekto.radiko) {
-            "klisemi" -> klisemi(eco)
-            else -> throw Exception("Nekonita objekto ${objekto}")
-        }
+    suspend fun koDes(objektoNomo: SintaksoArbo, eco: SintaksoArbo): String {
+        val objekto = objektoj[objektoNomo.radiko] ?: throw Exception("Ne konita objekto: ${objektoNomo.radiko}")
+        return objekto(eco)
     }
 }

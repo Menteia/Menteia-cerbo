@@ -19,17 +19,27 @@ data class ThermostatState(
         val name: String,
         val ambient_temperature_c: Float,
         @Optional val target_temperature_c: Float? = null,
-        val humidity: Byte
+        val humidity: Byte,
+        val hvac_mode: String
+)
+
+val hvacModes = mapOf(
+        "heat" to "saresa",
+        "cool" to "silega",
+        "heat-cool" to "sasigas",
+        "eco" to "maraga",
+        "off" to "buve"
 )
 
 suspend fun getThermostatAlt(id: String): ThermostatState {
-    val client = HttpClient(Apache)
-    val respondo = client.get<String>(
-            URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]}")
-    ) {
-        headers {
-            append("Authorization", Sekretoj.NestKey)
+    HttpClient(Apache).use {
+        val respondo = it.get<String>(
+                URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]}")
+        ) {
+            headers {
+                append("Authorization", Sekretoj.NestKey)
+            }
         }
+        return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
     }
-    return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
 }
