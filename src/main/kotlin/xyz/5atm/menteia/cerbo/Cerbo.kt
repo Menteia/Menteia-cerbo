@@ -3,7 +3,6 @@ package xyz.`5atm`.menteia.cerbo
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.ʃanam.Tempo
 import xyz.`5atm`.menteia.cerbo.lumina.Vetero
-import xyz.`5atm`.menteia.objektoj
 import java.lang.Exception
 
 object Cerbo {
@@ -28,10 +27,6 @@ object Cerbo {
             else -> throw Exception("Ne komprenis ${eniro.radiko}")
         }
         return "sagi $respondo"
-    }
-
-    fun keli(eniro: SintaksoArbo): String {
-        throw Exception("Ne komprenis ${eniro.radiko}")
     }
 
     suspend fun ko(eniro: SintaksoArbo): String {

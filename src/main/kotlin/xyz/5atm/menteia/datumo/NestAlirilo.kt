@@ -7,6 +7,9 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
+import io.ktor.client.request.put
+import io.ktor.content.TextContent
+import io.ktor.http.ContentType
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
@@ -20,26 +23,39 @@ data class ThermostatState(
         val ambient_temperature_c: Float,
         @Optional val target_temperature_c: Float? = null,
         val humidity: Byte,
-        val hvac_mode: String
+        val hvac_state: String
 )
 
-val hvacModes = mapOf(
-        "heat" to "saresa",
-        "cool" to "silega",
-        "heat-cool" to "sasigas",
-        "eco" to "maraga",
+val hvacStates = mapOf(
+        "heating" to "saresa",
+        "cooling" to "silega",
         "off" to "buve"
+)
+
+val properties = mapOf(
+        "sevara" to "target_temperature_c"
 )
 
 suspend fun getThermostatAlt(id: String): ThermostatState {
     HttpClient(Apache).use {
         val respondo = it.get<String>(
-                URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]}")
+                URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")
         ) {
             headers {
-                append("Authorization", Sekretoj.NestKey)
+                append("Authorization", Sekretoj.NestKey[id]!!)
             }
         }
         return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
+    }
+}
+
+suspend fun setThermostat(id: String, targetTemperature: Int) {
+    HttpClient(Apache).use {
+        it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")) {
+            headers {
+                append("Authorization", Sekretoj.NestKey[id]!!)
+            }
+            body = TextContent("{\"target_temperature_c\": $targetTemperature}", ContentType.Application.Json)
+        }
     }
 }

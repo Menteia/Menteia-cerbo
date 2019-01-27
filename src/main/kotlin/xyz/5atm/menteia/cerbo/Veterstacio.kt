@@ -1,43 +1,17 @@
-package xyz.`5atm`.menteia
+package xyz.`5atm`.menteia.cerbo
 
-import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
-import xyz.`5atm`.menteia.datumo.getThermostatAlt
 import xyz.`5atm`.menteia.datumo.getState
+import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.kiram.Nombroj
-import xyz.`5atm`.menteia.cerbo.Iloj
-import xyz.`5atm`.menteia.datumo.hvacModes
-import kotlin.math.roundToInt
 
-interface Objekto {
-    suspend operator fun invoke(eco: SintaksoArbo): String
-}
+internal object frodeni : Objekto {
+    override val nomo = "frodeni"
 
-val objektoj = mapOf(
-        "klisemi" to klisemi,
-        "frodeni" to frodeni
-)
-
-// Waterloo thermostat
-private object klisemi : Objekto {
-    override suspend operator fun invoke(eco: SintaksoArbo): String {
-        return when (eco.radiko) {
-            "testos" -> testos()
-            else -> throw Exception("Nekonita eco de klisemi: ${eco.radiko}")
-        }
-    }
-
-    private suspend fun testos(): String {
-        val raporto = getThermostatAlt("klisemi")
-        return "sageta nevum ${Nombroj.nombrigi(raporto.ambient_temperature_c.roundToInt())} pomorom ${Nombroj.nombrigi(raporto.humidity.toInt())} ${hvacModes[raporto.hvac_mode]!!}"
-    }
-}
-
-private object frodeni : Objekto {
     override suspend operator fun invoke(eco: SintaksoArbo): String {
         return when (eco.radiko) {
             "testos" -> testos()
             "taskesos" -> taskesos()
-            else -> throw Exception("Nekonita eco de frodeni: ${eco.radiko}")
+            else -> super.invoke(eco)
         }
     }
 
