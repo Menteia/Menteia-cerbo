@@ -5,8 +5,8 @@ import xyz.`5atm`.menteia.datumo.getThermostatAlt
 import xyz.`5atm`.menteia.cerbo.kiram.Nombroj
 import xyz.`5atm`.menteia.datumo.setThermostat
 
-internal interface Termostato : Objekto {
-    override suspend operator fun invoke(eco: SintaksoArbo): String {
+internal interface Termostato : NomitaAĵo {
+    override suspend operator fun invoke(eco: SintaksoArbo): Pair<String, Certeco> {
         return when (eco.radiko) {
             "testos" -> testos()
             else -> super.invoke(eco)
@@ -26,14 +26,14 @@ internal interface Termostato : Objekto {
         }
     }
 
-    suspend fun testos(): String {
+    suspend fun testos(): Pair<String, Certeco> {
         val raporto = getThermostatAlt(nomo)
         return when (raporto.hvac_state) {
             "heating" -> "saresa nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"
             "cooling" -> "silega nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"
             "off" -> "buve"
             else -> throw Exception("Ne konita ŝtato de $nomo: ${raporto.hvac_state}")
-        }
+        } to Certeco.Sagi
     }
 }
 

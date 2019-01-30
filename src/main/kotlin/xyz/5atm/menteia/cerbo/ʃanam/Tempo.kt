@@ -1,22 +1,23 @@
 package xyz.`5atm`.menteia.cerbo.ʃanam
 
 import xyz.`5atm`.menteia.cerbo.kiram.Nombroj
+import xyz.`5atm`.menteia.cerbo.Certeco
 import java.util.*
 
 object Tempo {
     private val fazoj = listOf("valima", "darena", "gemuna")
 
-    fun geradas(): String {
+    fun geradas(): Pair<String, Certeco> {
         val nun = Calendar.getInstance()
         val fazo = fazoj[nun[Calendar.HOUR_OF_DAY] / 8]
         val horo = nun[Calendar.HOUR_OF_DAY] % 8
         val minuto = nun[Calendar.MINUTE]
-        return "$fazo ${Nombroj.nombrigi(horo)} ${Nombroj.nombrigi(minuto)}"
+        return "$fazo ${Nombroj.nombrigi(horo)} ${Nombroj.nombrigi(minuto)}" to Certeco.Negi
     }
 
-    fun fidinas(): String {
+    fun fidinas(): Pair<String, Certeco> {
         val hodiaŭ = SilicanDate.fromGregorian(Calendar.getInstance())
-        return "karima ${Nombroj.nombrigi(hodiaŭ.year)} ${Nombroj.nombrigi(hodiaŭ.month)} ${Nombroj.nombrigi(hodiaŭ.day)}"
+        return "karima ${Nombroj.nombrigi(hodiaŭ.year)} ${Nombroj.nombrigi(hodiaŭ.month)} ${Nombroj.nombrigi(hodiaŭ.day)}" to Certeco.Negi
     }
 }
 
@@ -28,7 +29,7 @@ const val daysIn5Years = 5 * 364 + 7
 
 data class SilicanDate(val year: Int, val month: Int, val day: Int) {
     companion object {
-        fun fromGregorian(date: Calendar) : SilicanDate {
+        fun fromGregorian(date: Calendar): SilicanDate {
             val difference = (date.timeInMillis - syncPoint.timeInMillis) / (1000 * 60 * 60 * 24)
             val dayNumber = syncDayNumber + difference
             val years400 = dayNumber / daysIn400Years

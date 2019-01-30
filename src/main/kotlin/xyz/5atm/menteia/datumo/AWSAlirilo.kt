@@ -6,6 +6,8 @@ import org.dom4j.QName
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
@@ -104,7 +106,32 @@ private fun igiIPA(vortoj: String): List<String> {
     }
 }
 
-data class Vorto(val vorto: String, val valenco: Int, val antaŭpaŭzo: Boolean, val interpaŭzo: Boolean, val elparolo: String?)
+fun alportiListon(nomo: String): List<String> {
+    val db = DynamoDbClient.builder()
+            .region(Region.US_WEST_2)
+            .build()
+    val respondo = db.query(QueryRequest.builder()
+            .tableName("Menteia-datumejo")
+            .expressionAttributeValues(mapOf(":nomo" to AttributeValue.builder().s(nomo).build()))
+            .keyConditionExpression("vorto = :nomo")
+            .build()
+    )
+    if (respondo.count() != 1) {
+        throw Exception("Ne eblis trovi la liston nomita ${nomo}")
+    }
+    return respondo.items()[0]["enhavo"]!!.l().map {
+        it.s()
+    }
+}
+
+data class Vorto(
+        val vorto: String,
+        val valenco: Int,
+        val antaŭpaŭzo: Boolean,
+        val interpaŭzo: Boolean,
+        val elparolo: String?,
+        val tipo: String?
+)
 
 object Vortaro {
     private val vortaro: MutableMap<String, Vorto> = mutableMapOf()
@@ -116,17 +143,24 @@ object Vortaro {
         val db = DynamoDbClient.builder()
                 .region(Region.US_WEST_2)
                 .build()
-        val respondo = db.scan(ScanRequest.builder().tableName("Menteia-vortaro").build())
-        respondo.items().forEach {
-            val vorto = it["vorto"]!!.s()
-            val datumo = Vorto(
-                    vorto = vorto,
-                    valenco = it["valenco"]!!.n().toInt(),
-                    antaŭpaŭzo = it["antaŭpaŭzo"]?.bool() ?: false,
-                    interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
-                    elparolo = it["elparolo"]?.s()
-            )
-            vortaro[vorto] = datumo
+        val listo = db.scanPaginator(
+                ScanRequest.builder().tableName("Menteia-datumejo")
+                        .attributesToGet("vorto", "valenco", "antaŭpaŭzo", "interpaŭzo", "elparolo", "tipo")
+                        .build()
+        )
+        listo.forEach {
+            it.items().forEach {
+                val vorto = it["vorto"]!!.s()
+                val datumo = Vorto(
+                        vorto = vorto,
+                        valenco = it["valenco"]!!.n().toInt(),
+                        antaŭpaŭzo = it["antaŭpaŭzo"]?.bool() ?: false,
+                        interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
+                        elparolo = it["elparolo"]?.s(),
+                        tipo = it["tipo"]?.s()
+                )
+                vortaro[vorto] = datumo
+            }
         }
         return vortaro
     }
