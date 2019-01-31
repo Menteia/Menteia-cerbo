@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest
+import software.amazon.awssdk.services.dynamodb.model.Select
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
 import software.amazon.awssdk.services.polly.PollyClient
@@ -122,6 +123,21 @@ fun alportiListon(nomo: String): List<String> {
     return respondo.items()[0]["enhavo"]!!.l().map {
         it.s()
     }
+}
+
+fun nombriListojn(): Int {
+    val db = DynamoDbClient.builder()
+            .region(Region.US_WEST_2)
+            .build()
+    val respondo = db.scan(ScanRequest.builder()
+            .tableName("Menteia-datumejo")
+            .filterExpression("tipo = :nomo")
+            .expressionAttributeValues(mapOf(
+                    ":nomo" to AttributeValue.builder().s("girisa").build()
+            ))
+            .select(Select.COUNT)
+            .build())
+    return respondo.count()
 }
 
 data class Vorto(

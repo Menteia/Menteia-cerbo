@@ -14,7 +14,9 @@ interface NomitaAĵo {
         throw Exception("Ne eblas agordi $eco de $nomo al $valuo")
     }
 
-    fun priskribi(): Pair<String, Certeco>
+    fun priskribi(): Pair<String, Certeco> {
+        return nomo to Certeco.Negi
+    }
 }
 
 fun troviNomitanAĵon(nomo: SintaksoArbo): NomitaAĵo {
@@ -29,5 +31,7 @@ fun troviNomitanAĵon(nomo: SintaksoArbo): NomitaAĵo {
 val objektoj = mapOf(
         "klisemi" to klisemi,
         "frodeni" to frodeni,
-        "brinemi" to brinemi
+        "brinemi" to brinemi,
+
+        "girisa" to Listo
 )

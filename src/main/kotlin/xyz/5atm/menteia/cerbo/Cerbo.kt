@@ -3,7 +3,7 @@ package xyz.`5atm`.menteia.cerbo
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.ʃanam.Tempo
 import xyz.`5atm`.menteia.cerbo.lumina.Vetero
-import xyz.`5atm`.menteia.cerbo.troviNomitanAĵon
+import xyz.`5atm`.menteia.cerbo.girisa.Listo
 import java.lang.Exception
 
 enum class Certeco(val vorto: String) {
@@ -26,15 +26,16 @@ object Cerbo {
         }
     }
 
-    suspend fun doni(eniro: SintaksoArbo): String {
+    private suspend fun doni(eniro: SintaksoArbo): String {
         val (respondo, certeco) = when (eniro.radiko) {
             "ko" -> ko(eniro.opcioj[0])
+            "kurimis" -> Listo.kurimis(eniro.opcioj[0], eniro.opcioj[1])
             else -> throw Exception("Ne komprenis ${eniro.radiko}")
         }
         return "${certeco.vorto} $respondo"
     }
 
-    suspend fun ko(eniro: SintaksoArbo): Pair<String, Certeco> {
+    private suspend fun ko(eniro: SintaksoArbo): Pair<String, Certeco> {
         val (respondo, certeco) = when (eniro.radiko) {
             "geradas" -> Tempo.geradas()
             "fidinas" -> Tempo.fidinas()
@@ -49,7 +50,7 @@ object Cerbo {
         return "to ${eniro} ${respondo}" to certeco
     }
 
-    suspend fun koDes(objektoNomo: SintaksoArbo, eco: SintaksoArbo): Pair<String, Certeco> {
+    private suspend fun koDes(objektoNomo: SintaksoArbo, eco: SintaksoArbo): Pair<String, Certeco> {
         val objekto = troviNomitanAĵon(objektoNomo)
         return objekto(eco)
     }
