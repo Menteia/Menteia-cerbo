@@ -60,7 +60,7 @@ object VeteraDatumo {
             800 to "ʃanare",
             801 to "mino molaro",
             802 to "neda molaro",
-            803 to "lema molaro",
+            803 to "lisa molaro",
             804 to "molaro"
     )
 }

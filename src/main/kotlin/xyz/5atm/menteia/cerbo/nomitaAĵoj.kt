@@ -7,7 +7,7 @@ import Vortaro
 interface NomitaAĵo {
     val nomo: String
     suspend operator fun invoke(eco: SintaksoArbo): Pair<String, Certeco> {
-        throw Exception("Nekonita eco de $nomo: ${eco.radiko}")
+        throw MenteiaEksepcio("klos tinas des ${nomo} ${eco}")
     }
 
     suspend operator fun invoke(eco: SintaksoArbo, valuo: SintaksoArbo): String {

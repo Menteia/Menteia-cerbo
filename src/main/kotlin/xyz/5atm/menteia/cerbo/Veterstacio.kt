@@ -1,8 +1,8 @@
 package xyz.`5atm`.menteia.cerbo
 
-import xyz.`5atm`.menteia.datumo.getState
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.kiram.Nombroj
+import xyz.`5atm`.menteia.datumo.*
 
 internal object frodeni : NomitaAĵo {
     override val nomo = "frodeni"
@@ -16,7 +16,7 @@ internal object frodeni : NomitaAĵo {
     }
 
     private suspend fun testos(): Pair<String, Certeco> {
-        val raporto = getState()
+        val raporto = alirilaro.getWeatherStationState()
         val ĉefdatumo = raporto.body.devices[0].dashboard_data
         val nevum = Nombroj.nombrigi(ĉefdatumo.Temperature.toInt())
         val dreta = Nombroj.nombrigi(ĉefdatumo.Humidity.toInt())
@@ -25,7 +25,7 @@ internal object frodeni : NomitaAĵo {
     }
 
     private suspend fun taskesos(): Pair<String, Certeco> {
-        val raporto = getState()
+        val raporto = alirilaro.getWeatherStationState()
         val ĉefaparato = raporto.body.devices[0]
         val modulo1 = ĉefaparato.modules[0]
         val modulo2 = ĉefaparato.modules[1]

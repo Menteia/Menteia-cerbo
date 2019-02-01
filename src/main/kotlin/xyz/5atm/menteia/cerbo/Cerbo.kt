@@ -20,6 +20,8 @@ object Cerbo {
                 else -> "veguna"
             }
             return SintaksoArbo.konstrui(respondo)
+        } catch (e: MenteiaEksepcio) {
+            return SintaksoArbo.konstrui("negi ${e.message}")
         } catch (e: Exception) {
             e.printStackTrace()
             return SintaksoArbo("veguna", listOf())
@@ -41,6 +43,7 @@ object Cerbo {
             "fidinas" -> Tempo.fidinas()
             "lemona" -> Vetero.lemona(eniro.opcioj[0])
             "lurina" -> Vetero.lurina(eniro.opcioj[0], eniro.opcioj[1])
+            "tremos" -> Listo.tremos(eniro.opcioj[0])
             "des" -> koDes(eniro.opcioj[0], eniro.opcioj[1])
             else -> {
                 val aĵo = troviNomitanAĵon(eniro)

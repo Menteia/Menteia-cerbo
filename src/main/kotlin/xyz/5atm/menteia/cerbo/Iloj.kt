@@ -15,6 +15,16 @@ object Iloj {
         }
     }
 
+    fun arigi(aro: Map<String, List<String>>): String {
+        if (aro.isEmpty()) {
+            return "premis"
+        } else {
+            return aro.map {
+                "pretas ${it.key} ${listigi(it.value)}"
+            }.joinToString(" ", postfix = " premis")
+        }
+    }
+
     fun legiDaton(arbo: SintaksoArbo): Calendar {
         return when (arbo.radiko) {
             "fitam" -> {

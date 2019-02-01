@@ -1,9 +1,8 @@
 package xyz.`5atm`.menteia.cerbo
 
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
-import xyz.`5atm`.menteia.datumo.getThermostatAlt
 import xyz.`5atm`.menteia.cerbo.kiram.Nombroj
-import xyz.`5atm`.menteia.datumo.setThermostat
+import xyz.`5atm`.menteia.datumo.*
 
 internal interface Termostato : NomitaAĵo {
     override suspend operator fun invoke(eco: SintaksoArbo): Pair<String, Certeco> {
@@ -17,7 +16,7 @@ internal interface Termostato : NomitaAĵo {
         return when (eco.radiko) {
             "sevara" -> {
                 when (valuo.radiko) {
-                    "nevum" -> setThermostat(nomo, Nombroj.legiNombron(valuo.opcioj[0]))
+                    "nevum" -> alirilaro.setThermostatTemperature(nomo, Nombroj.legiNombron(valuo.opcioj[0]))
                     else -> throw Exception("Nekonita vorto: ${valuo.radiko}")
                 }
                 "miras des $nomo $eco $valuo"
@@ -27,7 +26,7 @@ internal interface Termostato : NomitaAĵo {
     }
 
     suspend fun testos(): Pair<String, Certeco> {
-        val raporto = getThermostatAlt(nomo)
+        val raporto = alirilaro.getThermostatState(nomo)
         return when (raporto.hvac_state) {
             "heating" -> "saresa nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"
             "cooling" -> "silega nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"

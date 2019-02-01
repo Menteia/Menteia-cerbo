@@ -92,13 +92,3 @@ suspend fun authenticate(): String {
         throw e
     }
 }
-
-suspend fun getState(): WeatherStationState {
-    val accessToken = Sekretoj.session["NetatmoAccessToken"] ?: authenticate()
-    HttpClient(Apache).use {
-        val response = it.get<String>(URL("https://api.netatmo.com/api/getstationsdata")) {
-            parameter("access_token", accessToken)
-        }
-        return JSON.nonstrict.parse(WeatherStationState.serializer(), response)
-    }
-}

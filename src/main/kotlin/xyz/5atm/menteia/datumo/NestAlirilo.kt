@@ -35,27 +35,3 @@ val hvacStates = mapOf(
 val properties = mapOf(
         "sevara" to "target_temperature_c"
 )
-
-suspend fun getThermostatAlt(id: String): ThermostatState {
-    HttpClient(Apache).use {
-        val respondo = it.get<String>(
-                URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")
-        ) {
-            headers {
-                append("Authorization", Sekretoj.NestKey[id]!!)
-            }
-        }
-        return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
-    }
-}
-
-suspend fun setThermostat(id: String, targetTemperature: Int) {
-    HttpClient(Apache).use {
-        it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")) {
-            headers {
-                append("Authorization", Sekretoj.NestKey[id]!!)
-            }
-            body = TextContent("{\"target_temperature_c\": $targetTemperature}", ContentType.Application.Json)
-        }
-    }
-}

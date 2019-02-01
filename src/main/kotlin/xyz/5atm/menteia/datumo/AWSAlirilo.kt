@@ -6,10 +6,7 @@ import org.dom4j.QName
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue
-import software.amazon.awssdk.services.dynamodb.model.QueryRequest
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest
-import software.amazon.awssdk.services.dynamodb.model.Select
+import software.amazon.awssdk.services.dynamodb.model.*
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
 import software.amazon.awssdk.services.polly.PollyClient
@@ -23,10 +20,11 @@ import java.nio.file.FileSystems
 import java.text.SimpleDateFormat
 import java.util.*
 
+val polly = PollyClient.builder()
+        .region(Region.US_WEST_2)
+        .build()
+
 internal fun paroli(arbo: SintaksoArbo): Unit {
-    val polly = PollyClient.builder()
-            .region(Region.US_WEST_2)
-            .build()
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
             .addElement(QName("amazon:effect"))
@@ -57,7 +55,6 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
                 .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
     }
     val petoXML = xml.asXML()
-    println(petoXML)
     polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
             .outputFormat(OutputFormat.OGG_VORBIS)
             .text(petoXML)
@@ -79,9 +76,6 @@ private fun pravigiIPA(vortoj: List<String>, ipa: List<String>): List<String> {
         elparolo ?: s
     }
 }
-
-@Serializable
-data class Peto(val IPA: String)
 
 @Serializable
 data class Respondenhavo(
@@ -107,39 +101,6 @@ private fun igiIPA(vortoj: String): List<String> {
     }
 }
 
-fun alportiListon(nomo: String): List<String> {
-    val db = DynamoDbClient.builder()
-            .region(Region.US_WEST_2)
-            .build()
-    val respondo = db.query(QueryRequest.builder()
-            .tableName("Menteia-datumejo")
-            .expressionAttributeValues(mapOf(":nomo" to AttributeValue.builder().s(nomo).build()))
-            .keyConditionExpression("vorto = :nomo")
-            .build()
-    )
-    if (respondo.count() != 1) {
-        throw Exception("Ne eblis trovi la liston nomita ${nomo}")
-    }
-    return respondo.items()[0]["enhavo"]!!.l().map {
-        it.s()
-    }
-}
-
-fun nombriListojn(): Int {
-    val db = DynamoDbClient.builder()
-            .region(Region.US_WEST_2)
-            .build()
-    val respondo = db.scan(ScanRequest.builder()
-            .tableName("Menteia-datumejo")
-            .filterExpression("tipo = :nomo")
-            .expressionAttributeValues(mapOf(
-                    ":nomo" to AttributeValue.builder().s("girisa").build()
-            ))
-            .select(Select.COUNT)
-            .build())
-    return respondo.count()
-}
-
 data class Vorto(
         val vorto: String,
         val valenco: Int,
@@ -152,8 +113,8 @@ data class Vorto(
 object Vortaro {
     private val vortaro: MutableMap<String, Vorto> = mutableMapOf()
 
-    fun alporti(): Map<String, Vorto> {
-        if (vortaro.isNotEmpty()) {
+    fun alporti(alporti: Boolean = false): Map<String, Vorto> {
+        if (vortaro.isNotEmpty() && !alporti) {
             return vortaro
         }
         val db = DynamoDbClient.builder()
