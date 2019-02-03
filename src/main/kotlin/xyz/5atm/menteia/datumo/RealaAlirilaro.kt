@@ -4,12 +4,14 @@ import awaitStringResponse
 import com.github.kittinunf.fuel.Fuel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.BadResponseStatusException
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.parameter
 import io.ktor.client.request.put
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
+import kotlinx.coroutines.io.readUTF8Line
 import kotlinx.serialization.json.JSON
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -137,10 +139,10 @@ object RealaAlirilaro : Alirilaro {
     override suspend fun getThermostatState(id: String): ThermostatState {
         HttpClient(Apache).use {
             val respondo = it.get<String>(
-                    URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")
+                    URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")
             ) {
                 headers {
-                    append("Authorization", Sekretoj.NestKey[id]!!)
+                    append("Authorization", Sekretoj.NestKey(id))
                 }
             }
             return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
@@ -149,11 +151,41 @@ object RealaAlirilaro : Alirilaro {
 
     override suspend fun setThermostatTemperature(id: String, targetTemperature: Int) {
         HttpClient(Apache).use {
-            it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceIDs[id]!!}")) {
+            it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
                 headers {
-                    append("Authorization", Sekretoj.NestKey.getValue(id))
+                    append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
                 }
                 body = TextContent("{\"target_temperature_c\": $targetTemperature}", ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun setThermostatMode(id: String, mode: String, t1: Int?, t2: Int?) {
+        val modeLabel = hvacModesReversed.getValue(mode)
+        val additionalBodyContent = when (modeLabel) {
+            "heat", "cool" -> "{\"target_temperature_c\": ${t1!!}}"
+            "heat-cool" -> "{\"target_temperature_low_c\": ${t1!!}, \"target_temperature_high_c\": ${t2!!}}"
+            else -> null
+        }
+        HttpClient(Apache).use {
+            try {
+                it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
+                    headers {
+                        append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                    }
+                    body = TextContent("{\"hvac_mode\": \"$modeLabel\"}", ContentType.Application.Json)
+                }
+                if (additionalBodyContent != null){
+                    it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
+                        headers {
+                            append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                        }
+                        body = TextContent(additionalBodyContent, ContentType.Application.Json)
+                    }
+                }
+            } catch (e: BadResponseStatusException) {
+                println(e.response.content.readUTF8Line())
+                throw e
             }
         }
     }

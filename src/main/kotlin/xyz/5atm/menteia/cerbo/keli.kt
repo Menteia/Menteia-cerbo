@@ -23,7 +23,7 @@ object keli {
             "des" -> {
                 val objekto = objektoj[celo.opcioj[0].radiko]
                         ?: throw Exception("Nekonita objekto ${celo.opcioj[0]}")
-                objekto(celo.opcioj[1], valuo) to Certeco.Sagi
+                objekto(celo.opcioj[1], valuo)
             }
             else -> throw Exception("Ne komprenis ${celo.radiko}")
         }

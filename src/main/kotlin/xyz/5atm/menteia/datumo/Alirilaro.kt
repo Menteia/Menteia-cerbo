@@ -13,6 +13,7 @@ interface Alirilaro {
 
     suspend fun getThermostatState(id: String): ThermostatState
     suspend fun setThermostatTemperature(id: String, targetTemperature: Int)
+    suspend fun setThermostatMode(id: String, mode: String, t1: Int? = null, t2: Int? = null)
 
     suspend fun getWeatherStationState(): WeatherStationState
 

@@ -24,7 +24,35 @@ val polly = PollyClient.builder()
         .region(Region.US_WEST_2)
         .build()
 
-internal fun paroli(arbo: SintaksoArbo): Unit {
+internal fun paroli(arbo: SintaksoArbo): ByteArray {
+    val petoXML = kreiXML(arbo)
+    val respondo = polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
+            .outputFormat(OutputFormat.OGG_VORBIS)
+            .text(petoXML)
+            .voiceId(VoiceId.IVY)
+            .textType(TextType.SSML)
+            .build()
+    )
+    return respondo.readAllBytes()
+}
+
+internal fun paroliEnDosieron(arbo: SintaksoArbo) {
+    val petoXML = kreiXML(arbo)
+    polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
+            .outputFormat(OutputFormat.OGG_VORBIS)
+            .text(petoXML)
+            .voiceId(VoiceId.IVY)
+            .textType(TextType.SSML)
+            .build(),
+            FileSystems.getDefault().getPath(
+                    "ekparolado",
+                    "${SimpleDateFormat("yyyy-MM-dd HHmmss").format(Calendar.getInstance().time)}.ogg"
+            )
+    )
+
+}
+
+private fun kreiXML(arbo: SintaksoArbo): String {
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
             .addElement(QName("amazon:effect"))
@@ -54,19 +82,7 @@ internal fun paroli(arbo: SintaksoArbo): Unit {
                 .addAttribute("alphabet", "ipa")
                 .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
     }
-    val petoXML = xml.asXML()
-    polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
-            .outputFormat(OutputFormat.OGG_VORBIS)
-            .text(petoXML)
-            .voiceId(VoiceId.IVY)
-            .textType(TextType.SSML)
-            .build(),
-            FileSystems.getDefault().getPath(
-                    "ekparolado",
-                    "${SimpleDateFormat("yyyy-MM-dd HHmmss").format(Calendar.getInstance().time)}.ogg"
-            )
-    )
-
+    return xml.asXML()
 }
 
 private fun pravigiIPA(vortoj: List<String>, ipa: List<String>): List<String> {

@@ -43,11 +43,15 @@ dependencies {
     compile 'software.amazon.awssdk:dynamodb'
     compile 'software.amazon.awssdk:lambda'
     compile 'software.amazon.awssdk:polly'
+    compile 'software.amazon.awssdk:ssm'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.9.1"
     compile 'com.github.kittinunf.fuel:fuel:1.16.0'
     compile 'com.github.kittinunf.fuel:fuel-coroutines:1.16.0'
     compile "io.ktor:ktor-client-apache:1.1.1"
+    compile "io.ktor:ktor-server-core:1.1.1"
+    compile "io.ktor:ktor-server-netty:1.1.1"
+    compile "io.ktor:ktor-websockets:1.1.1"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
     compile group: 'org.dom4j', name: 'dom4j', version: '2.1.1'

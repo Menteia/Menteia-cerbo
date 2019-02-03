@@ -40,4 +40,11 @@ object Iloj {
             else -> throw Exception("Ne povas trakti ${arbo}")
         }
     }
+
+    fun legiTemperaturon(arbo: SintaksoArbo): Int {
+        return when (arbo.radiko) {
+            "nevum" -> Nombroj.legiNombron(arbo.opcioj[0])
+            else -> throw Exception("$arbo ne estas valida temperaturo")
+        }
+    }
 }

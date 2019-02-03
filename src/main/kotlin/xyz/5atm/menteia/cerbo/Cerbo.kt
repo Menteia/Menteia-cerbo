@@ -12,8 +12,8 @@ enum class Certeco(val vorto: String) {
 
 object Cerbo {
     suspend fun trakti(eniro: String): SintaksoArbo {
-        val enirarbo = SintaksoArbo.konstrui(eniro)
         try {
+            val enirarbo = SintaksoArbo.konstrui(eniro)
             val respondo = when (enirarbo.radiko) {
                 "doni" -> doni(enirarbo.opcioj[0])
                 "keli" -> keli(enirarbo.opcioj[0])
@@ -24,7 +24,7 @@ object Cerbo {
             return SintaksoArbo.konstrui("negi ${e.message}")
         } catch (e: Exception) {
             e.printStackTrace()
-            return SintaksoArbo("veguna", listOf())
+            throw e
         }
     }
 

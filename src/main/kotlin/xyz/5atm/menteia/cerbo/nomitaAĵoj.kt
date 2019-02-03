@@ -10,7 +10,7 @@ interface NomitaAĵo {
         throw MenteiaEksepcio("klos tinas des ${nomo} ${eco}")
     }
 
-    suspend operator fun invoke(eco: SintaksoArbo, valuo: SintaksoArbo): String {
+    suspend operator fun invoke(eco: SintaksoArbo, valuo: SintaksoArbo): Pair<String, Certeco> {
         throw Exception("Ne eblas agordi $eco de $nomo al $valuo")
     }
 

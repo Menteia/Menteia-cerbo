@@ -22,8 +22,11 @@ data class ThermostatState(
         val name: String,
         val ambient_temperature_c: Float,
         @Optional val target_temperature_c: Float? = null,
+        @Optional val target_temperature_high_c: Float? = null,
+        @Optional val target_temperature_low_c: Float? = null,
         val humidity: Byte,
-        val hvac_state: String
+        val hvac_state: String,
+        val hvac_mode: String
 )
 
 val hvacStates = mapOf(
@@ -31,6 +34,18 @@ val hvacStates = mapOf(
         "cooling" to "silega",
         "off" to "buve"
 )
+
+val hvacModes = mapOf(
+        "heat" to "saresa",
+        "cool" to "silega",
+        "heat-cool" to "sasigas",
+        "eco" to "maraga",
+        "off" to "buve"
+)
+
+val hvacModesReversed = hvacModes.map {
+    it.value to it.key
+}.toMap()
 
 val properties = mapOf(
         "sevara" to "target_temperature_c"

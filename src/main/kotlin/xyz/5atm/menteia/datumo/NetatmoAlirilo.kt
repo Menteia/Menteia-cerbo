@@ -74,11 +74,12 @@ suspend fun authenticate(): String {
         HttpClient(Apache).use {
             val response = it.post<String>(URL("https://api.netatmo.com/oauth2/token")) {
                 val params = Parameters.build {
-                    append("client_id", Sekretoj.NetatmoClientID)
-                    append("client_secret", Sekretoj.NetatmoClientSecret)
+                    val values = Sekretoj.NetatmoCredentials()
+                    append("client_id", values.getValue("/External/Netatmo/ClientID"))
+                    append("client_secret", values.getValue("/External/Netatmo/ClientSecret"))
                     append("grant_type", "password")
-                    append("username", Sekretoj.NetatmoUsername)
-                    append("password", Sekretoj.NetatmoPassword)
+                    append("username", values.getValue("/External/Netatmo/Username"))
+                    append("password", values.getValue("/External/Netatmo/Password"))
                 }
                 body = FormDataContent(params)
             }
