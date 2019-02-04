@@ -21,7 +21,7 @@ object Cerbo {
             }
             return SintaksoArbo.konstrui(respondo)
         } catch (e: MenteiaEksepcio) {
-            return SintaksoArbo.konstrui("negi ${e.message}")
+            return SintaksoArbo.konstrui("pegi ${e.message}")
         } catch (e: Exception) {
             e.printStackTrace()
             throw e

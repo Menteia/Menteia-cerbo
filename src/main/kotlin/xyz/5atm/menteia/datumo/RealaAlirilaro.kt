@@ -17,7 +17,6 @@ import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 import software.amazon.awssdk.services.lambda.LambdaClient
-import software.amazon.awssdk.services.lambda.LambdaClientBuilder
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
 import java.lang.Exception
 import java.net.URL
@@ -142,7 +141,7 @@ object RealaAlirilaro : Alirilaro {
                     URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")
             ) {
                 headers {
-                    append("Authorization", Sekretoj.NestKey(id))
+                    append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
                 }
             }
             return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
