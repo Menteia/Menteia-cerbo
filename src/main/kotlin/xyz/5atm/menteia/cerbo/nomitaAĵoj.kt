@@ -2,6 +2,7 @@ package xyz.`5atm`.menteia.cerbo
 
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.girisa.Listo
+import xyz.`5atm`.menteia.cerbo.samona.Tempoŝaltilo
 import Vortaro
 
 interface NomitaAĵo {
@@ -24,6 +25,7 @@ fun troviNomitanAĵon(nomo: SintaksoArbo): NomitaAĵo {
     return objektoj[vorto.vorto] ?:
             when (vorto.tipo) {
                 "girisa" -> Listo(vorto.vorto)
+                "samona" -> Tempoŝaltilo(vorto.vorto)
                 else -> throw Exception("${vorto.vorto} ne havas konitan tipon")
             }
 }

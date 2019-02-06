@@ -7,9 +7,10 @@ interface Alirilaro {
     fun nombriListojn(): Int
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
-    fun kreiNomon(): String
+    fun kreiNomon(tipo: String): String
     fun kreiListon(): String
     fun forigiListon(nomo: String)
+    fun forigiTempoŝaltilon(nomo: String)
 
     suspend fun getThermostatState(id: String): ThermostatState
     suspend fun setThermostatTemperature(id: String, targetTemperature: Int)

@@ -7,6 +7,7 @@ import xyz.`5atm`.menteia.cerbo.NomitaAĵo
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.MenteiaEksepcio
 import xyz.`5atm`.menteia.datumo.alirilaro
+import xyz.`5atm`.menteia.cerbo.Cerbo
 
 class Listo(override val nomo: String) : NomitaAĵo {
     companion object : NomitaAĵo {
@@ -53,7 +54,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
                 add(indekso, aĵo.toString())
             }
             alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-            return "miras des $listoNomo las $nombro $aĵo" to Certeco.Negi
+            return "to des $listoNomo las $nombro $aĵo" to Certeco.Megi
         }
 
         fun kirema(listoNomo: SintaksoArbo, aĵo: SintaksoArbo): Pair<String, Certeco> {
@@ -62,7 +63,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
                 add(aĵo.toString())
             }
             alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-            return "miras des $listoNomo las ${Nombroj.nombrigi(novaListo.size-1)} $aĵo" to Certeco.Negi
+            return "to des $listoNomo las ${Nombroj.nombrigi(novaListo.size-1)} $aĵo" to Certeco.Megi
         }
 
         fun karisi(listoNomo: SintaksoArbo, aĵo: SintaksoArbo): Pair<String, Certeco> {
@@ -71,7 +72,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
             val novaListo = listo.toMutableList()
             if (novaListo.remove(aĵo.toString())) {
                 alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-                return "miras des $nomo diremi ${Nombroj.nombrigi(novaListo.size)}" to Certeco.Negi
+                return "klos kurimis $nomo $aĵo" to Certeco.Megi
             } else {
                 throw MenteiaEksepcio("klos kurimis $listoNomo $aĵo")
             }
@@ -79,12 +80,24 @@ class Listo(override val nomo: String) : NomitaAĵo {
 
         fun marina(): Pair<String, Certeco> {
             val novaNomo = alirilaro.kreiListon()
-            return "tinas $novaNomo" to Certeco.Negi
+            return "tinas $novaNomo" to Certeco.Megi
         }
 
         fun furika(nomo: SintaksoArbo): Pair<String, Certeco> {
             alirilaro.forigiListon(nomo.radiko)
-            return "klos sindis $nomo" to Certeco.Negi
+            return "klos sindis $nomo" to Certeco.Megi
+        }
+
+        suspend fun vidina(listoNomo: SintaksoArbo): Pair<String, Certeco> {
+            val listo = alirilaro.alportiListon(listoNomo.radiko)
+            val respondoj = listo.map {
+                val arbo = SintaksoArbo.konstrui(it)
+                when (arbo.radiko) {
+                    "ko" -> Cerbo.ko(arbo.opcioj[0]).first
+                    else -> throw Exception("Ne komprenis $arbo")
+                }
+            }
+            return Iloj.listigi(respondoj) to Certeco.Pegi
         }
     }
 

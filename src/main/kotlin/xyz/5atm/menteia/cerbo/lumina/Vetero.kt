@@ -16,7 +16,7 @@ object Vetero {
         val raporto = alirilaro.getCurrentWeather(lokoID)
         val lumina = VeteraDatumo.kodoj[raporto.weather[0].id]
                 ?: throw Exception("${raporto.weather[0].id} ne ekzistas")
-        val raportenhavo = "luvana ${lumina} nevum ${Nombroj.nombrigi(raporto.main.temp.roundToInt())} posetim ${Nombroj.nombrigi((raporto.wind.speed * 3.6).roundToInt())}"
+        val raportenhavo = "sadika ${lumina} nevum ${Nombroj.nombrigi(raporto.main.temp.roundToInt())} posetim ${Nombroj.nombrigi((raporto.wind.speed * 3.6).roundToInt())}"
         return raportenhavo to Certeco.Sagi
     }
 
@@ -29,6 +29,6 @@ object Vetero {
         val lumina = VeteraDatumo.kodoj[raporto.weather[0].id]
                 ?: throw Exception("${raporto.weather[0].id} ne ekzistas")
         println(raporto)
-        return "luvana ${lumina} nevum ${Nombroj.nombrigi(raporto.main.temp.roundToInt())} posetim ${Nombroj.nombrigi((raporto.wind.speed * 3.6).roundToInt())}" to Certeco.Sagi
+        return "sadika ${lumina} nevum ${Nombroj.nombrigi(raporto.main.temp.roundToInt())} posetim ${Nombroj.nombrigi((raporto.wind.speed * 3.6).roundToInt())}" to Certeco.Sagi
     }
 }

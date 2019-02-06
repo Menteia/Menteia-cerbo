@@ -4,7 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import io.ktor.application.install
 import io.ktor.http.cio.websocket.CloseReason
 import io.ktor.http.cio.websocket.Frame
@@ -17,6 +16,8 @@ import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import paroli
 import xyz.`5atm`.menteia.cerbo.Cerbo
 import java.io.FileInputStream
@@ -32,7 +33,14 @@ fun main() {
         install(WebSockets)
         routing {
             webSocket("/") {
-                println("?!")
+                println("Konektis")
+                val sekvaMesaĝo = { mesaĝo: String ->
+                    launch {
+                        outgoing.send(Frame.Text(mesaĝo))
+                        val parolado = paroli(mesaĝo)
+                        outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
+                    }
+                }
                 var token = idRicevo(incoming, outgoing)
                 while (true) {
                     val frame = incoming.receive()
@@ -40,12 +48,11 @@ fun main() {
                         when (frame) {
                             is Frame.Text -> {
                                 val teksto = frame.readText()
-                                println("Eniro: $teksto")
                                 if (teksto.equals("fino")) {
                                     close(CloseReason(CloseReason.Codes.NORMAL, "Fino"))
                                 } else {
                                     try {
-                                        val elirarbo = Cerbo.trakti(teksto)
+                                        val elirarbo = Cerbo.trakti(teksto, sekvaMesaĝo)
                                         outgoing.send(Frame.Text(elirarbo.toString()))
                                         val parolado = paroli(elirarbo)
                                         outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))

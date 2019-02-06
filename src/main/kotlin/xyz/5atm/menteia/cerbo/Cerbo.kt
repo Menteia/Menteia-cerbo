@@ -1,5 +1,6 @@
 package xyz.`5atm`.menteia.cerbo
 
+import kotlinx.coroutines.Job
 import xyz.`5atm`.menteia.vorttrakto.SintaksoArbo
 import xyz.`5atm`.menteia.cerbo.ʃanam.Tempo
 import xyz.`5atm`.menteia.cerbo.lumina.Vetero
@@ -7,16 +8,16 @@ import xyz.`5atm`.menteia.cerbo.girisa.Listo
 import java.lang.Exception
 
 enum class Certeco(val vorto: String) {
-    Negi("negi"), Sagi("sagi")
+    Negi("negi"), Sagi("sagi"), Megi("megi"), Regi("regi"), Pegi("pegi")
 }
 
 object Cerbo {
-    suspend fun trakti(eniro: String): SintaksoArbo {
+    suspend fun trakti(eniro: String, sekvaMesaĝo: (String) -> Job): SintaksoArbo {
         try {
             val enirarbo = SintaksoArbo.konstrui(eniro)
             val respondo = when (enirarbo.radiko) {
                 "doni" -> doni(enirarbo.opcioj[0])
-                "keli" -> keli(enirarbo.opcioj[0])
+                "keli" -> keli(enirarbo.opcioj[0], sekvaMesaĝo)
                 else -> "veguna"
             }
             return SintaksoArbo.konstrui(respondo)
@@ -28,7 +29,7 @@ object Cerbo {
         }
     }
 
-    private suspend fun doni(eniro: SintaksoArbo): String {
+    internal suspend fun doni(eniro: SintaksoArbo): String {
         val (respondo, certeco) = when (eniro.radiko) {
             "ko" -> ko(eniro.opcioj[0])
             "kurimis" -> Listo.kurimis(eniro.opcioj[0], eniro.opcioj[1])
@@ -37,7 +38,7 @@ object Cerbo {
         return "${certeco.vorto} $respondo"
     }
 
-    private suspend fun ko(eniro: SintaksoArbo): Pair<String, Certeco> {
+    internal suspend fun ko(eniro: SintaksoArbo): Pair<String, Certeco> {
         val (respondo, certeco) = when (eniro.radiko) {
             "geradas" -> Tempo.geradas()
             "fidinas" -> Tempo.fidinas()

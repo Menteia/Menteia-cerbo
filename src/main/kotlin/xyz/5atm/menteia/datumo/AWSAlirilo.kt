@@ -24,6 +24,10 @@ val polly = PollyClient.builder()
         .region(Region.US_WEST_2)
         .build()
 
+internal fun paroli(mesaĝo: String): ByteArray {
+    return paroli(SintaksoArbo.konstrui(mesaĝo))
+}
+
 internal fun paroli(arbo: SintaksoArbo): ByteArray {
     val petoXML = kreiXML(arbo)
     val respondo = polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
@@ -133,6 +137,7 @@ object Vortaro {
         if (vortaro.isNotEmpty() && !alporti) {
             return vortaro
         }
+        vortaro.clear()
         val db = DynamoDbClient.builder()
                 .region(Region.US_WEST_2)
                 .build()

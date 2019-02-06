@@ -94,39 +94,76 @@ object RealaAlirilaro : Alirilaro {
         return listoj
     }
 
-    override fun kreiNomon(): String {
-        val respondo = lambda.invoke(InvokeRequest.builder()
-                .functionName("Menteia-vortilo")
-                .build())
-        val vorto = respondo.payload().asUtf8String()
-        return vorto.substring(1..vorto.length-2)
-    }
-
-    override fun kreiListon(): String {
-        while (true) {
-            val nomo = kreiNomon()
+    override fun kreiNomon(tipo: String): String {
+        funkcio@ while (true) {
+            val respondo = lambda.invoke(InvokeRequest.builder()
+                    .functionName("Menteia-vortilo")
+                    .build())
+                    .payload()
+                    .asUtf8String()
+            val vorto = respondo.substring(1..respondo.length-2)
+            for (v in Vortaro.alporti()) {
+                if (v.key.startsWith(vorto) || vorto.startsWith(v.key) ||
+                        v.key.endsWith(vorto) || vorto.endsWith(v.key)) {
+                    continue@funkcio
+                }
+            }
             try {
                 db.putItem(PutItemRequest.builder()
                         .tableName("Menteia-datumejo")
                         .conditionExpression("attribute_not_exists(vorto)")
                         .item(mapOf(
-                                "vorto" to AttributeValue.builder().s(nomo).build(),
-                                "tipo" to AttributeValue.builder().s("girisa").build(),
-                                "enhavo" to AttributeValue.builder().l(listOf()).build(),
+                                "vorto" to AttributeValue.builder().s(vorto).build(),
+                                "tipo" to AttributeValue.builder().s(tipo).build(),
                                 "valenco" to AttributeValue.builder().n("0").build()
                         ))
                         .build())
                 Vortaro.alporti(alporti = true)
-                return nomo
+                return vorto
             } catch (e: ConditionalCheckFailedException) {
                 continue
             }
         }
     }
 
+    override fun kreiListon(): String {
+        val nomo = kreiNomon("girisa")
+        db.updateItem(UpdateItemRequest.builder()
+                .tableName("Menteia-datumejo")
+                .key(mapOf(
+                        "vorto" to AttributeValue.builder().s(nomo).build()
+                ))
+                .updateExpression("set enhavo = :e")
+                .expressionAttributeValues(mapOf(
+                        ":e" to AttributeValue.builder().l(listOf()).build()
+                ))
+                .build())
+        Vortaro.alporti(alporti = true)
+        return nomo
+    }
+
     override fun forigiListon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
                 .tableName("Menteia-datumejo")
+                .conditionExpression("tipo = :t")
+                .expressionAttributeValues(mapOf(
+                        ":t" to AttributeValue.builder().s("girisa").build()
+                ))
+                .key(mapOf(
+                        "vorto" to AttributeValue.builder().s(nomo).build()
+                ))
+                .build()
+        )
+        Vortaro.alporti(alporti = true)
+    }
+
+    override fun forigiTempoŝaltilon(nomo: String) {
+        db.deleteItem(DeleteItemRequest.builder()
+                .tableName("Menteia-datumejo")
+                .conditionExpression("tipo = :t")
+                .expressionAttributeValues(mapOf(
+                        ":t" to AttributeValue.builder().s("samona").build()
+                ))
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))

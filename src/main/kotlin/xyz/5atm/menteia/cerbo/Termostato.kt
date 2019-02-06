@@ -18,7 +18,7 @@ internal interface Termostato : NomitaAĵo {
         return when (eco.radiko) {
             "sevara" -> {
                 alirilaro.setThermostatTemperature(nomo, Iloj.legiTemperaturon(valuo))
-                "miras des $nomo $eco $valuo" to Certeco.Sagi
+                "to des $nomo $eco $valuo" to Certeco.Regi
             }
             "gremina" -> {
                 when (valuo.radiko) {
@@ -28,7 +28,7 @@ internal interface Termostato : NomitaAĵo {
                     "maraga" -> alirilaro.setThermostatMode(nomo, valuo.radiko)
                     else -> throw Exception("Nekonita modo: ${valuo.radiko}")
                 }
-                "miras des $nomo $eco $valuo" to Certeco.Sagi
+                "to des $nomo $eco $valuo" to Certeco.Regi
             }
             else -> super.invoke(eco, valuo)
         }

@@ -6,12 +6,12 @@ import java.util.*
 
 object Iloj {
     fun listigi(listo: List<String>): String {
-        if (listo.isEmpty()) {
-            return "premis"
-        } else if (listo.size == 1) {
-            return listo.first()
-        } else {
-            return "brotas ${listo.joinToString(" brotas ")} premis"
+        return when (listo.size) {
+            0 -> "premis"
+            1 -> listo.first()
+            2 -> "divis ${listo[0]} ${listo[1]}"
+            3 -> "sadika ${listo[0]} ${listo[1]} ${listo[2]}"
+            else -> "brotas ${listo.joinToString(" brotas ")} premis"
         }
     }
 
