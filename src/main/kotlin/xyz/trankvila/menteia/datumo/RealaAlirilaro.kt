@@ -5,10 +5,7 @@ import com.github.kittinunf.fuel.Fuel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.BadResponseStatusException
-import io.ktor.client.request.get
-import io.ktor.client.request.headers
-import io.ktor.client.request.parameter
-import io.ktor.client.request.put
+import io.ktor.client.request.*
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import kotlinx.coroutines.io.readUTF8Line
@@ -19,6 +16,8 @@ import software.amazon.awssdk.services.dynamodb.model.*
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
 import java.lang.Exception
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.net.URL
 import java.util.*
 
@@ -185,22 +184,22 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override suspend fun setThermostatTemperature(id: String, targetTemperature: Int) {
+    override suspend fun setThermostatTemperature(id: String, targetTemperature: BigDecimal) {
         HttpClient(Apache).use {
             it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
                 headers {
                     append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
                 }
-                body = TextContent("{\"target_temperature_c\": $targetTemperature}", ContentType.Application.Json)
+                body = TextContent("{\"target_temperature_c\": ${targetTemperature.toPlainString()}", ContentType.Application.Json)
             }
         }
     }
 
-    override suspend fun setThermostatMode(id: String, mode: String, t1: Int?, t2: Int?) {
+    override suspend fun setThermostatMode(id: String, mode: String, t1: BigDecimal?, t2: BigDecimal?) {
         val modeLabel = hvacModesReversed.getValue(mode)
         val additionalBodyContent = when (modeLabel) {
-            "heat", "cool" -> "{\"target_temperature_c\": ${t1!!}}"
-            "heat-cool" -> "{\"target_temperature_low_c\": ${t1!!}, \"target_temperature_high_c\": ${t2!!}}"
+            "heat", "cool" -> "{\"target_temperature_c\": ${t1!!.toPlainString()}}"
+            "heat-cool" -> "{\"target_temperature_low_c\": ${t1!!.toPlainString()}, \"target_temperature_high_c\": ${t2!!.toPlainString()}}"
             else -> null
         }
         HttpClient(Apache).use {
@@ -264,5 +263,49 @@ object RealaAlirilaro : Alirilaro {
                     null
                 }, { error -> throw error.exception }
         )
+    }
+
+    override suspend fun getLightBulbState(name: String): LightBulbState {
+        HttpClient(Apache).use {
+            val response = it.get<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
+                Sekretoj.HueLightID(name)
+            }") {
+                headers {
+                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                }
+            }
+            return JSON.nonstrict.parse(HueResponse.serializer(), response).state
+        }
+    }
+
+    override suspend fun setLightBulbOn(name: String, on: Boolean) {
+        HttpClient(Apache).use {
+            it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
+                Sekretoj.HueLightID(name)
+            }/state") {
+                headers {
+                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                }
+                body = TextContent("{\"on\": $on}", ContentType.Application.Json)
+            }
+        }
+    }
+
+    override suspend fun setLightBulbBrightness(name: String, brightness: BigDecimal) {
+        HttpClient(Apache).use {
+            it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
+            Sekretoj.HueLightID(name)
+            }/state") {
+                headers {
+                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                }
+                body = TextContent(if (brightness == BigDecimal.ZERO) {
+                    "{\"on\": false}"
+                } else {
+                    "{\"on\": true, \"bri\": ${(brightness * BigDecimal(254)).toInt()}}"
+                }, ContentType.Application.Json)
+                println(body.toString())
+            }
+        }
     }
 }

@@ -46,6 +46,30 @@ object Sekretoj {
         }.toMap()
     }
 
+    fun HueLightID(name: String): String {
+        return ssm.getParameter(GetParameterRequest.builder()
+                .name("/External/Hue/drakoni/$name")
+                .withDecryption(true)
+                .build())
+                .parameter().value()
+    }
+
+    fun HueToken(): String {
+        return ssm.getParameter(GetParameterRequest.builder()
+                .name("/External/Hue/drakoni/Token")
+                .withDecryption(true)
+                .build())
+                .parameter().value()
+    }
+
+    fun HueUsername(): String {
+        return ssm.getParameter(GetParameterRequest.builder()
+                .name("/External/Hue/drakoni/Username")
+                .withDecryption(true)
+                .build())
+                .parameter().value()
+    }
+
     // Necesa pro Netatmo
     val session = mutableMapOf<String, String>()
 }

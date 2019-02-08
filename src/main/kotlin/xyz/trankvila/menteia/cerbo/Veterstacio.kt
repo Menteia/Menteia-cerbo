@@ -18,7 +18,7 @@ internal object frodeni : NomitaAĵo {
     private suspend fun testos(): Pair<String, Certeco> {
         val raporto = alirilaro.getWeatherStationState()
         val ĉefdatumo = raporto.body.devices[0].dashboard_data
-        val nevum = Nombroj.nombrigi(ĉefdatumo.Temperature.toInt())
+        val nevum = Nombroj.nombrigi(ĉefdatumo.Temperature)
         val dreta = Nombroj.nombrigi(ĉefdatumo.Humidity.toInt())
         val co2 = Nombroj.nombrigi(ĉefdatumo.CO2.toInt())
         return "sadika nevum ${nevum} dreta ${dreta} meforam ${co2}" to Certeco.Sagi
@@ -30,7 +30,7 @@ internal object frodeni : NomitaAĵo {
         val modulo1 = ĉefaparato.modules[0]
         val modulo2 = ĉefaparato.modules[1]
 
-        val nevum = Nombroj.nombrigi(ĉefaparato.dashboard_data.Temperature.toInt())
+        val nevum = Nombroj.nombrigi(ĉefaparato.dashboard_data.Temperature)
         val dreta = Nombroj.nombrigi(ĉefaparato.dashboard_data.Humidity.toInt())
         val co2 = Nombroj.nombrigi(ĉefaparato.dashboard_data.CO2.toInt())
         val perom = Nombroj.nombrigi(ĉefaparato.dashboard_data.Pressure.toInt())
@@ -52,12 +52,12 @@ internal object frodeni : NomitaAĵo {
         val nevum2 = temperaturo.dashboard_data.Temperature!!
         val dreta2 = temperaturo.dashboard_data.Humidity!!
 
-        listo.add("nevum ${Nombroj.nombrigi(nevum2.toInt())}")
+        listo.add("nevum ${Nombroj.nombrigi(nevum2)}")
         listo.add("dreta ${Nombroj.nombrigi(dreta2.toInt())}")
 
         val glimaSenam = pluvo.dashboard_data.Rain!!
 
-        listo.add("senam glima ${Nombroj.nombrigi(glimaSenam.toInt())}")
+        listo.add("senam glima ${Nombroj.nombrigi(glimaSenam)}")
 
         return Iloj.listigi(listo) to Certeco.Sagi
     }

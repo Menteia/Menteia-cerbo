@@ -46,7 +46,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
 
         fun karema(listoNomo: SintaksoArbo, aĵo: SintaksoArbo, nombro: SintaksoArbo): Pair<String, Certeco> {
             val listo = alirilaro.alportiListon(listoNomo.radiko)
-            val indekso = Nombroj.legiEntjeron(nombro)
+            val indekso = Nombroj.legiNombron(nombro).toInt()
             if (indekso !in 0..listo.size) {
                 throw MenteiaEksepcio("klos pokes $nombro mora ${Nombroj.nombrigi(listo.size)}")
             }
@@ -120,7 +120,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
     }
 
     private fun las(nombro: SintaksoArbo): Pair<String, Certeco> {
-        val indekso = Nombroj.legiEntjeron(nombro)
+        val indekso = Nombroj.legiNombron(nombro).toInt()
         val listo = alirilaro.alportiListon(nomo)
         if (indekso in 0 until listo.size) {
             return listo[indekso] to Certeco.Negi

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import xyz.trankvila.menteia.cerbo.kiram.Nombroj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
+import java.math.BigDecimal
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 object NombrajTestoj {
@@ -35,5 +37,19 @@ object NombrajTestoj {
         pravaj.forEachIndexed { index, s ->
             assertEquals(s, rezultoj[index])
         }
+    }
+
+    @Test
+    fun nombroj1() {
+        val teksto = "dreta siri mora"
+        val prava = BigDecimal(0.5)
+        assertEquals(prava, Nombroj.legiNombron(SintaksoArbo.konstrui(teksto)))
+    }
+
+    @Test
+    fun nombroj2() {
+        val nombro = BigDecimal("177.3")
+        val prava = "liris poni ʃoni ʃona nora"
+        assertEquals(prava, Nombroj.nombrigi(nombro, decimalciferoj = 1))
     }
 }

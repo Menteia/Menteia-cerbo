@@ -9,15 +9,34 @@ import java.util.*
 object Nombroj {
     private val nombroj = listOf("mora", "pona", "fora", "nora", "tega", "sira", "lina", "ʃona", "kera", "gina")
     private val partnombroj = listOf("mori", "poni", "fori", "nori", "tegi", "siri", "lini", "ʃoni", "keri", "gini")
-    private val grandajPrefiksoj = mapOf(
-            3 to "ponega"
+    private val prefiksoj = mapOf(
+            3 to "ponega",
+            -1 to "prena",
+            -2 to "dreta",
+            -3 to "glima"
     )
+    private val maligitajPrefiksoj = prefiksoj.map {
+        it.value to it.key
+    }.toMap()
 
     fun nombrigi(nombro: Int): String {
         return nombrigi(nombro.toBigInteger())
     }
 
-    fun legiEntjeron(arbo: SintaksoArbo): Int {
+    fun nombrigi(nombro: Float, decimalciferoj: Int = 1): String {
+        return nombrigi(nombro.toBigDecimal(), decimalciferoj)
+    }
+
+    fun legiNombron(arbo: SintaksoArbo): BigDecimal {
+        val prefikso = maligitajPrefiksoj[arbo.radiko]
+        return if (prefikso != null) {
+            (legiCiferon(arbo.opcioj[0]) * Math.pow(10.0, prefikso.toDouble())).toBigDecimal()
+        } else {
+            legiCiferon(arbo).toBigDecimal()
+        }
+    }
+
+    private fun legiCiferon(arbo: SintaksoArbo): Int {
         var nombro = 0
         arbo.traversi().forEach {
             val cifero = partnombroj.indexOf(it)
@@ -63,6 +82,21 @@ object Nombroj {
         }
     }
 
+    fun nombrigi(nombro: BigDecimal, decimalciferoj: Int = 3): String {
+        if (nombro < BigDecimal.ZERO) {
+            return nombrigi(-nombro, decimalciferoj)
+        } else {
+            if (nombro < BigDecimal.ONE) {
+                val prefikso = prefiksoj.getValue(-decimalciferoj)
+                val decimalo = nombro.movePointRight(decimalciferoj).toBigInteger()
+                return "$prefikso ${nombrigi(decimalo)}"
+            } else {
+                val decimalo = (nombro - nombro.setScale(0, RoundingMode.DOWN)).movePointRight(decimalciferoj).toBigInteger()
+                return "liris ${nombrigi(nombro.toBigInteger())} ${nombrigi(decimalo)}"
+            }
+        }
+    }
+
     private fun troviPrefikson(nombro: BigInteger): Pair<BigInteger, String?> {
         var nuloj = 0
         var restantaj = nombro
@@ -74,8 +108,8 @@ object Nombroj {
             cifero = restantaj.remainder(BigInteger.TEN)
         }
 
-        if (grandajPrefiksoj.containsKey(nuloj)) {
-            return restantaj to grandajPrefiksoj[nuloj]
+        if (prefiksoj.containsKey(nuloj)) {
+            return restantaj to prefiksoj[nuloj]
         } else {
             return nombro to null
         }

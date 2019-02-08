@@ -6,9 +6,9 @@ import xyz.trankvila.menteia.cerbo.kiram.Nombroj
 object Daŭro {
     fun legiDaŭron(daŭro: SintaksoArbo): Long {
         return when (daŭro.radiko) {
-            "gomos" -> Nombroj.legiEntjeron(daŭro.opcioj[0]).toLong() * 3600
-            "nires" -> Nombroj.legiEntjeron(daŭro.opcioj[0]).toLong() * 60
-            "trimis" -> Nombroj.legiEntjeron(daŭro.opcioj[0]).toLong()
+            "gomos" -> Nombroj.legiNombron(daŭro.opcioj[0]).toLong() * 3600
+            "nires" -> Nombroj.legiNombron(daŭro.opcioj[0]).toLong() * 60
+            "trimis" -> Nombroj.legiNombron(daŭro.opcioj[0]).toLong()
             else -> throw Exception("$daŭro ne estas valida daŭro")
         }
     }

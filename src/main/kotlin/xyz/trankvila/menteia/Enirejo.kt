@@ -27,6 +27,9 @@ import java.nio.ByteBuffer
 fun main() {
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
+//                    GoogleCredentials.fromStream(
+//                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
+//                    )
                     GoogleCredentials.fromStream(
                             ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
                     )

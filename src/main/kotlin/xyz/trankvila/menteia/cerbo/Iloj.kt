@@ -2,6 +2,7 @@ package xyz.trankvila.menteia.cerbo
 
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import java.math.BigDecimal
 import java.util.*
 
 object Iloj {
@@ -29,7 +30,7 @@ object Iloj {
         return when (arbo.radiko) {
             "fitam" -> {
                 val dato = Calendar.getInstance()
-                val nombro = Nombroj.legiEntjeron(arbo.opcioj[0]).toInt()
+                val nombro = Nombroj.legiNombron(arbo.opcioj[0]).toInt()
                 dato.add(Calendar.DATE, nombro)
                 dato.set(Calendar.HOUR_OF_DAY, 0)
                 dato.set(Calendar.MILLISECOND, 0)
@@ -41,9 +42,9 @@ object Iloj {
         }
     }
 
-    fun legiTemperaturon(arbo: SintaksoArbo): Int {
+    fun legiTemperaturon(arbo: SintaksoArbo): BigDecimal {
         return when (arbo.radiko) {
-            "nevum" -> Nombroj.legiEntjeron(arbo.opcioj[0])
+            "nevum" -> Nombroj.legiNombron(arbo.opcioj[0])
             else -> throw Exception("$arbo ne estas valida temperaturo")
         }
     }
