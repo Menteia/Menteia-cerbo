@@ -60,6 +60,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
     compile group: 'org.dom4j', name: 'dom4j', version: '2.1.1'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: "com.twilio.sdk", name: "twilio", version: "7.35.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0'
     implementation 'com.google.firebase:firebase-admin:6.7.0'
 }

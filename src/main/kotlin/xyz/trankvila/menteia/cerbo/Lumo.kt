@@ -32,7 +32,7 @@ internal interface Lumo : NomitaAĵo {
                 } else {
                     alirilaro.setLightBulbBrightness(
                             nomo,
-                            Nombroj.legiNombron(valuo)
+                            Nombroj.legiNombron(valuo).bigDecimalValue()
                     )
                 }
                 "to des $nomo gremina $valuo" to Certeco.Regi
@@ -50,4 +50,8 @@ internal interface Lumo : NomitaAĵo {
 
 internal object minero : Lumo {
     override val nomo = "minero"
+}
+
+internal object namida : Lumo {
+    override val nomo = "namida"
 }

@@ -42,7 +42,7 @@ object VeteraDatumo {
             612 to "saleni salekres",
             615 to "mino divis saleri varumi",
             616 to "divis saleri varumi",
-            620 to "mina saleni varumi",
+            620 to "mino saleni varumi",
             621 to "saleni varumi",
             622 to "trisa saleni varumi",
 

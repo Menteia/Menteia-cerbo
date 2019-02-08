@@ -46,6 +46,8 @@ object Cerbo {
             "lurina" -> Vetero.lurina(eniro.opcioj[0], eniro.opcioj[1])
             "tremos" -> Listo.tremos(eniro.opcioj[0])
             "des" -> koDes(eniro.opcioj[0], eniro.opcioj[1])
+            "tamis" -> Matematiko.tamis(eniro.opcioj[0], eniro.opcioj[1])
+            "kredas" -> Matematiko.kredas(eniro.opcioj[0], eniro.opcioj[1])
             else -> {
                 val aĵo = troviNomitanAĵon(eniro)
                 aĵo.priskribi()

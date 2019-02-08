@@ -70,6 +70,16 @@ object Sekretoj {
                 .parameter().value()
     }
 
+    fun TwilioCredentials(): Pair<String, String> {
+        val valuoj = ssm.getParameters(GetParametersRequest.builder()
+                .names(listOf("SID", "AuthToken").map {
+                    "/External/Twilio/$it"
+                })
+                .withDecryption(true)
+                .build()).parameters()
+        return valuoj[0].value() to valuoj[1].value()
+    }
+
     // Necesa pro Netatmo
     val session = mutableMapOf<String, String>()
 }

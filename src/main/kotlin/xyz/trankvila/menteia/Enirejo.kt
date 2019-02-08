@@ -4,11 +4,17 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.twilio.Twilio
+import com.twilio.type.PhoneNumber
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.http.cio.websocket.CloseReason
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
+import io.ktor.request.receiveParameters
+import io.ktor.response.respondText
+import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -17,10 +23,10 @@ import io.ktor.websocket.webSocket
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.io.ByteArrayInputStream
 import paroli
 import xyz.trankvila.menteia.cerbo.Cerbo
-import java.io.ByteArrayInputStream
+import xyz.trankvila.menteia.datumo.Sekretoj
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 
@@ -37,6 +43,8 @@ fun main() {
             .setDatabaseUrl("https://menteia.firebaseio.com")
             .build()
     )
+    val (sid, token) = Sekretoj.TwilioCredentials()
+    Twilio.init(sid, token)
     val servilo = embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 7777) {
         install(WebSockets)
         routing {
@@ -73,6 +81,27 @@ fun main() {
                     } else {
                         token = idRicevo(incoming, outgoing)
                     }
+                }
+            }
+            post("/sms") {
+                val peto = call.receiveParameters()
+                val enhavo = peto["Body"]!!
+                val sekvaMesaĝo = { mesaĝo: String ->
+                    launch {
+                        val smsMesaĝo = com.twilio.rest.api.v2010.account.Message.creator(
+                                PhoneNumber(peto["From"]!!),
+                                PhoneNumber("+15206368342"),
+                                mesaĝo
+                        ).create()
+                        println("Mesaĝo: ${smsMesaĝo.sid}")
+                    }
+                }
+                try {
+                    val respondo = Cerbo.trakti(enhavo, sekvaMesaĝo)
+                    call.respondText(respondo.toString())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    call.respondText("veguna")
                 }
             }
         }

@@ -44,7 +44,7 @@ object Iloj {
 
     fun legiTemperaturon(arbo: SintaksoArbo): BigDecimal {
         return when (arbo.radiko) {
-            "nevum" -> Nombroj.legiNombron(arbo.opcioj[0])
+            "nevum" -> Nombroj.legiNombron(arbo.opcioj[0]).bigDecimalValue()
             else -> throw Exception("$arbo ne estas valida temperaturo")
         }
     }

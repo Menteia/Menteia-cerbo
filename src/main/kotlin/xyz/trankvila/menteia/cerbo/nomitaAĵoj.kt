@@ -35,6 +35,7 @@ val objektoj = mapOf(
         "frodeni" to frodeni,
         "brinemi" to brinemi,
         "minero" to minero,
+        "namida" to namida,
 
         "girisa" to Listo
 )

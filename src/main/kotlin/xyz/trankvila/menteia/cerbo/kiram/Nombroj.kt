@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia.cerbo.kiram
 
+import org.apache.commons.math3.fraction.BigFraction
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -9,7 +10,8 @@ import java.util.*
 object Nombroj {
     private val nombroj = listOf("mora", "pona", "fora", "nora", "tega", "sira", "lina", "ʃona", "kera", "gina")
     private val partnombroj = listOf("mori", "poni", "fori", "nori", "tegi", "siri", "lini", "ʃoni", "keri", "gini")
-    private val prefiksoj = mapOf(
+    private val prefiksoj = linkedMapOf(
+            6 to "sariga",
             3 to "ponega",
             -1 to "prena",
             -2 to "dreta",
@@ -27,12 +29,22 @@ object Nombroj {
         return nombrigi(nombro.toBigDecimal(), decimalciferoj)
     }
 
-    fun legiNombron(arbo: SintaksoArbo): BigDecimal {
+    fun legiNombron(arbo: SintaksoArbo): BigFraction {
+        if (arbo.radiko == "gulos") {
+            return legiNombron(arbo.opcioj[0]).negate()
+        } else if (arbo.radiko == "poneras") {
+            return BigFraction(BigInteger.ONE, legiNombron(arbo.opcioj[0]).numerator)
+        } else if (arbo.radiko == "generas") {
+            return BigFraction(
+                    legiNombron(arbo.opcioj[0]).numerator,
+                    legiNombron(arbo.opcioj[1]).numerator
+            )
+        }
         val prefikso = maligitajPrefiksoj[arbo.radiko]
         return if (prefikso != null) {
-            (legiCiferon(arbo.opcioj[0]) * Math.pow(10.0, prefikso.toDouble())).toBigDecimal()
+            BigFraction(legiCiferon(arbo.opcioj[0]) * Math.pow(10.0, prefikso.toDouble()))
         } else {
-            legiCiferon(arbo).toBigDecimal()
+            BigFraction(legiCiferon(arbo))
         }
     }
 
@@ -82,9 +94,21 @@ object Nombroj {
         }
     }
 
+    fun nombrigi(nombro: BigFraction): String {
+        if (nombro.denominator == BigInteger.ONE) {
+            return nombrigi(nombro.numerator)
+        } else if (nombro.numerator == BigInteger.ONE) {
+            return "poneras ${nombrigi(nombro.denominator)}"
+        } else {
+            return "generas ${nombrigi(nombro.numerator)} ${nombrigi(nombro.denominator)}"
+        }
+    }
+
     fun nombrigi(nombro: BigDecimal, decimalciferoj: Int = 3): String {
         if (nombro < BigDecimal.ZERO) {
-            return nombrigi(-nombro, decimalciferoj)
+            return "gulos ${nombrigi(-nombro, decimalciferoj)}"
+        } else if (nombro.signum() == 0 || nombro.scale() <= 0 || nombro.stripTrailingZeros().scale() <= 0) {
+            return nombrigi(nombro.toBigIntegerExact())
         } else {
             if (nombro < BigDecimal.ONE) {
                 val prefikso = prefiksoj.getValue(-decimalciferoj)
@@ -108,10 +132,11 @@ object Nombroj {
             cifero = restantaj.remainder(BigInteger.TEN)
         }
 
-        if (prefiksoj.containsKey(nuloj)) {
-            return restantaj to prefiksoj[nuloj]
-        } else {
-            return nombro to null
+        prefiksoj.forEach {
+            if (it.key in 0..nuloj) {
+                return restantaj * 10.toBigInteger().pow(nuloj - it.key) to it.value
+            }
         }
+        return nombro to null
     }
 }
