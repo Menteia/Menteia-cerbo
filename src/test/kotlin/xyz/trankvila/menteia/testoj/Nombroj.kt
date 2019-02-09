@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia.testoj
 
+import org.apache.commons.math3.fraction.BigFraction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -42,7 +43,7 @@ object NombrajTestoj {
     @Test
     fun nombroj1() {
         val teksto = "dreta siri mora"
-        val prava = BigDecimal(0.5)
+        val prava = BigFraction(1,2)
         assertEquals(prava, Nombroj.legiNombron(SintaksoArbo.konstrui(teksto)))
     }
 
@@ -51,5 +52,14 @@ object NombrajTestoj {
         val nombro = BigDecimal("177.3")
         val prava = "liris poni ʃoni ʃona nora"
         assertEquals(prava, Nombroj.nombrigi(nombro, decimalciferoj = 1))
+    }
+
+    @Test
+    fun frakcioj() {
+        val teksto = "liris pona pona"
+        val prava = BigFraction(11, 10)
+        val rezulto = Nombroj.legiNombron(SintaksoArbo.konstrui(teksto))
+        assertEquals(prava.numerator, rezulto.numerator)
+        assertEquals(prava.denominator, rezulto.denominator)
     }
 }

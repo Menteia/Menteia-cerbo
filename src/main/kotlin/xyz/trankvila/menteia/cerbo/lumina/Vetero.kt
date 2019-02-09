@@ -28,7 +28,6 @@ object Vetero {
         val raporto = alirilaro.getForecast(lokoID, dato) ?: throw MenteiaEksepcio("klos tinas lurina $lokoArbo $datoArbo")
         val lumina = VeteraDatumo.kodoj[raporto.weather[0].id]
                 ?: throw Exception("${raporto.weather[0].id} ne ekzistas")
-        println(raporto)
         return "sadika ${lumina} nevum ${Nombroj.nombrigi(raporto.main.temp.roundToInt())} posetim ${Nombroj.nombrigi((raporto.wind.speed * 3.6).roundToInt())}" to Certeco.Sagi
     }
 }

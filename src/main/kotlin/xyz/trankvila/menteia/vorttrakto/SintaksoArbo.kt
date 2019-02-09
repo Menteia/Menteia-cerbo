@@ -2,12 +2,13 @@ package xyz.trankvila.menteia.vorttrakto
 
 import java.lang.Exception
 
-data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>) {
+data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>, val tipo: String? = null) {
     companion object {
         fun konstrui(
                 frazo: String,
                 vortoj: Iterator<String> = frazo.splitToSequence(" "
-                ).iterator()): SintaksoArbo {
+                ).iterator(),
+                bezonataTipo: String? = null): SintaksoArbo {
             if (!vortoj.hasNext()) {
                 throw Exception("$frazo ne estas valida")
             }
@@ -42,6 +43,13 @@ data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>) {
                 }
                 yieldAll(it.traversi(kunPaŭzoj))
             }
+        }
+    }
+
+    fun longeco(): Int {
+        if (opcioj.size == 0) return 1
+        return opcioj.fold(1) { acc, arbo ->
+            acc + arbo.longeco()
         }
     }
 

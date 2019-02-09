@@ -2,6 +2,7 @@ package xyz.trankvila.menteia.cerbo.ʃanam
 
 import xyz.trankvila.menteia.cerbo.kiram.Nombroj
 import xyz.trankvila.menteia.cerbo.Certeco
+import java.time.ZoneId
 import java.util.*
 
 object Tempo {
@@ -9,6 +10,7 @@ object Tempo {
 
     fun geradas(): Pair<String, Certeco> {
         val nun = Calendar.getInstance()
+        nun.timeZone = TimeZone.getTimeZone(ZoneId.of("America/Toronto"))
         val fazo = fazoj[nun[Calendar.HOUR_OF_DAY] / 8]
         val horo = nun[Calendar.HOUR_OF_DAY] % 8
         val minuto = nun[Calendar.MINUTE]
@@ -16,7 +18,9 @@ object Tempo {
     }
 
     fun fidinas(): Pair<String, Certeco> {
-        val hodiaŭ = SilicanDate.fromGregorian(Calendar.getInstance())
+        val nun = Calendar.getInstance()
+        nun.timeZone = TimeZone.getTimeZone(ZoneId.of("America/Toronto"))
+        val hodiaŭ = SilicanDate.fromGregorian(nun)
         return "karima ${Nombroj.nombrigi(hodiaŭ.year)} ${Nombroj.nombrigi(hodiaŭ.month)} ${Nombroj.nombrigi(hodiaŭ.day)}" to Certeco.Negi
     }
 }
@@ -43,7 +47,7 @@ data class SilicanDate(val year: Int, val month: Int, val day: Int) {
             val year = years400 * 400 + years40 * 40 + years5 * 5 + Math.min(remainingYears, 5)
             val dayOfYear = if (remainingYears == 6L) 364 + remainingDays else remainingDays
             val month = (dayOfYear / 28).toInt()
-            val day = (dayOfYear % 28).toInt()
+            val day = (dayOfYear % 28).toInt() + 1
             return SilicanDate(year.toInt(), Math.min(month + 1, 13), if (month == 13) day + 28 else day)
         }
     }

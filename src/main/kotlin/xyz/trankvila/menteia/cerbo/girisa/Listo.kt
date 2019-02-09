@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia.cerbo.girisa
 
+import kotlinx.coroutines.Job
 import xyz.trankvila.menteia.cerbo.Certeco
 import xyz.trankvila.menteia.cerbo.Iloj
 import xyz.trankvila.menteia.cerbo.kiram.Nombroj
@@ -88,14 +89,10 @@ class Listo(override val nomo: String) : NomitaAĵo {
             return "klos sindis $nomo" to Certeco.Megi
         }
 
-        suspend fun vidina(listoNomo: SintaksoArbo): Pair<String, Certeco> {
+        suspend fun vidina(listoNomo: SintaksoArbo, sekvaMesaĝo: (String) -> Job): Pair<String, Certeco> {
             val listo = alirilaro.alportiListon(listoNomo.radiko)
             val respondoj = listo.map {
-                val arbo = SintaksoArbo.konstrui(it)
-                when (arbo.radiko) {
-                    "ko" -> Cerbo.ko(arbo.opcioj[0]).first
-                    else -> throw Exception("Ne komprenis $arbo")
-                }
+                Cerbo.trakti(it, sekvaMesaĝo).toString()
             }
             return Iloj.listigi(respondoj) to Certeco.Pegi
         }

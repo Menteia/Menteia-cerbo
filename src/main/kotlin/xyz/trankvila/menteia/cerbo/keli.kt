@@ -15,7 +15,7 @@ object keli {
             "kirema" -> Listo.kirema(eniro.opcioj[0], eniro.opcioj[1])
             "karisi" -> Listo.karisi(eniro.opcioj[0], eniro.opcioj[1])
             "marina" -> marina(eniro.opcioj[0], sekvaMesaĝo)
-            "vidina" -> Listo.vidina(eniro.opcioj[0])
+            "vidina" -> Listo.vidina(eniro.opcioj[0], sekvaMesaĝo)
             "buvi" -> Lumo.buvi(eniro.opcioj[0])
             "mavi" -> Lumo.mavi(eniro.opcioj[0])
             else -> throw Exception("Ne komprenis ${eniro.radiko}")

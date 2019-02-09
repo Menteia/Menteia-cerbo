@@ -30,21 +30,34 @@ object Nombroj {
     }
 
     fun legiNombron(arbo: SintaksoArbo): BigFraction {
-        if (arbo.radiko == "gulos") {
-            return legiNombron(arbo.opcioj[0]).negate()
-        } else if (arbo.radiko == "poneras") {
-            return BigFraction(BigInteger.ONE, legiNombron(arbo.opcioj[0]).numerator)
-        } else if (arbo.radiko == "generas") {
-            return BigFraction(
-                    legiNombron(arbo.opcioj[0]).numerator,
-                    legiNombron(arbo.opcioj[1]).numerator
-            )
-        }
-        val prefikso = maligitajPrefiksoj[arbo.radiko]
-        return if (prefikso != null) {
-            BigFraction(legiCiferon(arbo.opcioj[0]) * Math.pow(10.0, prefikso.toDouble()))
-        } else {
-            BigFraction(legiCiferon(arbo))
+        return when (arbo.radiko) {
+            "gulos" -> legiNombron(arbo.opcioj[0]).negate()
+            "poneras" -> {
+                val valuo = legiNombron(arbo.opcioj[0])
+                BigFraction(valuo.denominator, valuo.numerator)
+            }
+            "generas" -> {
+                val num = legiNombron(arbo.opcioj[0])
+                val den = legiNombron(arbo.opcioj[1])
+                num.divide(den)
+            }
+            "liris" -> {
+                val entjero = legiNombron(arbo.opcioj[0]).numerator
+                val decimallongeco = arbo.opcioj[1].longeco()
+                BigFraction(legiCiferon(arbo.opcioj[1]).toBigInteger(), BigInteger.TEN.pow(decimallongeco)).add(entjero)
+            }
+            else -> {
+                val prefikso = maligitajPrefiksoj[arbo.radiko]
+                if (prefikso != null) {
+                    if (prefikso > 0) {
+                        BigFraction(legiCiferon(arbo.opcioj[0]).toBigInteger() * BigInteger.TEN.pow(prefikso))
+                    } else {
+                        BigFraction(legiCiferon(arbo.opcioj[0]).toBigInteger(), BigInteger.TEN.pow(-prefikso))
+                    }
+                } else {
+                    BigFraction(legiCiferon(arbo))
+                }
+            }
         }
     }
 

@@ -8,12 +8,16 @@ import com.twilio.Twilio
 import com.twilio.type.PhoneNumber
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.cio.websocket.CloseReason
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
 import io.ktor.request.receiveParameters
+import io.ktor.response.respond
 import io.ktor.response.respondText
+import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -24,9 +28,12 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
 import kotlinx.io.ByteArrayInputStream
+import kotlinx.serialization.*
+import kotlinx.serialization.json.JSON
 import paroli
 import xyz.trankvila.menteia.cerbo.Cerbo
 import xyz.trankvila.menteia.datumo.Sekretoj
+import xyz.trankvila.menteia.datumo.alirilaro
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 
@@ -102,6 +109,18 @@ fun main() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     call.respondText("veguna")
+                }
+            }
+            get("/girisa") {
+                val idToken = call.parameters["token"]
+                if (idToken == null || !idKontrolo(idToken)) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } else {
+                    val listoj = alirilaro.ĉiujListoj()
+                    call.respondText(JSON.stringify(
+                            (String.serializer() to String.serializer().list).map,
+                            listoj
+                    ), ContentType.Application.Json);
                 }
             }
         }

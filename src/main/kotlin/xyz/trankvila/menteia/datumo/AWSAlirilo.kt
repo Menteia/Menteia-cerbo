@@ -127,7 +127,10 @@ data class Vorto(
         val antaŭpaŭzo: Boolean,
         val interpaŭzo: Boolean,
         val elparolo: String?,
-        val tipo: String?
+        val tipo: String?,
+        val tipaktantoj: List<String>?,
+        val genera: Boolean?,
+        val aktantoj: List<String>?
 )
 
 object Vortaro {
@@ -143,7 +146,17 @@ object Vortaro {
                 .build()
         val listo = db.scanPaginator(
                 ScanRequest.builder().tableName("Menteia-datumejo")
-                        .attributesToGet("vorto", "valenco", "antaŭpaŭzo", "interpaŭzo", "elparolo", "tipo")
+                        .attributesToGet(
+                                "vorto",
+                                "valenco",
+                                "antaŭpaŭzo",
+                                "interpaŭzo",
+                                "elparolo",
+                                "tipo",
+                                "aktantoj",
+                                "tipaktantoj",
+                                "genera"
+                        )
                         .build()
         )
         listo.forEach {
@@ -155,7 +168,14 @@ object Vortaro {
                         antaŭpaŭzo = it["antaŭpaŭzo"]?.bool() ?: false,
                         interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
                         elparolo = it["elparolo"]?.s(),
-                        tipo = it["tipo"]?.s()
+                        tipo = it["tipo"]?.s(),
+                        tipaktantoj = it["tipaktantoj"]?.l()?.map {
+                            it.s()
+                        },
+                        genera = it["genera"]?.bool(),
+                        aktantoj = it["aktantoj"]?.l()?.map {
+                            it.s()
+                        }
                 )
                 vortaro[vorto] = datumo
             }
