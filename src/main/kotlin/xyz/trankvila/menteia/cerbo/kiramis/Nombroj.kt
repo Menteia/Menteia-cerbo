@@ -8,8 +8,8 @@ import java.math.RoundingMode
 import java.util.*
 
 object Nombroj {
-    private val nombroj = listOf("mira", "pona", "fora", "nora", "tega", "sira", "lina", "ʃona", "kera", "gina")
-    private val partnombroj = listOf("miri", "poni", "fori", "nori", "tegi", "siri", "lini", "ʃoni", "keri", "gini")
+    private val nombroj = listOf("mira", "pona", "fora", "nona", "tera", "sina", "lina", "ʃona", "kera", "gina")
+    private val partnombroj = listOf("miri", "poni", "fori", "noni", "teri", "sini", "lini", "ʃoni", "keri", "gini")
     private val prefiksoj = linkedMapOf(
             6 to "sariga",
             3 to "ponega",

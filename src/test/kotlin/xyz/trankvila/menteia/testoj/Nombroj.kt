@@ -25,13 +25,13 @@ object NombrajTestoj {
             Nombroj.nombrigi(it)
         }
         val pravaj = listOf(
-                "poni fori nori tegi siri lini ʃoni keri gini mira",
+                "poni fori noni teri sini lini ʃoni keri gini mira",
                 "ʃoni ʃoni ʃona",
                 "mira",
                 "gulos ʃoni ʃoni ʃoni ʃoni ʃoni ʃoni ʃona",
-                "gulos poni fori nora",
-                "ponega nora",
-                "fori nori miri mira"
+                "gulos poni fori nona",
+                "ponega nona",
+                "fori noni miri mira"
         )
         pravaj.forEachIndexed { index, s ->
             assertEquals(s, rezultoj[index])
@@ -40,7 +40,7 @@ object NombrajTestoj {
 
     @Test
     fun nombroj1() {
-        val teksto = "dreta siri mira"
+        val teksto = "dreta sini mira"
         val prava = BigFraction(1,2)
         assertEquals(prava, Nombroj.legiNombron(SintaksoArbo.konstrui(teksto)))
     }
@@ -48,7 +48,7 @@ object NombrajTestoj {
     @Test
     fun nombroj2() {
         val nombro = BigDecimal("177.3")
-        val prava = "liris poni ʃoni ʃona nora"
+        val prava = "liris poni ʃoni ʃona nona"
         assertEquals(prava, Nombroj.nombrigi(nombro, decimalciferoj = 1))
     }
 
