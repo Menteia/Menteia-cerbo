@@ -128,8 +128,6 @@ data class Vorto(
         val interpaŭzo: Boolean,
         val elparolo: String?,
         val tipo: String?,
-        val tipaktantoj: List<String>?,
-        val genera: Boolean?,
         val aktantoj: List<String>?
 )
 
@@ -169,10 +167,6 @@ object Vortaro {
                         interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
                         elparolo = it["elparolo"]?.s(),
                         tipo = it["tipo"]?.s(),
-                        tipaktantoj = it["tipaktantoj"]?.l()?.map {
-                            it.s()
-                        },
-                        genera = it["genera"]?.bool(),
                         aktantoj = it["aktantoj"]?.l()?.map {
                             it.s()
                         }

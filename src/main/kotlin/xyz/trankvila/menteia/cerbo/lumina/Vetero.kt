@@ -5,7 +5,7 @@ import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.cerbo.Certeco
 import xyz.trankvila.menteia.cerbo.MenteiaEksepcio
 import xyz.trankvila.menteia.cerbo.Iloj
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import java.util.*
 import kotlin.math.roundToInt
 

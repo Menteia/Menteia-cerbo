@@ -1,7 +1,7 @@
 package xyz.trankvila.menteia.cerbo.gremuna
 
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 
 object Daŭro {
     fun legiDaŭron(daŭro: SintaksoArbo): Long {
@@ -22,7 +22,7 @@ object Daŭro {
             if (restantaj == 0) {
                 return "nires ${Nombroj.nombrigi(minutoj)}"
             } else {
-                return "tamis nires ${Nombroj.nombrigi(minutoj)} trimis ${Nombroj.nombrigi(sekondoj)}"
+                return "taris nires ${Nombroj.nombrigi(minutoj)} trimis ${Nombroj.nombrigi(sekondoj)}"
             }
         } else {
             val horoj = sekondoj / 3600

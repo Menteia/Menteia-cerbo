@@ -1,9 +1,9 @@
-package xyz.trankvila.menteia.cerbo.girisa
+package xyz.trankvila.menteia.cerbo.brodimis
 
 import kotlinx.coroutines.Job
 import xyz.trankvila.menteia.cerbo.Certeco
 import xyz.trankvila.menteia.cerbo.Iloj
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.cerbo.NomitaAĵo
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.cerbo.MenteiaEksepcio
@@ -12,7 +12,7 @@ import xyz.trankvila.menteia.cerbo.Cerbo
 
 class Listo(override val nomo: String) : NomitaAĵo {
     companion object : NomitaAĵo {
-        override val nomo: String = "girisa"
+        override val nomo: String = "brodimis"
 
         override suspend fun invoke(eco: SintaksoArbo): Pair<String, Certeco> {
             return when (eco.radiko) {
@@ -37,7 +37,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
 
         fun tremos(aĵo: SintaksoArbo): Pair<String, Certeco> {
             return when (aĵo.radiko) {
-                "girisa" -> {
+                "brodimis" -> {
                     val listoj = alirilaro.ĉiujListoj()
                     Iloj.listigi(listoj.map { it.key }) to Certeco.Negi
                 }
@@ -49,7 +49,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
             val listo = alirilaro.alportiListon(listoNomo.radiko)
             val indekso = Nombroj.legiNombron(nombro).toInt()
             if (indekso !in 0..listo.size) {
-                throw MenteiaEksepcio("klos pokes $nombro mora ${Nombroj.nombrigi(listo.size)}")
+                throw MenteiaEksepcio("klos pokes $nombro mira ${Nombroj.nombrigi(listo.size)}")
             }
             val novaListo = listo.toMutableList().apply {
                 add(indekso, aĵo.toString())
@@ -79,9 +79,9 @@ class Listo(override val nomo: String) : NomitaAĵo {
             }
         }
 
-        fun marina(): Pair<String, Certeco> {
-            val novaNomo = alirilaro.kreiListon()
-            return "tinas $novaNomo" to Certeco.Megi
+        fun marina(tipo: SintaksoArbo): Pair<String, Certeco> {
+            val novaNomo = alirilaro.kreiListon(tipo.toString())
+            return "sindis $novaNomo" to Certeco.Megi
         }
 
         fun furika(nomo: SintaksoArbo): Pair<String, Certeco> {

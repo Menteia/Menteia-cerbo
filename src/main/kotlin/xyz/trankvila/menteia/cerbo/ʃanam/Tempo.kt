@@ -1,6 +1,6 @@
 package xyz.trankvila.menteia.cerbo.ʃanam
 
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.cerbo.Certeco
 import java.time.ZoneId
 import java.util.*

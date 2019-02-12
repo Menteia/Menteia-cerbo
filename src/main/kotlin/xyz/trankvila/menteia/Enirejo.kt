@@ -111,7 +111,7 @@ fun main() {
                     call.respondText("veguna")
                 }
             }
-            get("/girisa") {
+            get("/brodimis") {
                 val idToken = call.parameters["token"]
                 if (idToken == null || !idKontrolo(idToken)) {
                     call.respond(HttpStatusCode.Unauthorized)

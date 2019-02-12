@@ -1,28 +1,28 @@
 package xyz.trankvila.menteia.cerbo
 
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import java.math.BigDecimal
 import java.util.*
 
 object Iloj {
     fun listigi(listo: List<String>): String {
         return when (listo.size) {
-            0 -> "premis"
+            0 -> "prenis"
             1 -> listo.first()
             2 -> "divis ${listo[0]} ${listo[1]}"
             3 -> "sadika ${listo[0]} ${listo[1]} ${listo[2]}"
-            else -> "brotas ${listo.joinToString(" brotas ")} premis"
+            else -> "brotas ${listo.joinToString(" brotas ")} prenis"
         }
     }
 
     fun arigi(aro: Map<String, List<String>>): String {
         if (aro.isEmpty()) {
-            return "premis"
+            return "prenis"
         } else {
             return aro.map {
                 "pretas ${it.key} ${listigi(it.value)}"
-            }.joinToString(" ", postfix = " premis")
+            }.joinToString(" ", postfix = " prenis")
         }
     }
 

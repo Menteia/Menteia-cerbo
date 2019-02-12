@@ -1,7 +1,7 @@
 package xyz.trankvila.menteia.cerbo
 
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.datumo.*
 import kotlin.math.roundToInt
 

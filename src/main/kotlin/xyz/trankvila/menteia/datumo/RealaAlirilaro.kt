@@ -47,9 +47,9 @@ object RealaAlirilaro : Alirilaro {
     override fun nombriListojn(): Int {
         val respondo = db.scan(ScanRequest.builder()
                 .tableName("Menteia-datumejo")
-                .filterExpression("tipo = :nomo")
+                .filterExpression("begins_with(tipo, :nomo)")
                 .expressionAttributeValues(mapOf(
-                        ":nomo" to AttributeValue.builder().s("girisa").build()
+                        ":nomo" to AttributeValue.builder().s("brodimis").build()
                 ))
                 .select(Select.COUNT)
                 .build())
@@ -77,9 +77,9 @@ object RealaAlirilaro : Alirilaro {
         val listoj = mutableMapOf<String, List<String>>()
         val respondo = db.scanPaginator(ScanRequest.builder()
                 .tableName("Menteia-datumejo")
-                .filterExpression("tipo = :nomo")
+                .filterExpression("begins_with(tipo, :nomo) and attribute_exists(enhavo)")
                 .expressionAttributeValues(mapOf(
-                        ":nomo" to AttributeValue.builder().s("girisa").build()
+                        ":nomo" to AttributeValue.builder().s("brodimis").build()
                 ))
                 .build()
         )
@@ -114,7 +114,8 @@ object RealaAlirilaro : Alirilaro {
                         .item(mapOf(
                                 "vorto" to AttributeValue.builder().s(vorto).build(),
                                 "tipo" to AttributeValue.builder().s(tipo).build(),
-                                "valenco" to AttributeValue.builder().n("0").build()
+                                "valenco" to AttributeValue.builder().n("0").build(),
+                                "aktantoj" to AttributeValue.builder().l(listOf()).build()
                         ))
                         .build())
                 Vortaro.alporti(alporti = true)
@@ -125,8 +126,8 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override fun kreiListon(): String {
-        val nomo = kreiNomon("girisa")
+    override fun kreiListon(tipo: String): String {
+        val nomo = kreiNomon("brodimis $tipo")
         db.updateItem(UpdateItemRequest.builder()
                 .tableName("Menteia-datumejo")
                 .key(mapOf(
@@ -144,9 +145,9 @@ object RealaAlirilaro : Alirilaro {
     override fun forigiListon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
                 .tableName("Menteia-datumejo")
-                .conditionExpression("tipo = :t")
+                .conditionExpression("begins_with(tipo, :t) and attribute_exists(enhavo)")
                 .expressionAttributeValues(mapOf(
-                        ":t" to AttributeValue.builder().s("girisa").build()
+                        ":t" to AttributeValue.builder().s("brodimis").build()
                 ))
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
@@ -159,7 +160,7 @@ object RealaAlirilaro : Alirilaro {
     override fun forigiTempoŝaltilon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
                 .tableName("Menteia-datumejo")
-                .conditionExpression("tipo = :t")
+                .conditionExpression("begins_with(tipo, :t)")
                 .expressionAttributeValues(mapOf(
                         ":t" to AttributeValue.builder().s("samona").build()
                 ))

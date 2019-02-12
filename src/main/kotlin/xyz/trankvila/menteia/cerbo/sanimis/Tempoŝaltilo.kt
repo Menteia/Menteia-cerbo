@@ -1,10 +1,10 @@
-package xyz.trankvila.menteia.cerbo.samona
+package xyz.trankvila.menteia.cerbo.sanimis
 
 import kotlinx.coroutines.Job
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.cerbo.Certeco
 import xyz.trankvila.menteia.datumo.alirilaro
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.cerbo.NomitaAĵo
 import xyz.trankvila.menteia.cerbo.gremuna.Daŭro
 import java.util.concurrent.*

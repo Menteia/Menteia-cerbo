@@ -2,8 +2,9 @@ package xyz.trankvila.menteia.cerbo
 
 import kotlinx.coroutines.Job
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
-import xyz.trankvila.menteia.cerbo.girisa.Listo
-import xyz.trankvila.menteia.cerbo.samona.Tempoŝaltilo
+import xyz.trankvila.menteia.cerbo.brodimis.Listo
+import xyz.trankvila.menteia.cerbo.sanimis.Tempoŝaltilo
+import xyz.trankvila.menteia.cerbo.timis.Tipsistemo
 import java.lang.Exception
 
 object keli {
@@ -36,7 +37,7 @@ object keli {
 
     private fun marina(tipo: SintaksoArbo, sekvaMesaĝo: (String) -> Job): Pair<String, Certeco> {
         return when (tipo.radiko) {
-            "girisa" -> Listo.marina()
+            "brodimis" -> Listo.marina(tipo.opcioj[0])
             "bis" -> marinaBis(tipo.opcioj[0], tipo.opcioj[1], sekvaMesaĝo)
             else -> throw Exception("Ne eblas krei tipon $tipo")
         }
@@ -51,8 +52,9 @@ object keli {
 
     private fun furika(nomo: SintaksoArbo): Pair<String, Certeco> {
         val vorto = Vortaro.alporti()[nomo.radiko] ?: throw MenteiaEksepcio("klos tinas $nomo")
-        return when (vorto.tipo) {
-            "girisa" -> Listo.furika(nomo)
+        val tipo = Tipsistemo.legiTipon(vorto.tipo!!)
+        return when (tipo[0]) {
+            "brodimis" -> Listo.furika(nomo)
             "samona" -> Tempoŝaltilo.furika(nomo)
             else -> throw Exception("Ne eblas forigi $nomo de tipo ${vorto.tipo}")
         }

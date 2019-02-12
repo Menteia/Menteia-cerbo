@@ -9,7 +9,7 @@ interface Alirilaro {
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
     fun kreiNomon(tipo: String): String
-    fun kreiListon(): String
+    fun kreiListon(tipo: String): String
     fun forigiListon(nomo: String)
     fun forigiTempoŝaltilon(nomo: String)
 

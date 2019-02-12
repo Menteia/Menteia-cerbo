@@ -2,11 +2,9 @@ package xyz.trankvila.menteia.testoj
 
 import org.apache.commons.math3.fraction.BigFraction
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
-import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import java.math.BigDecimal
 
@@ -27,13 +25,13 @@ object NombrajTestoj {
             Nombroj.nombrigi(it)
         }
         val pravaj = listOf(
-                "poni fori nori tegi siri lini ʃoni keri gini mora",
+                "poni fori nori tegi siri lini ʃoni keri gini mira",
                 "ʃoni ʃoni ʃona",
-                "mora",
+                "mira",
                 "gulos ʃoni ʃoni ʃoni ʃoni ʃoni ʃoni ʃona",
                 "gulos poni fori nora",
                 "ponega nora",
-                "fori nori mori mora"
+                "fori nori miri mira"
         )
         pravaj.forEachIndexed { index, s ->
             assertEquals(s, rezultoj[index])
@@ -42,7 +40,7 @@ object NombrajTestoj {
 
     @Test
     fun nombroj1() {
-        val teksto = "dreta siri mora"
+        val teksto = "dreta siri mira"
         val prava = BigFraction(1,2)
         assertEquals(prava, Nombroj.legiNombron(SintaksoArbo.konstrui(teksto)))
     }

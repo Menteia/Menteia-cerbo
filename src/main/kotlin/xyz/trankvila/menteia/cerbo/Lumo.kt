@@ -1,6 +1,6 @@
 package xyz.trankvila.menteia.cerbo
 
-import xyz.trankvila.menteia.cerbo.kiram.Nombroj
+import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 

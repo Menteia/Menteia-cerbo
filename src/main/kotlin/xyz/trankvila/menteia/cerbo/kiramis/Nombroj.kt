@@ -1,4 +1,4 @@
-package xyz.trankvila.menteia.cerbo.kiram
+package xyz.trankvila.menteia.cerbo.kiramis
 
 import org.apache.commons.math3.fraction.BigFraction
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
@@ -8,8 +8,8 @@ import java.math.RoundingMode
 import java.util.*
 
 object Nombroj {
-    private val nombroj = listOf("mora", "pona", "fora", "nora", "tega", "sira", "lina", "ʃona", "kera", "gina")
-    private val partnombroj = listOf("mori", "poni", "fori", "nori", "tegi", "siri", "lini", "ʃoni", "keri", "gini")
+    private val nombroj = listOf("mira", "pona", "fora", "nora", "tega", "sira", "lina", "ʃona", "kera", "gina")
+    private val partnombroj = listOf("miri", "poni", "fori", "nori", "tegi", "siri", "lini", "ʃoni", "keri", "gini")
     private val prefiksoj = linkedMapOf(
             6 to "sariga",
             3 to "ponega",
