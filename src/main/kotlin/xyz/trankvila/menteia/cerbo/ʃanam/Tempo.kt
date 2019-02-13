@@ -6,17 +6,6 @@ import java.time.ZoneId
 import java.util.*
 
 object Tempo {
-    private val fazoj = listOf("valima", "darena", "gemuna")
-
-    fun geradas(): Pair<String, Certeco> {
-        val nun = Calendar.getInstance()
-        nun.timeZone = TimeZone.getTimeZone(ZoneId.of("America/Toronto"))
-        val fazo = fazoj[nun[Calendar.HOUR_OF_DAY] / 8]
-        val horo = nun[Calendar.HOUR_OF_DAY] % 8
-        val minuto = nun[Calendar.MINUTE]
-        return "$fazo ${Nombroj.nombrigi(horo)} ${Nombroj.nombrigi(minuto)}" to Certeco.Negi
-    }
-
     fun fidinas(): Pair<String, Certeco> {
         val nun = Calendar.getInstance()
         nun.timeZone = TimeZone.getTimeZone(ZoneId.of("America/Toronto"))

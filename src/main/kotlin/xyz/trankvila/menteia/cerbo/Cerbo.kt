@@ -41,7 +41,6 @@ object Cerbo {
 
     internal suspend fun ko(eniro: SintaksoArbo): Pair<String, Certeco> {
         val (respondo, certeco) = when (eniro.radiko) {
-            "geradas" -> Tempo.geradas()
             "fidinas" -> Tempo.fidinas()
             "lemona" -> Vetero.lemona(eniro.opcioj[0])
             "lurina" -> Vetero.lurina(eniro.opcioj[0], eniro.opcioj[1])
