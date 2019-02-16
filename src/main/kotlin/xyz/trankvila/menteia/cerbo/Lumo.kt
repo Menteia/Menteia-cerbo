@@ -41,10 +41,8 @@ internal interface Lumo : NomitaAĵo {
         }
     }
 
-    private suspend fun testos(): Pair<String, Certeco> {
-        val respondo = alirilaro.getLightBulbState(nomo)
-        val valuo = if (respondo.on) "mave" else "buve"
-        return valuo to Certeco.Sagi
+    private fun testos(): Pair<String, Certeco> {
+        TODO()
     }
 }
 

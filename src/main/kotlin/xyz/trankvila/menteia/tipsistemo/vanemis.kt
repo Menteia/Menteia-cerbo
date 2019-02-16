@@ -1,39 +1,42 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import xyz.trankvila.menteia.vorttrakto.Legilo
+import kotlin.reflect.KClass
+
 sealed class vanemis(
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
 ): timis(morem, ponem, forem) {
-    abstract class tadumis<morom: timis>(
+    abstract class tadumis<morum: timis>(
             val _valuo: Boolean,
-            val _frazo: morom,
-            ponem: timis? = null,
-            forem: timis? = null
+            val _frazo: morum?,
+            ponem: Any? = null,
+            forem: Any? = null
     ): vanemis(_frazo, ponem, forem) {
-        override fun _valuigi(): Boolean {
+        override suspend fun _valuigi(): Boolean {
             return _valuo
         }
     }
 
-    abstract class fragemis<morum: timis>(
+    abstract class fragemis<morum: _bazaTipo>(
             val _valuo: morum,
-            morem: timis? = null,
-            ponem: timis? = null,
-            forem: timis? = null
+            morem: Any? = null,
+            ponem: Any? = null,
+            forem: Any? = null
     ): vanemis(morem, ponem, forem)
 }
 
-class to(morem: timis, ponem: timis): vanemis.tadumis<timis>(
+class to(morem: timis, ponem: _bazaTipo): vanemis.tadumis<timis>(
         morem == ponem,
         morem, ponem
 )
 
-class ko<morum: timis>(morem: morum): vanemis.fragemis<morum>(
+class ko<morum: _bazaTipo>(morem: morum): vanemis.fragemis<morum>(
         morem,
         morem
 ) {
-    override fun _valuigi(): Any {
+    override suspend fun _valuigi(): Any? {
         return _valuo._valuigi()
     }
 }
@@ -42,3 +45,10 @@ class klos(morem: vanemis.tadumis<*>): vanemis.tadumis<timis>(
         !morem._valuo,
         morem
 )
+
+class tres(morem: timis, ponem: KClass<*>): vanemis.tadumis<timis>(
+        ponem.isInstance(morem),
+        morem, Legilo._nomoKunTipaktantoj(ponem)
+)
+
+class sindis(morem: timis?): vanemis.tadumis<timis>(morem != null, morem)

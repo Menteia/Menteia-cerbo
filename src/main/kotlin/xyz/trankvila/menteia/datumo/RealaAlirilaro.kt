@@ -19,6 +19,8 @@ import java.lang.Exception
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.net.URL
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 object RealaAlirilaro : Alirilaro {
@@ -42,6 +44,45 @@ object RealaAlirilaro : Alirilaro {
         return respondo.items()[0]["enhavo"]!!.l().map {
             it.s()
         }
+    }
+
+    override fun alportiLokon(nomo: String): Pair<String, String> {
+        val respondo = db.query(QueryRequest.builder()
+                .tableName("Menteia-datumejo")
+                .keyConditionExpression("vorto = :nomo")
+                .expressionAttributeValues(mapOf(
+                        ":nomo" to AttributeValue.builder().s(nomo).build()
+                ))
+                .build()
+        )
+        if (respondo.count() != 1) {
+            throw Exception("Ne eblis trovi la lokon $nomo")
+        }
+        val loko = respondo.items().first()
+        if (loko["tipo"]!!.s() != "sinemis") {
+            throw Exception("$nomo ne estas loko")
+        }
+        val koordinatoj = loko["valuo"]!!.l()
+        return koordinatoj[0].n() to koordinatoj[1].n()
+    }
+
+    override fun alportiLumon(nomo: String): Int {
+        val respondo = db.query(QueryRequest.builder()
+                .tableName("Menteia-datumejo")
+                .keyConditionExpression("vorto = :nomo")
+                .filterExpression("tipo = :tipo")
+                .expressionAttributeValues(mapOf(
+                        ":nomo" to AttributeValue.builder().s(nomo).build(),
+                        ":tipo" to AttributeValue.builder().s("milimis").build()
+                ))
+                .build()
+        )
+        if (respondo.count() != 1) {
+            throw Exception("Ne eblis trovi la lumon $nomo")
+        }
+        val loko = respondo.items().first()
+        val id = loko["valuo"]!!.n()
+        return id.toInt()
     }
 
     override fun nombriListojn(): Int {
@@ -236,41 +277,52 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override suspend fun getCurrentWeather(location: Int): WeatherReport {
-        val (_, _, result) = Fuel.get(
-                "https://api.openweathermap.org/data/2.5/weather",
-                listOf("id" to location, "appid" to Sekretoj.OpenWeatherMapKey, "units" to "metric")
-        ).awaitStringResponse()
-        return result.fold(
-                { data -> JSON.nonstrict.parse(WeatherReport.serializer(), data) },
-                { error -> throw error.exception }
-        )
-    }
-
-    override suspend fun getForecast(location: Int, date: Calendar): WeatherReport? {
-        val (_, _, result) = Fuel.get(
-                "https://api.openweathermap.org/data/2.5/forecast",
-                listOf("id" to location, "appid" to Sekretoj.OpenWeatherMapKey, "units" to "metric")
-        ).awaitStringResponse()
-        val ts = (date.timeInMillis + date.timeZone.getOffset(date.timeInMillis)) / 1000
-        return result.fold(
-                { data ->
-                    val raporto: Raporto = JSON.nonstrict.parse(Raporto.serializer(), data)
-                    raporto.list.forEach {
-                        if (it.dt == ts) {
-                            return it
-                        }
-                    }
-                    null
-                }, { error -> throw error.exception }
-        )
-    }
-
-    override suspend fun getLightBulbState(name: String): LightBulbState {
+    override suspend fun getCurrentWeather(location: Pair<String, String>): WeatherItemsType {
         HttpClient(Apache).use {
-            val response = it.get<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
-                Sekretoj.HueLightID(name)
-            }") {
+            val response = it.get<String>(
+                    URL("https://weather.api.here.com/weather/1.0/report.json")
+            ) {
+                val (appid, appcode) = Sekretoj.HereCredentials
+                parameter("app_id", appid)
+                parameter("app_code", appcode)
+                parameter("product", "observation")
+                parameter("oneobservation", true)
+                parameter("latitude", location.first)
+                parameter("longitude", location.second)
+            }
+            val parsed = JSON.nonstrict.parse(ObservationResponse.serializer(), response)
+            return parsed.observations.location[0].observation[0]
+        }
+    }
+
+    override suspend fun getForecast(location: Pair<String, String>, date: LocalDate): WeatherItemsType? {
+        HttpClient(Apache).use {
+            val response = it.get<String>(
+                    URL("https://weather.api.here.com/weather/1.0/report.json")
+            ) {
+                val (appid, appcode) = Sekretoj.HereCredentials
+                parameter("app_id", appid)
+                parameter("app_code", appcode)
+                parameter("product", "forecast_7days_simple")
+                parameter("oneobservation", true)
+                parameter("latitude", location.first)
+                parameter("longitude", location.second)
+            }
+            val parsed: ForecastResponse = JSON.nonstrict.parse(ForecastResponse.serializer(), response)
+            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+            DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            parsed.dailyForecasts.forecastLocation.forecast.forEach {
+                if (LocalDate.parse(it.utcTime, format) == date) {
+                    return it
+                }
+            }
+            return null
+        }
+    }
+
+    override suspend fun getLightBulbState(id: Int): LightBulbState {
+        HttpClient(Apache).use {
+            val response = it.get<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/$id") {
                 headers {
                     append("Authorization", "Bearer ${Sekretoj.HueToken()}")
                 }

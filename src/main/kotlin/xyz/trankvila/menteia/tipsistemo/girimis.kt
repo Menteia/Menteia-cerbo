@@ -5,9 +5,9 @@ import org.apache.commons.math3.fraction.BigFraction
 abstract class girimis(
         _faktoro: Int,
         _valuo: List<Int>,
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
 ): lemis(
         BigFraction(_valuo.fold(0) { acc, i ->
             acc * 10 + i

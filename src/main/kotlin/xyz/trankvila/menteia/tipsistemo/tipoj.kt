@@ -2,7 +2,7 @@ package xyz.trankvila.menteia.tipsistemo
 
 import kotlin.reflect.KClass
 
-val tipoj: Map<String, KClass<out timis>> = mapOf(
+val vortoj: Map<String, KClass<out timis>> = mapOf(
         "timis" to timis::class,
         "mira" to mira::class,
         "miri" to miri::class,
@@ -44,5 +44,33 @@ val tipoj: Map<String, KClass<out timis>> = mapOf(
         "ko" to ko::class,
         "fragemis" to vanemis.fragemis::class,
         "to" to to::class,
-        "doni" to doni::class
+        "doni" to doni::class,
+        "sagi" to sagi::class,
+        "negi" to negi::class,
+        "pegi" to pegi::class,
+        "tres" to tres::class,
+        "nomis nevum" to `nomis nevum`::class,
+        "ŝanare" to ŝanare::class,
+        "lisa" to lisa::class,
+        "geradas" to geradas::class,
+        "lemona" to lemona::class,
+        "fidinas" to fidinas::class,
+        "karima" to karima::class,
+        "fitam" to fitam::class,
+        "lurina" to lurina::class,
+        "des" to des::class,
+        "buve" to buve::class,
+        "mave" to mave::class,
+        "marisas" to marisas::class
+)
+
+val tipoj = mapOf(
+        "timis" to timis::class,
+        "brodimis" to brodimis::class,
+        "girimis" to girimis::class,
+        "kamis" to kamis::class,
+        "sinemis" to sinemis::class,
+        "karimis" to karimis::class,
+        "ŝanamis" to ŝanamis::class,
+        "milimis" to milimis::class
 )

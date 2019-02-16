@@ -34,18 +34,21 @@ import paroli
 import xyz.trankvila.menteia.cerbo.Cerbo
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.tipsistemo.MenteiaTipEkcepcio
+import xyz.trankvila.menteia.tipsistemo.timis
+import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 
 fun main() {
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
-//                    GoogleCredentials.fromStream(
-//                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
-//                    )
                     GoogleCredentials.fromStream(
-                            ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
+                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
                     )
+//                    GoogleCredentials.fromStream(
+//                            ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
+//                    )
             )
             .setDatabaseUrl("https://menteia.firebaseio.com")
             .build()
@@ -57,13 +60,6 @@ fun main() {
         routing {
             webSocket("/") {
                 println("Konektis")
-                val sekvaMesaĝo = { mesaĝo: String ->
-                    launch {
-                        outgoing.send(Frame.Text(mesaĝo))
-                        val parolado = paroli(mesaĝo)
-                        outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
-                    }
-                }
                 var token = idRicevo(incoming, outgoing)
                 while (true) {
                     val frame = incoming.receive()
@@ -75,11 +71,19 @@ fun main() {
                                     close(CloseReason(CloseReason.Codes.NORMAL, "Fino"))
                                 } else {
                                     try {
-                                        val elirarbo = Cerbo.trakti(teksto, sekvaMesaĝo)
+                                        val elirarbo = Legilo.legi(teksto)._valuigi()
+                                        if (elirarbo !is timis) {
+                                            throw Exception("kalkulis: $elirarbo")
+                                        }
                                         outgoing.send(Frame.Text(elirarbo.toString()))
                                         val parolado = paroli(elirarbo)
                                         outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
+                                    } catch (e: MenteiaTipEkcepcio) {
+                                        outgoing.send(Frame.Text(e._mesaĝo.toString()))
+                                        val parolado = paroli(e._mesaĝo)
+                                        outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
                                     } catch (e: Exception) {
+                                        e.printStackTrace()
                                         outgoing.send(Frame.Text("veguna (${e.message})"))
                                     }
                                 }

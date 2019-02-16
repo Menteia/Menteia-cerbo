@@ -1,10 +1,13 @@
 package xyz.trankvila.menteia.datumo
 
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.util.*
 
 interface Alirilaro {
     fun alportiListon(nomo: String): List<String>
+    fun alportiLokon(nomo: String): Pair<String, String>
+    fun alportiLumon(nomo: String): Int
     fun nombriListojn(): Int
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
@@ -19,10 +22,10 @@ interface Alirilaro {
 
     suspend fun getWeatherStationState(): WeatherStationState
 
-    suspend fun getCurrentWeather(location: Int): WeatherReport
-    suspend fun getForecast(location: Int, date: Calendar): WeatherReport?
+    suspend fun getCurrentWeather(location: Pair<String, String>): WeatherItemsType
+    suspend fun getForecast(location: Pair<String, String>, date: LocalDate): WeatherItemsType?
 
-    suspend fun getLightBulbState(name: String): LightBulbState
+    suspend fun getLightBulbState(id: Int): LightBulbState
     suspend fun setLightBulbOn(name: String, on: Boolean)
     suspend fun setLightBulbBrightness(name: String, brightness: BigDecimal)
 }

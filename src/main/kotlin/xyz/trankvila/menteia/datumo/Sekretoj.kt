@@ -80,6 +80,17 @@ object Sekretoj {
         return valuoj[0].value() to valuoj[1].value()
     }
 
+    val HereCredentials: Pair<String, String>
+        get() {
+            val valuoj = ssm.getParameters(GetParametersRequest.builder()
+                    .names(listOf("AppID", "AppCode").map {
+                        "/External/Here/$it"
+                    })
+                    .withDecryption(true)
+                    .build()).parameters()
+            return valuoj[1].value() to valuoj[0].value()
+        }
+
     // Necesa pro Netatmo
     val session = mutableMapOf<String, String>()
 }

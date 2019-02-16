@@ -1,37 +1,29 @@
 package xyz.trankvila.menteia.tipsistemo
 
 abstract class _negiTipo(
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
-): timis(morem, ponem, forem) {
-    open fun _simpligi(): _negiTipo {
-        return this
-    }
-}
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
+): timis(morem, ponem, forem)
 
 abstract class _sagiTipo(
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
-): timis(morem, ponem, forem) {
-    open fun _simpligi(): _sagiTipo {
-        return this
-    }
-}
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
+): timis(morem, ponem, forem)
 
 abstract class vidimis(
         val _valuo: vanemis,
-        ponem: timis? = null,
-        forem: timis? = null
+        ponem: Any? = null,
+        forem: Any? = null
 ): timis(_valuo, ponem, forem) {
-    override fun _valuigi(): Any {
+    override suspend fun _valuigi(): Any? {
         return _valuo._valuigi()
     }
 }
 
 class doni(morem: vanemis): vidimis(morem) {
-    override fun _valuigi(): vidimis {
+    override suspend fun _valuigi(): vidimis {
         return when (_valuo) {
             is vanemis.tadumis<*> -> {
                 val respondo = if (_valuo._valuo) {
@@ -40,6 +32,17 @@ class doni(morem: vanemis): vidimis(morem) {
                     klos(_valuo)
                 }
                 return when (_valuo._frazo) {
+                    is des -> {
+                        when (_valuo._frazo._objekto) {
+                            is _sagiTipo -> {
+                                sagi(respondo)
+                            }
+                            is _negiTipo -> {
+                                negi(respondo)
+                            }
+                            else -> throw Exception("Ne eblas simpligi $this")
+                        }
+                    }
                     is _sagiTipo -> {
                         sagi(respondo)
                     }
@@ -52,13 +55,34 @@ class doni(morem: vanemis): vidimis(morem) {
             is vanemis.fragemis<*> -> {
                 val demando = _valuo._valuo
                 when (demando) {
+                    is des -> {
+                        when (demando._objekto) {
+                            is _negiTipo -> {
+                                negi(to(demando, demando._valuigi() as _bazaTipo))
+                            }
+                            is _sagiTipo -> {
+                                sagi(to(demando, demando._valuigi() as _bazaTipo))
+                            }
+                            else -> throw Exception("Ne eblas respondi al $this")
+                        }
+                    }
                     is _negiTipo -> {
-                        negi(to(demando, demando._simpligi()))
+                        val rezulto = demando._simpligi()
+                        return if (rezulto == null) {
+                            negi(klos(sindis(demando)))
+                        } else {
+                            negi(to(demando, rezulto))
+                        }
                     }
                     is _sagiTipo -> {
-                        sagi(to(demando, demando._simpligi()))
+                        val rezulto = demando._simpligi()
+                        if (rezulto != null) {
+                            sagi(to(demando, rezulto))
+                        } else {
+                            sagi(klos(sindis(demando)))
+                        }
                     }
-                    else -> throw Exception("Ne eblas simpligi $this")
+                    else -> throw Exception("Ne eblas respondi al $this")
                 }
             }
         }
@@ -68,3 +92,5 @@ class doni(morem: vanemis): vidimis(morem) {
 class negi(morem: vanemis.tadumis<out timis>): vidimis(morem)
 
 class sagi(morem: vanemis.tadumis<out timis>): vidimis(morem)
+
+class pegi(morem: vanemis.tadumis<out timis>): vidimis(morem)

@@ -14,7 +14,11 @@ import software.amazon.awssdk.services.polly.model.OutputFormat
 import software.amazon.awssdk.services.polly.model.SynthesizeSpeechRequest
 import software.amazon.awssdk.services.polly.model.TextType
 import software.amazon.awssdk.services.polly.model.VoiceId
+import xyz.trankvila.menteia.tipsistemo.timis
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
+import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
+import xyz.trankvila.menteia.vorttrakto.elparolado
+import xyz.trankvila.menteia.vorttrakto.interpaŭzoj
 import java.lang.Exception
 import java.nio.file.FileSystems
 import java.text.SimpleDateFormat
@@ -24,11 +28,7 @@ val polly = PollyClient.builder()
         .region(Region.US_WEST_2)
         .build()
 
-internal fun paroli(mesaĝo: String): ByteArray {
-    return paroli(SintaksoArbo.konstrui(mesaĝo))
-}
-
-internal fun paroli(arbo: SintaksoArbo): ByteArray {
+internal fun paroli(arbo: timis): ByteArray {
     val petoXML = kreiXML(arbo)
     val respondo = polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
             .outputFormat(OutputFormat.OGG_VORBIS)
@@ -40,23 +40,7 @@ internal fun paroli(arbo: SintaksoArbo): ByteArray {
     return respondo.readBytes()
 }
 
-internal fun paroliEnDosieron(arbo: SintaksoArbo) {
-    val petoXML = kreiXML(arbo)
-    polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
-            .outputFormat(OutputFormat.OGG_VORBIS)
-            .text(petoXML)
-            .voiceId(VoiceId.IVY)
-            .textType(TextType.SSML)
-            .build(),
-            FileSystems.getDefault().getPath(
-                    "ekparolado",
-                    "${SimpleDateFormat("yyyy-MM-dd HHmmss").format(Calendar.getInstance().time)}.ogg"
-            )
-    )
-
-}
-
-private fun kreiXML(arbo: SintaksoArbo): String {
+private fun kreiXML(frazo: timis): String {
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
             .addElement(QName("amazon:effect"))
@@ -64,20 +48,33 @@ private fun kreiXML(arbo: SintaksoArbo): String {
             .addElement("prosody")
             .addAttribute("rate", "70%")
             .addAttribute("volume", "+6dB")
+            .addAttribute("pitch", "+7%")
     val vortoj = mutableListOf<String>()
-    arbo.traversi(kunPaŭzoj = true).forEach {
-        if (it.startsWith("!")) {
+    frazo.traversi().forEach {
+        if (it.startsWith('!')) {
             val ipa = igiIPA(vortoj.joinToString(" "))
             xmlRadiko.addElement("phoneme")
                     .addAttribute("alphabet", "ipa")
                     .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
             when (it) {
-                "!longapaŭzo" -> xmlRadiko.addElement("break")
-                "!paŭzo" -> xmlRadiko.addElement("break").addAttribute("strength", "weak")
+                "!interpaŭzo" -> {
+                    xmlRadiko.addElement("break").addAttribute("strength", "weak")
+                }
+                "!autaŭpaŭzo" -> {
+                    xmlRadiko.addElement("break")
+                }
+                "!spiro" -> {
+                    xmlRadiko.addElement(QName("amazon:effect"))
+                }
+                "!longaspiro" -> {
+                    xmlRadiko.addElement(QName("amazon:effect"))
+                            .addAttribute("volume", "x-loud")
+                            .addAttribute("duration", "long")
+                }
             }
             vortoj.clear()
         } else {
-            vortoj.add(it)
+            vortoj.add(it.replace('ŝ', 'ʃ'))
         }
     }
     if (vortoj.isNotEmpty()) {
@@ -90,9 +87,8 @@ private fun kreiXML(arbo: SintaksoArbo): String {
 }
 
 private fun pravigiIPA(vortoj: List<String>, ipa: List<String>): List<String> {
-    val vortaro = Vortaro.alporti()
     return ipa.mapIndexed { index, s ->
-        val elparolo = vortaro[vortoj[index]]?.elparolo
+        val elparolo = elparolado[vortoj[index]]
         elparolo ?: s
     }
 }
@@ -123,12 +119,7 @@ private fun igiIPA(vortoj: String): List<String> {
 
 data class Vorto(
         val vorto: String,
-        val valenco: Int,
-        val antaŭpaŭzo: Boolean,
-        val interpaŭzo: Boolean,
-        val elparolo: String?,
-        val tipo: String?,
-        val aktantoj: List<String>?
+        val tipo: String
 )
 
 object Vortaro {
@@ -146,14 +137,7 @@ object Vortaro {
                 ScanRequest.builder().tableName("Menteia-datumejo")
                         .attributesToGet(
                                 "vorto",
-                                "valenco",
-                                "antaŭpaŭzo",
-                                "interpaŭzo",
-                                "elparolo",
-                                "tipo",
-                                "aktantoj",
-                                "tipaktantoj",
-                                "genera"
+                                "tipo"
                         )
                         .build()
         )
@@ -162,14 +146,7 @@ object Vortaro {
                 val vorto = it["vorto"]!!.s()
                 val datumo = Vorto(
                         vorto = vorto,
-                        valenco = it["valenco"]!!.n().toInt(),
-                        antaŭpaŭzo = it["antaŭpaŭzo"]?.bool() ?: false,
-                        interpaŭzo = it["interpaŭzo"]?.bool() ?: false,
-                        elparolo = it["elparolo"]?.s(),
-                        tipo = it["tipo"]?.s(),
-                        aktantoj = it["aktantoj"]?.l()?.map {
-                            it.s()
-                        }
+                        tipo = it["tipo"]!!.s()
                 )
                 vortaro[vorto] = datumo
             }

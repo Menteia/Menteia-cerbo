@@ -3,9 +3,9 @@ package xyz.trankvila.menteia.tipsistemo
 
 abstract class kamis(
         val _ciferoj: List<Int>,
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
 ): girimis(1, _ciferoj, morem, ponem, forem)
 
 class mira : kamis(listOf(0))

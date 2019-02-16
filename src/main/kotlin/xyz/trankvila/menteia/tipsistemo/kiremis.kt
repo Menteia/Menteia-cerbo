@@ -5,11 +5,11 @@ import org.apache.commons.math3.fraction.BigFraction
 abstract class kiremis(
         val _faktoro: Int,
         val _valuo: List<Int>,
-        morem: timis? = null,
-        ponem: timis? = null,
-        forem: timis? = null
+        morem: Any? = null,
+        ponem: Any? = null,
+        forem: Any? = null
 ) : timis(morem, ponem, forem) {
-    override fun _valuigi(): BigFraction {
+    override suspend fun _valuigi(): BigFraction {
         return BigFraction(
                 _valuo.fold(0) { acc, i ->
                     acc * 10 + i

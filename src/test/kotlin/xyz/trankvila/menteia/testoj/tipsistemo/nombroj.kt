@@ -1,10 +1,12 @@
 package xyz.trankvila.menteia.testoj.tipsistemo
 
+import kotlinx.coroutines.runBlocking
 import org.apache.commons.math3.fraction.BigFraction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import xyz.trankvila.menteia.tipsistemo.*
+import java.math.BigInteger
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 object NombrojTesto {
@@ -20,7 +22,7 @@ object NombrojTesto {
             BigFraction(it)
         }
         vortoj.forEachIndexed { i, n ->
-            assertEquals(pravaj[i], n._valuigi())
+            assertEquals(pravaj[i], runBlocking { n._valuigi() })
         }
     }
 
@@ -34,7 +36,7 @@ object NombrojTesto {
         )
         val pravaj = listOf(70, 37, 19, 453)
         vortoj.forEachIndexed { index, kamis ->
-            assertEquals(BigFraction(pravaj[index]), kamis._valuigi())
+            assertEquals(BigFraction(pravaj[index]), runBlocking { kamis._valuigi() })
         }
     }
 
@@ -49,7 +51,7 @@ object NombrojTesto {
                 24_000_000
         )
         vortoj.forEachIndexed { index, girimis ->
-            assertEquals(BigFraction(pravaj[index]), girimis._valuigi())
+            assertEquals(BigFraction(pravaj[index]), runBlocking { girimis._valuigi() })
         }
     }
 
@@ -59,7 +61,9 @@ object NombrojTesto {
         assertEquals(liris(pona(), sina()), generas(nona(), fora()))
         assertEquals(dreta(poni(mira())), prena(pona()))
         assertEquals(poneras(ponega(pona())), glima(pona()))
-        assertEquals(BigFraction(-5), gulos(sina())._valuigi())
+        assertEquals(BigFraction(-5), runBlocking { gulos(sina())._valuigi() })
+        assertEquals(ponega(poni(mira())), poni(miri(miri(miri(mira()))))._simpligi())
+        assertEquals(sini(liri(mira())), lemis.ciferigi(BigInteger.valueOf(560)))
     }
 
     @Test
