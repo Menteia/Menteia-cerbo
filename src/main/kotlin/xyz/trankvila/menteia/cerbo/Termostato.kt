@@ -35,24 +35,11 @@ internal interface Termostato : NomitaAĵo {
     }
 
     suspend fun testos(): Pair<String, Certeco> {
-        val raporto = alirilaro.getThermostatState(nomo)
-        return when (raporto.hvac_state) {
-            "heating" -> "saresa nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"
-            "cooling" -> "silega nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.toInt())}"
-            "off" -> "buve"
-            else -> throw Exception("Ne konita ŝtato de $nomo: ${raporto.hvac_state}")
-        } to Certeco.Sagi
+        TODO()
     }
 
     suspend fun gremina(): Pair<String, Certeco> {
-        val raporto = alirilaro.getThermostatState(nomo)
-        val modo = hvacModes.getValue(raporto.hvac_mode)
-        val temperaturo = when (raporto.hvac_mode) {
-            "heat", "cool" -> " nevum ${Nombroj.nombrigi(raporto.target_temperature_c!!.roundToInt())}"
-            "heat-cool" -> " nevum ${Nombroj.nombrigi(raporto.target_temperature_low_c!!.roundToInt())} nevum ${Nombroj.nombrigi(raporto.target_temperature_high_c!!.roundToInt())}"
-            else -> ""
-        }
-        return modo + temperaturo to Certeco.Sagi
+        TODO()
     }
 }
 

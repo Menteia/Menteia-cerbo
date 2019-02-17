@@ -15,7 +15,15 @@ class brotas<morum: timis>(morem: morum, ponem: brodimis<morum>) : brodimis<moru
         listOf(morem) + ponem._listo,
         morem,
         ponem
-)
+) {
+    companion object {
+        fun <morum: timis> igiListon(listo: List<morum>): brodimis<morum> {
+            return listo.foldRight(prenis()) { valuo, acc ->
+                brotas(valuo, acc)
+            }
+        }
+    }
+}
 
 class prenis<morum: timis> : brodimis<morum> (
         listOf()

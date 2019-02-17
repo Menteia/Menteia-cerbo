@@ -19,7 +19,7 @@ sealed class vanemis(
         }
     }
 
-    abstract class fragemis<morum: _bazaTipo>(
+    abstract class fragemis<morum: renas>(
             val _valuo: morum,
             morem: Any? = null,
             ponem: Any? = null,
@@ -27,12 +27,12 @@ sealed class vanemis(
     ): vanemis(morem, ponem, forem)
 }
 
-class to(morem: timis, ponem: _bazaTipo): vanemis.tadumis<timis>(
+class to(morem: timis, ponem: renas): vanemis.tadumis<timis>(
         morem == ponem,
         morem, ponem
 )
 
-class ko<morum: _bazaTipo>(morem: morum): vanemis.fragemis<morum>(
+class ko<morum: renas>(morem: morum): vanemis.fragemis<morum>(
         morem,
         morem
 ) {

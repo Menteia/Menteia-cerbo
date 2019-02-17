@@ -40,6 +40,9 @@ internal fun paroli(arbo: timis): ByteArray {
     return respondo.readBytes()
 }
 
+private val mallongaspiro = 14
+private val longaspiro = 19
+
 private fun kreiXML(frazo: timis): String {
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
@@ -48,8 +51,8 @@ private fun kreiXML(frazo: timis): String {
             .addElement("prosody")
             .addAttribute("rate", "70%")
             .addAttribute("volume", "+6dB")
-            .addAttribute("pitch", "+7%")
     val vortoj = mutableListOf<String>()
+    var spiro = 0
     frazo.traversi().forEach {
         if (it.startsWith('!')) {
             val ipa = igiIPA(vortoj.joinToString(" "))
@@ -58,23 +61,31 @@ private fun kreiXML(frazo: timis): String {
                     .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
             when (it) {
                 "!interpaŭzo" -> {
-                    xmlRadiko.addElement("break").addAttribute("strength", "weak")
+                    if (spiro > mallongaspiro) {
+                        spiro = 0
+                        xmlRadiko.addElement(QName("amazon:breath"))
+                    } else {
+                        xmlRadiko.addElement("break").addAttribute("strength", "weak")
+                    }
                 }
-                "!autaŭpaŭzo" -> {
-                    xmlRadiko.addElement("break")
-                }
-                "!spiro" -> {
-                    xmlRadiko.addElement(QName("amazon:effect"))
-                }
-                "!longaspiro" -> {
-                    xmlRadiko.addElement(QName("amazon:effect"))
-                            .addAttribute("volume", "x-loud")
-                            .addAttribute("duration", "long")
+                "!antaŭpaŭzo" -> {
+                    if (spiro > mallongaspiro) {
+                        spiro = 0
+                        xmlRadiko.addElement(QName("amazon:breath"))
+                    } else if (spiro > longaspiro) {
+                        spiro = 0
+                        xmlRadiko.addElement(QName("amazon:breath"))
+                                .addAttribute("volume", "x-loud")
+                                .addAttribute("duration", "long")
+                    } else {
+                        xmlRadiko.addElement("break")
+                    }
                 }
             }
             vortoj.clear()
         } else {
             vortoj.add(it.replace('ŝ', 'ʃ'))
+            ++spiro
         }
     }
     if (vortoj.isNotEmpty()) {
@@ -113,6 +124,7 @@ private fun igiIPA(vortoj: String): List<String> {
     if (enhavo.ĈuValida) {
         return enhavo.IPA
     } else {
+        println(vortoj)
         throw Exception(enhavo.Kialo)
     }
 }

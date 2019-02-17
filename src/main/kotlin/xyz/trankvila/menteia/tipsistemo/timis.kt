@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
 import xyz.trankvila.menteia.vorttrakto.interpaŭzoj
 
-interface _bazaTipo {
+interface renas {
     suspend fun _valuigi(): Any?
     suspend fun _simpligi(): timis?
 }
@@ -13,7 +13,7 @@ abstract class timis(
         val morem: Any? = null,
         val ponem: Any? = null,
         val forem: Any? = null
-): _bazaTipo {
+): renas {
     override fun equals(other: Any?): Boolean {
         return runBlocking {
             when (other) {

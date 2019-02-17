@@ -19,3 +19,31 @@ abstract class `nomis nevum`(
 ): _unito(_valuo, morem)
 
 class nevum(morem: lemis): `nomis nevum`(morem._valuo, morem)
+
+abstract class `nomis meforam`(
+        _valuo: BigFraction,
+        morem: Any? = null
+): _unito(_valuo, morem)
+
+class meforam(morem: lemis): `nomis meforam`(morem._valuo, morem)
+
+abstract class `nomis perom`(
+        _valuo: BigFraction,
+        morem: Any? = null
+): _unito(_valuo, morem)
+
+class perom(morem: lemis): `nomis perom`(morem._valuo, morem)
+
+abstract class `nomis balim`(
+        _valuo: BigFraction,
+        morem: Any? = null
+): _unito(_valuo, morem)
+
+class balim(morem: lemis): `nomis balim`(morem._valuo, morem)
+
+abstract class `nomis senam`(
+        _valuo: BigFraction,
+        morem: Any? = null
+): _unito(_valuo, morem)
+
+class senam(morem: lemis): `nomis senam`(morem._valuo, morem)

@@ -85,6 +85,24 @@ object RealaAlirilaro : Alirilaro {
         return id.toInt()
     }
 
+    override fun alportiTermostaton(nomo: String): Pair<String, String> {
+        val respondo = db.query(QueryRequest.builder()
+                .tableName("Menteia-datumejo")
+                .keyConditionExpression("vorto = :nomo")
+                .filterExpression("tipo = :tipo")
+                .expressionAttributeValues(mapOf(
+                        ":nomo" to AttributeValue.builder().s(nomo).build(),
+                        ":tipo" to AttributeValue.builder().s("kredimis").build()
+                ))
+                .build()
+        )
+        if (respondo.count() != 1) {
+            throw Exception("Ne eblis trovi la termostaton $nomo")
+        }
+        val valuo = respondo.items().first()["valuo"]!!.l()
+        return valuo[0].s() to valuo[1].s()
+    }
+
     override fun nombriListojn(): Int {
         val respondo = db.scan(ScanRequest.builder()
                 .tableName("Menteia-datumejo")
@@ -213,13 +231,13 @@ object RealaAlirilaro : Alirilaro {
         Vortaro.alporti(alporti = true)
     }
 
-    override suspend fun getThermostatState(id: String): ThermostatState {
+    override suspend fun getThermostatState(id: String, key: String): ThermostatState {
         HttpClient(Apache).use {
             val respondo = it.get<String>(
-                    URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")
+                    URL("https://developer-api.nest.com/devices/thermostats/$id")
             ) {
                 headers {
-                    append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                    append("Authorization", "Bearer $key")
                 }
             }
             return JSON.nonstrict.parse(ThermostatState.serializer(), respondo)
@@ -331,11 +349,9 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override suspend fun setLightBulbOn(name: String, on: Boolean) {
+    override suspend fun setLightBulbOn(id: Int, on: Boolean) {
         HttpClient(Apache).use {
-            it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
-                Sekretoj.HueLightID(name)
-            }/state") {
+            it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/$id/state") {
                 headers {
                     append("Authorization", "Bearer ${Sekretoj.HueToken()}")
                 }

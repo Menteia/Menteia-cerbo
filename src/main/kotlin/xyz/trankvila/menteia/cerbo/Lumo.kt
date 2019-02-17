@@ -6,14 +6,12 @@ import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 
 internal interface Lumo : NomitaAĵo {
     companion object {
-        suspend fun buvi(nomo: SintaksoArbo): Pair<String, Certeco> {
-            alirilaro.setLightBulbOn(nomo.radiko, false)
-            return "to des $nomo testos buve" to Certeco.Regi
+        fun buvi(nomo: SintaksoArbo): Pair<String, Certeco> {
+            TODO()
         }
 
-        suspend fun mavi(nomo: SintaksoArbo): Pair<String, Certeco> {
-            alirilaro.setLightBulbOn(nomo.radiko, true)
-            return "to des $nomo testos mave" to Certeco.Regi
+        fun mavi(nomo: SintaksoArbo): Pair<String, Certeco> {
+            TODO()
         }
     }
 
@@ -25,20 +23,7 @@ internal interface Lumo : NomitaAĵo {
     }
 
     override suspend fun invoke(eco: SintaksoArbo, valuo: SintaksoArbo): Pair<String, Certeco> {
-        return when (eco.radiko) {
-            "gremina" -> {
-                if (valuo.radiko == "buve") {
-                    alirilaro.setLightBulbOn(nomo, false)
-                } else {
-                    alirilaro.setLightBulbBrightness(
-                            nomo,
-                            Nombroj.legiNombron(valuo).bigDecimalValue()
-                    )
-                }
-                "to des $nomo gremina $valuo" to Certeco.Regi
-            }
-            else -> super.invoke(eco, valuo)
-        }
+        TODO()
     }
 
     private fun testos(): Pair<String, Certeco> {

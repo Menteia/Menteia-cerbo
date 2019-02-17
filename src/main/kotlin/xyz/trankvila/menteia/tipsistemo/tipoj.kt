@@ -61,7 +61,10 @@ val vortoj: Map<String, KClass<out timis>> = mapOf(
         "des" to des::class,
         "buve" to buve::class,
         "mave" to mave::class,
-        "marisas" to marisas::class
+        "marisas" to marisas::class,
+        "keli" to keli::class,
+        "buvi" to buvi::class,
+        "mavi" to mavi::class
 )
 
 val tipoj = mapOf(
@@ -72,5 +75,7 @@ val tipoj = mapOf(
         "sinemis" to sinemis::class,
         "karimis" to karimis::class,
         "ŝanamis" to ŝanamis::class,
-        "milimis" to milimis::class
+        "milimis" to milimis::class,
+        "krumis" to krumis::class,
+        "kredimis" to kredimis::class
 )

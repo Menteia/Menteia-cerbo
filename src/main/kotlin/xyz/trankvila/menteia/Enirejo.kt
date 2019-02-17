@@ -43,12 +43,12 @@ import java.nio.ByteBuffer
 fun main() {
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
-                    GoogleCredentials.fromStream(
-                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
-                    )
 //                    GoogleCredentials.fromStream(
-//                            ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
+//                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
 //                    )
+                    GoogleCredentials.fromStream(
+                            ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
+                    )
             )
             .setDatabaseUrl("https://menteia.firebaseio.com")
             .build()
@@ -97,34 +97,12 @@ fun main() {
             post("/sms") {
                 val peto = call.receiveParameters()
                 val enhavo = peto["Body"]!!
-                val sekvaMesaĝo = { mesaĝo: String ->
-                    launch {
-                        val smsMesaĝo = com.twilio.rest.api.v2010.account.Message.creator(
-                                PhoneNumber(peto["From"]!!),
-                                PhoneNumber("+15206368342"),
-                                mesaĝo
-                        ).create()
-                        println("Mesaĝo: ${smsMesaĝo.sid}")
-                    }
-                }
                 try {
-                    val respondo = Cerbo.trakti(enhavo, sekvaMesaĝo)
-                    call.respondText(respondo.toString())
+                    val arbo = Legilo.legi(enhavo)
+                    call.respondText(arbo._valuigi()!!.toString())
                 } catch (e: Exception) {
                     e.printStackTrace()
                     call.respondText("veguna")
-                }
-            }
-            get("/brodimis") {
-                val idToken = call.parameters["token"]
-                if (idToken == null || !idKontrolo(idToken)) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } else {
-                    val listoj = alirilaro.ĉiujListoj()
-                    call.respondText(JSON.stringify(
-                            (String.serializer() to String.serializer().list).map,
-                            listoj
-                    ), ContentType.Application.Json);
                 }
             }
         }

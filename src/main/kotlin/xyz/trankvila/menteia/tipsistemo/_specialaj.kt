@@ -2,7 +2,6 @@ package xyz.trankvila.menteia.tipsistemo
 
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.declaredMemberProperties
 
 class des(val _objekto: timis, val _eco: String): timis(
         _objekto, _eco

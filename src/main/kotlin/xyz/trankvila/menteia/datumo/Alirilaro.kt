@@ -8,6 +8,7 @@ interface Alirilaro {
     fun alportiListon(nomo: String): List<String>
     fun alportiLokon(nomo: String): Pair<String, String>
     fun alportiLumon(nomo: String): Int
+    fun alportiTermostaton(nomo: String): Pair<String, String>
     fun nombriListojn(): Int
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
@@ -16,7 +17,7 @@ interface Alirilaro {
     fun forigiListon(nomo: String)
     fun forigiTempoŝaltilon(nomo: String)
 
-    suspend fun getThermostatState(id: String): ThermostatState
+    suspend fun getThermostatState(id: String, key: String): ThermostatState
     suspend fun setThermostatTemperature(id: String, targetTemperature: BigDecimal)
     suspend fun setThermostatMode(id: String, mode: String, t1: BigDecimal? = null, t2: BigDecimal? = null)
 
@@ -26,7 +27,7 @@ interface Alirilaro {
     suspend fun getForecast(location: Pair<String, String>, date: LocalDate): WeatherItemsType?
 
     suspend fun getLightBulbState(id: Int): LightBulbState
-    suspend fun setLightBulbOn(name: String, on: Boolean)
+    suspend fun setLightBulbOn(id: Int, on: Boolean)
     suspend fun setLightBulbBrightness(name: String, brightness: BigDecimal)
 }
 

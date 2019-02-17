@@ -2,9 +2,9 @@ package xyz.trankvila.menteia.tipsistemo
 
 import xyz.trankvila.menteia.datumo.alirilaro
 
-interface merimis : _bazaTipo
+interface merimis : renas
 
-interface melemis : _bazaTipo
+interface melemis : renas
 
 abstract class _modo(
         morem: Any? = null,
@@ -25,7 +25,7 @@ abstract class _modo(
     }
 }
 
-class milimis(val _nomo: String): _sagiTipo() {
+class milimis(val _nomo: String): _sagiTipo(), nadimis {
     override suspend fun _valuigi(): milimis {
         return this
     }
@@ -55,7 +55,7 @@ class milimis(val _nomo: String): _sagiTipo() {
     }
 }
 
-class buve : _modo(), merimis, melemis
+class buve : _modo(), merimis, melemis, kredrimis
 class mave : _modo(), merimis, melemis
 class marisas(val _valuo: lemis): _modo(_valuo), melemis {
     override fun equals(other: Any?): Boolean {

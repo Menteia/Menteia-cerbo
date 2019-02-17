@@ -4,20 +4,18 @@ import org.apache.commons.math3.fraction.BigFraction
 
 abstract class kiremis(
         val _faktoro: Int,
-        val _valuo: List<Int>,
+        val _ciferoj: List<Int>,
         morem: Any? = null,
         ponem: Any? = null,
         forem: Any? = null
-) : timis(morem, ponem, forem) {
-    override suspend fun _valuigi(): BigFraction {
-        return BigFraction(
-                _valuo.fold(0) { acc, i ->
-                    acc * 10 + i
-                },
-                _faktoro
-        )
-    }
-}
+) : lemis(
+        BigFraction(
+            _ciferoj.fold(0) { acc, i ->
+                acc * 10 + i
+            },
+            _faktoro
+    ), morem, ponem, forem
+)
 
 class prena(morem: kamis): kiremis(10, morem._ciferoj, morem)
 

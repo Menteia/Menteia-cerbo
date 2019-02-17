@@ -72,7 +72,7 @@ abstract class lemis(
                     return it.value to restantaj * BigInteger.TEN.pow(nuloj - it.key)
                 }
             }
-            return null to restantaj
+            return null to nombro
         }
     }
 
