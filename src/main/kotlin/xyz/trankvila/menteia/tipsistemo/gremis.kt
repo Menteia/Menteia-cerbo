@@ -1,9 +1,10 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
+import kotlin.reflect.KClass
 
 abstract class gremis(
-        val _frazo: renas,
+        val _frazo: KClass<out timis>,
         morem: Any? = null,
         ponem: Any? = null,
         forem: Any? = null

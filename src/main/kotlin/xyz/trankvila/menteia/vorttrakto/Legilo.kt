@@ -15,24 +15,32 @@ object Legilo {
             val klaso = tipoj.getValue(vorto.tipo)
             return klaso.primaryConstructor!!.call(sekva)
         } else {
-            if (tipo.isAbstract) {
-                TODO()
-            } else if (tipo == des::class) {
-                val objekto = legi(frazo, vortoj)
-                val eco = vortoj.next()
-                return des(objekto, eco)
-            } else {
-                val bezonataj = tipo.primaryConstructor!!.parameters
-                val opcioj = bezonataj.map {
-                    legi(frazo, vortoj)
+            when {
+                tipo.isAbstract -> TODO()
+                tipo == des::class -> {
+                    val objekto = legi(frazo, vortoj)
+                    val eco = vortoj.next()
+                    return des(objekto, eco)
                 }
-                opcioj.forEachIndexed { index, opcio ->
-                    val bezonata = bezonataj[index].type.jvmErasure
-                    if (!bezonata.isInstance(opcio)) {
-                        throw MenteiaTipEkcepcio(pegi(klos(tres(opcio, bezonata))))
+                tipo == miris::class -> {
+                    val objekto = legi(frazo, vortoj)
+                    val eco = vortoj.next()
+                    val valuo = legi(frazo, vortoj)
+                    return miris(objekto, eco, valuo)
+                }
+                else -> {
+                    val bezonataj = tipo.primaryConstructor!!.parameters
+                    val opcioj = bezonataj.map {
+                        legi(frazo, vortoj)
                     }
+                    opcioj.forEachIndexed { index, opcio ->
+                        val bezonata = bezonataj[index].type.jvmErasure
+                        if (!bezonata.isInstance(opcio)) {
+                            throw MenteiaTipEkcepcio(pegi(klos(tres(opcio, bezonata))))
+                        }
+                    }
+                    return tipo.primaryConstructor!!.call(*opcioj.toTypedArray())
                 }
-                return tipo.primaryConstructor!!.call(*opcioj.toTypedArray())
             }
         }
     }

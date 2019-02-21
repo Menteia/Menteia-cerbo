@@ -51,7 +51,7 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
         val _valuo = _valuo.await()
         return when (_valuo) {
             is vanemis.tadumis<*> -> {
-                val respondo = if (_valuo._valuo) {
+                val respondo = if (_valuo._valuo()) {
                     _valuo
                 } else {
                     klos(_valuo)

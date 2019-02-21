@@ -9,13 +9,13 @@ sealed class vanemis(
         forem: Any? = null
 ): timis(morem, ponem, forem) {
     abstract class tadumis<morum: timis>(
-            val _valuo: Boolean,
+            val _valuo: suspend () -> Boolean,
             val _frazo: morum?,
             ponem: Any? = null,
             forem: Any? = null
     ): vanemis(_frazo, ponem, forem) {
         override suspend fun _valuigi(): Boolean {
-            return _valuo
+            return _valuo()
         }
     }
 
@@ -28,7 +28,7 @@ sealed class vanemis(
 }
 
 class to(morem: timis, ponem: renas): vanemis.tadumis<timis>(
-        morem == ponem,
+        { morem._egala(ponem) },
         morem, ponem
 )
 
@@ -42,13 +42,13 @@ class ko<morum: renas>(morem: morum): vanemis.fragemis<morum>(
 }
 
 class klos(morem: vanemis.tadumis<*>): vanemis.tadumis<timis>(
-        !morem._valuo,
+        { !morem._valuo() },
         morem
 )
 
 class tres(morem: timis, ponem: KClass<*>): vanemis.tadumis<timis>(
-        ponem.isInstance(morem),
+        { ponem.isInstance(morem) },
         morem, Legilo._nomoKunTipaktantoj(ponem)
 )
 
-class sindis(morem: timis?): vanemis.tadumis<timis>(morem != null, morem)
+class sindis(_aĵo: timis?): vanemis.tadumis<timis>({ _aĵo != null }, _aĵo)

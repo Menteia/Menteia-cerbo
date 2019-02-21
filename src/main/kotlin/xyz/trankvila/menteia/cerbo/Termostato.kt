@@ -15,23 +15,7 @@ internal interface Termostato : NomitaAĵo {
     }
 
     override suspend operator fun invoke(eco: SintaksoArbo, valuo: SintaksoArbo): Pair<String, Certeco> {
-        return when (eco.radiko) {
-            "sevara" -> {
-                alirilaro.setThermostatTemperature(nomo, Iloj.legiTemperaturon(valuo))
-                "to des $nomo $eco $valuo" to Certeco.Regi
-            }
-            "gremina" -> {
-                when (valuo.radiko) {
-                    "saresa", "silega" -> alirilaro.setThermostatMode(nomo, valuo.radiko, Iloj.legiTemperaturon(valuo.opcioj[0]))
-                    "sasigas" -> alirilaro.setThermostatMode(nomo, valuo.radiko,
-                            Iloj.legiTemperaturon(valuo.opcioj[0]), Iloj.legiTemperaturon(valuo.opcioj[1]))
-                    "maraga" -> alirilaro.setThermostatMode(nomo, valuo.radiko)
-                    else -> throw Exception("Nekonita modo: ${valuo.radiko}")
-                }
-                "to des $nomo $eco $valuo" to Certeco.Regi
-            }
-            else -> super.invoke(eco, valuo)
-        }
+        TODO()
     }
 
     suspend fun testos(): Pair<String, Certeco> {

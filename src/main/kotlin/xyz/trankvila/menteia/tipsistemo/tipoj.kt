@@ -9,7 +9,7 @@ val vortoj: Map<String, KClass<out timis>> = mapOf(
         "pona" to pona::class,
         "poni" to poni::class,
         "fora" to fora::class,
-        "fori" to fora::class,
+        "fori" to fori::class,
         "nona" to nona::class,
         "tera" to tera::class,
         "ponega" to ponega::class,
@@ -48,9 +48,14 @@ val vortoj: Map<String, KClass<out timis>> = mapOf(
         "sagi" to sagi::class,
         "negi" to negi::class,
         "pegi" to pegi::class,
+        "regi" to regi::class,
+        "megi" to megi::class,
         "tres" to tres::class,
-        "nomis nevum" to `nomis nevum`::class,
         "ŝanare" to ŝanare::class,
+        "varumi" to varumi::class,
+        "saleri" to saleri::class,
+        "salena" to salena::class,
+        "saleni" to saleni::class,
         "lisa" to lisa::class,
         "geradas" to geradas::class,
         "lemona" to lemona::class,
@@ -64,7 +69,20 @@ val vortoj: Map<String, KClass<out timis>> = mapOf(
         "marisas" to marisas::class,
         "keli" to keli::class,
         "buvi" to buvi::class,
-        "mavi" to mavi::class
+        "mavi" to mavi::class,
+        "darena" to darena::class,
+        "gemuna" to gemuna::class,
+        "valima" to valima::class,
+        "sadika" to sadika::class,
+        "molaro" to molaro::class,
+        "nevum" to nevum::class,
+        "saremi" to saremi::class,
+        "saresa" to saresa::class,
+        "silega" to silega::class,
+        "sasigas" to sasigas::class,
+        "miris" to miris::class,
+        "maraga" to maraga::class,
+        "klos" to klos::class
 )
 
 val tipoj = mapOf(
@@ -77,5 +95,6 @@ val tipoj = mapOf(
         "ŝanamis" to ŝanamis::class,
         "milimis" to milimis::class,
         "krumis" to krumis::class,
-        "kredimis" to kredimis::class
+        "kredimis" to kredimis::class,
+        "nomis nevum" to `nomis nevum`::class
 )

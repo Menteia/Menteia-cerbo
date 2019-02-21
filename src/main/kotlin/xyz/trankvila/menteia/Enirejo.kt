@@ -4,6 +4,9 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.Message
+import com.google.firebase.messaging.Notification
 import com.twilio.Twilio
 import com.twilio.type.PhoneNumber
 import io.ktor.application.call
@@ -15,7 +18,9 @@ import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.close
 import io.ktor.http.cio.websocket.readText
 import io.ktor.request.receiveParameters
+import io.ktor.request.receiveText
 import io.ktor.response.respond
+import io.ktor.response.respondBytes
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
@@ -41,6 +46,8 @@ import java.io.FileInputStream
 import java.nio.ByteBuffer
 
 fun main() {
+    val ids = mutableMapOf<String, String>()
+
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
 //                    GoogleCredentials.fromStream(
@@ -58,39 +65,63 @@ fun main() {
     val servilo = embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 7777) {
         install(WebSockets)
         routing {
-            webSocket("/") {
-                println("Konektis")
-                var token = idRicevo(incoming, outgoing)
-                while (true) {
-                    val frame = incoming.receive()
-                    if (idKontrolo(token)) {
-                        when (frame) {
-                            is Frame.Text -> {
-                                val teksto = frame.readText()
-                                if (teksto.equals("fino")) {
-                                    close(CloseReason(CloseReason.Codes.NORMAL, "Fino"))
-                                } else {
-                                    try {
-                                        val elirarbo = Legilo.legi(teksto)._valuigi()
-                                        if (elirarbo !is timis) {
-                                            throw Exception("kalkulis: $elirarbo")
-                                        }
-                                        outgoing.send(Frame.Text(elirarbo.toString()))
-                                        val parolado = paroli(elirarbo)
-                                        outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
-                                    } catch (e: MenteiaTipEkcepcio) {
-                                        outgoing.send(Frame.Text(e._mesaĝo.toString()))
-                                        val parolado = paroli(e._mesaĝo)
-                                        outgoing.send(Frame.Binary(true, ByteBuffer.wrap(parolado)))
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                        outgoing.send(Frame.Text("veguna (${e.message})"))
-                                    }
-                                }
-                            }
-                        }
+            post("/respondi") {
+                val xtoken = call.parameters["token"]
+                if (xtoken == null) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } else {
+                    val uid = idKontrolo(xtoken)
+                    if (uid == null || !ids.containsKey(uid)) {
+                        call.respond(HttpStatusCode.Unauthorized)
                     } else {
-                        token = idRicevo(incoming, outgoing)
+                        try {
+                            val peto = call.receiveText()
+                            Agordo.kunuloID.set(ids.getValue(uid))
+                            val respondo = Legilo.legi(peto)._valuigi()
+                            if (respondo !is timis) {
+                                throw Exception("kalkulis: $respondo")
+                            } else {
+                                sendiMesaĝon(respondo.toString(), ids.getValue(uid))
+                                call.respond(HttpStatusCode.NoContent)
+                            }
+                        } catch (e: MenteiaTipEkcepcio) {
+                            sendiMesaĝon(e._mesaĝo.toString(), ids.getValue(uid))
+                            call.respond(HttpStatusCode.NoContent)
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                            call.respondText(
+                                    "vaguna (${e.message})",
+                                    status = HttpStatusCode.BadRequest
+                            )
+                        }
+                    }
+                }
+            }
+            post("/paroli") {
+                val xtoken = call.parameters["token"]
+                if (xtoken == null) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } else {
+                    val peto = call.receiveText()
+                    val respondo = Legilo.legi(peto)
+                    val parolado = paroli(respondo)
+                    println("Parolas $peto")
+                    call.respondBytes(parolado, ContentType.Audio.OGG)
+                }
+            }
+            post("/sciigi") {
+                val xtoken = call.parameters["token"]
+                if (xtoken == null) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } else {
+                    val uid = idKontrolo(xtoken)
+                    if (uid == null) {
+                        call.respond(HttpStatusCode.Unauthorized)
+                    } else {
+                        val firebaseDeviceID = call.receiveText()
+                        ids[uid] = firebaseDeviceID
+                        println("Konektis: $firebaseDeviceID")
+                        call.respond(HttpStatusCode.NoContent)
                     }
                 }
             }
@@ -110,29 +141,27 @@ fun main() {
     servilo.start(wait = true)
 }
 
-suspend fun idRicevo(incoming: ReceiveChannel<Frame>, outgoing: SendChannel<Frame>): String {
-    while (true) {
-        val idToken = incoming.receive()
-        when (idToken) {
-            is Frame.Text -> {
-                val token = idToken.readText()
-                if (idKontrolo(token)) {
-                    outgoing.send(Frame.Text("!"))
-                    return token
-                } else {
-                    outgoing.send(Frame.Text("?"))
-                }
-            }
-        }
+fun idKontrolo(idToken: String): String? {
+    try {
+        val uzanto = FirebaseAuth.getInstance().verifyIdToken(idToken)
+        return uzanto.uid
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
     }
 }
 
-fun idKontrolo(idToken: String): Boolean {
-    try {
-        FirebaseAuth.getInstance().verifyIdToken(idToken)
-        return true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return false
-    }
+fun sendiMesaĝon(enhavo: String, al: String) {
+    val rezulto = FirebaseMessaging.getInstance().send(
+            Message.builder()
+                    .setNotification(
+                            Notification(
+                                    "Respondo de Menteia cerbo",
+                                    enhavo
+                            )
+                    )
+                    .setToken(al)
+                    .build()
+    )
+    println("Sendis: $rezulto")
 }

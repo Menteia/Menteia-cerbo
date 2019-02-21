@@ -172,9 +172,7 @@ object RealaAlirilaro : Alirilaro {
                         .conditionExpression("attribute_not_exists(vorto)")
                         .item(mapOf(
                                 "vorto" to AttributeValue.builder().s(vorto).build(),
-                                "tipo" to AttributeValue.builder().s(tipo).build(),
-                                "valenco" to AttributeValue.builder().n("0").build(),
-                                "aktantoj" to AttributeValue.builder().l(listOf()).build()
+                                "tipo" to AttributeValue.builder().s(tipo).build()
                         ))
                         .build())
                 Vortaro.alporti(alporti = true)
@@ -255,20 +253,19 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override suspend fun setThermostatMode(id: String, mode: String, t1: BigDecimal?, t2: BigDecimal?) {
-        val modeLabel = hvacModesReversed.getValue(mode)
-        val additionalBodyContent = when (modeLabel) {
+    override suspend fun setThermostatMode(key: String, id: String, mode: String, t1: BigDecimal?, t2: BigDecimal?) {
+        val additionalBodyContent = when (mode) {
             "heat", "cool" -> "{\"target_temperature_c\": ${t1!!.toPlainString()}}"
             "heat-cool" -> "{\"target_temperature_low_c\": ${t1!!.toPlainString()}, \"target_temperature_high_c\": ${t2!!.toPlainString()}}"
             else -> null
         }
         HttpClient(Apache).use {
             try {
-                it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
+                it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/$id")) {
                     headers {
-                        append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                        append("Authorization", "Bearer $key")
                     }
-                    body = TextContent("{\"hvac_mode\": \"$modeLabel\"}", ContentType.Application.Json)
+                    body = TextContent("{\"hvac_mode\": \"$mode\"}", ContentType.Application.Json)
                 }
                 if (additionalBodyContent != null){
                     it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {

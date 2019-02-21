@@ -19,7 +19,7 @@ interface Alirilaro {
 
     suspend fun getThermostatState(id: String, key: String): ThermostatState
     suspend fun setThermostatTemperature(id: String, targetTemperature: BigDecimal)
-    suspend fun setThermostatMode(id: String, mode: String, t1: BigDecimal? = null, t2: BigDecimal? = null)
+    suspend fun setThermostatMode(key: String, id: String, mode: String, t1: BigDecimal? = null, t2: BigDecimal? = null)
 
     suspend fun getWeatherStationState(): WeatherStationState
 

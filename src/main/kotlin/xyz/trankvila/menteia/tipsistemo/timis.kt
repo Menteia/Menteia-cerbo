@@ -14,14 +14,12 @@ abstract class timis(
         val ponem: Any? = null,
         val forem: Any? = null
 ): renas {
-    override fun equals(other: Any?): Boolean {
-        return runBlocking {
-            when (other) {
-                is timis -> {
-                    _valuigi() == other._valuigi()
-                }
-                else -> super.equals(other)
+    suspend fun _egala(other: Any?): Boolean {
+        return when (other) {
+            is timis -> {
+                _valuigi() == other._valuigi()
             }
+            else -> super.equals(other)
         }
     }
 
