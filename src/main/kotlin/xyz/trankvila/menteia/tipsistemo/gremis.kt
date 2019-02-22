@@ -4,7 +4,7 @@ import kotlinx.coroutines.Deferred
 import kotlin.reflect.KClass
 
 abstract class gremis(
-        val _frazo: KClass<out timis>,
+        val _frazo: KClass<out renas>,
         morem: Any? = null,
         ponem: Any? = null,
         forem: Any? = null

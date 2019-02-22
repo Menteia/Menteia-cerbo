@@ -57,10 +57,10 @@ class milimis(val _nomo: String): _sagiTipo(), nadimis {
 
 class buve : _modo(), merimis, melemis, kredrimis
 class mave : _modo(), merimis, melemis
-class marisas(val _valuo: lemis): _modo(_valuo), melemis {
+class maridas(val _valuo: lemis): _modo(_valuo), melemis {
     override fun equals(other: Any?): Boolean {
         return when (other) {
-            is marisas -> {
+            is maridas -> {
                 _valuo == other._valuo
             }
             else -> super.equals(other)

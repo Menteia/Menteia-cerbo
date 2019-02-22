@@ -3,6 +3,7 @@ package xyz.trankvila.menteia.tipsistemo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
+import kotlin.reflect.full.isSubclassOf
 
 abstract class _negiTipo(
         morem: Any? = null,
@@ -120,11 +121,11 @@ class keli(val _ago: gremis): vidimis(_ago._ekruli()) {
         return when (rezulto) {
             is vanemis.tadumis<*> -> {
                 val objekto = _ago._frazo
-                when (objekto) {
-                    is _negiTipo -> {
+                when {
+                    objekto.isSubclassOf(_negiTipo::class) -> {
                         megi(rezulto)
                     }
-                    is _sagiTipo -> {
+                    objekto.isSubclassOf(_sagiTipo::class) -> {
                         regi(rezulto)
                     }
                     else -> throw Exception("Ne eblas montri la rezulton de $_ago")

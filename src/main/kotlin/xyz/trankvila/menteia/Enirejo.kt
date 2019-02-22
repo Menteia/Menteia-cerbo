@@ -76,7 +76,9 @@ fun main() {
                     } else {
                         try {
                             val peto = call.receiveText()
-                            Agordo.kunuloID.set(ids.getValue(uid))
+                            Agordo.sendiMesaĝon.set {
+                                sendiMesaĝon(it, ids.getValue(uid))
+                            }
                             val respondo = Legilo.legi(peto)._valuigi()
                             if (respondo !is timis) {
                                 throw Exception("kalkulis: $respondo")

@@ -7,7 +7,7 @@ import xyz.trankvila.menteia.datumo.alirilaro
 
 interface nadimis : renas
 
-class buvi(val nadimis: nadimis): gremis(nadimis) {
+class buvi(val nadimis: nadimis): gremis(nadimis::class) {
     override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
         return GlobalScope.async {
             when (nadimis) {
@@ -23,7 +23,7 @@ class buvi(val nadimis: nadimis): gremis(nadimis) {
     }
 }
 
-class mavi(val nadimis: nadimis): gremis(nadimis) {
+class mavi(val nadimis: nadimis): gremis(nadimis::class) {
     override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
         return GlobalScope.async {
             when (nadimis) {

@@ -8,6 +8,6 @@ import java.time.LocalDate
 
 fun main() {
     runBlocking {
-        println(doni(ko(des(kredimis("klisemi"), "testos")))._valuigi())
+        println(Legilo.legi("keli marisa sanimis nires lira")._valuigi())
     }
 }
