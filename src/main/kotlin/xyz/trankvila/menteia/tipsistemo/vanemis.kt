@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import kotlin.reflect.KClass
 
@@ -9,18 +10,19 @@ sealed class vanemis(
         forem: Any? = null
 ): timis(morem, ponem, forem) {
     abstract class tadumis<morum: timis>(
-            val _valuo: suspend () -> Boolean,
+            private val _valuo: suspend () -> Boolean,
             val _frazo: morum?,
             ponem: Any? = null,
             forem: Any? = null
     ): vanemis(_frazo, ponem, forem) {
         override suspend fun _valuigi(): Boolean {
+            Memoro.lastaFrazo = this as tadumis<timis>
             return _valuo()
         }
     }
 
     abstract class fragemis<morum: renas>(
-            val _valuo: morum,
+            val _valuo: morum?,
             morem: Any? = null,
             ponem: Any? = null,
             forem: Any? = null
@@ -32,17 +34,17 @@ class to(morem: timis, ponem: renas): vanemis.tadumis<timis>(
         morem, ponem
 )
 
-class ko<morum: renas>(morem: morum): vanemis.fragemis<morum>(
+class ko<morum: renas>(morem: morum?): vanemis.fragemis<morum>(
         morem,
         morem
 ) {
     override suspend fun _valuigi(): Any? {
-        return _valuo._valuigi()
+        return _valuo?._valuigi()
     }
 }
 
 class klos(morem: vanemis.tadumis<*>): vanemis.tadumis<timis>(
-        { !morem._valuo() },
+        { !morem._valuigi() },
         morem
 )
 

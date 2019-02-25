@@ -17,6 +17,10 @@ class talimis(val _nomo: String): _negiTipo() {
         }
     }
 
+    fun diremi(): kamis {
+        return lemis.ciferigi(enhavo!!.size.toBigInteger())
+    }
+
     override suspend fun _valuigi(): List<timis>? {
         return enhavo
     }
@@ -57,5 +61,32 @@ class karema(val _listo: talimis, val _aĵo: timis, val _loko: kamis): gremis(_l
             it.toString()
         })
         return CompletableDeferred(to(las(_listo, _loko), _aĵo))
+    }
+}
+
+class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo::class) {
+    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
+        _listo.enhavo!!.add(_aĵo)
+        alirilaro.redaktiListon(_listo._nomo, _listo.enhavo!!.map {
+            it.toString()
+        })
+        return CompletableDeferred(to(las(_listo, lemis.ciferigi(_listo.enhavo!!.size.toBigInteger())), _aĵo))
+    }
+}
+
+class kurinis(_listo: talimis, _aĵo: timis): vanemis.tadumis<timis>({
+    _listo.enhavo!!.contains(_aĵo)
+}, _listo, _listo, _aĵo)
+
+class karisi(val _listo: talimis, val _aĵo: timis): gremis(_listo::class) {
+    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
+        val sukcesa = _listo.enhavo!!.remove(_aĵo)
+        if (sukcesa) {
+            return CompletableDeferred(to(des(_listo, "direma"),
+                    lemis.ciferigi(_listo.enhavo!!.size.toBigInteger()))
+            )
+        } else {
+            throw MenteiaTipEkcepcio(pegi(klos(kurinis(_listo, _aĵo))))
+        }
     }
 }

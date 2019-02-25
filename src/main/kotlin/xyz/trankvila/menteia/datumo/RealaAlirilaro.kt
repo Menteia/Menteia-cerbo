@@ -113,12 +113,12 @@ object RealaAlirilaro : Alirilaro {
         return valuo[0].s() to valuo[1].s()
     }
 
-    override fun nombriListojn(): Int {
+    override fun nombri(tipo: String): Int {
         val respondo = db.scan(ScanRequest.builder()
                 .tableName("Menteia-datumejo")
-                .filterExpression("begins_with(tipo, :nomo)")
+                .filterExpression("tipo = :t")
                 .expressionAttributeValues(mapOf(
-                        ":nomo" to AttributeValue.builder().s("brodimis").build()
+                        ":t" to AttributeValue.builder().s(tipo).build()
                 ))
                 .select(Select.COUNT)
                 .build())

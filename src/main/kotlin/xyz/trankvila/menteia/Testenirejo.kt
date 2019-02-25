@@ -9,6 +9,9 @@ import java.time.LocalDate
 
 fun main() {
     runBlocking {
-        println(Legilo.legi("des runa testos")._valuigi())
+        println(Legilo.legi("doni ko taris pona pona")._valuigi())
+        println(Legilo.legi("doni ko taris paranas pona")._valuigi())
+        println(Legilo.legi("doni ko paranas")._valuigi())
+        println(Legilo.legi("doni ko paranas")._valuigi())
     }
 }

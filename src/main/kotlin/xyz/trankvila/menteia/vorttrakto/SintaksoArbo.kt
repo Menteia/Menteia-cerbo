@@ -1,8 +1,5 @@
 package xyz.trankvila.menteia.vorttrakto
 
-import xyz.trankvila.menteia.cerbo.MenteiaEksepcio
-import xyz.trankvila.menteia.cerbo.timis.GeneraTipilo
-import xyz.trankvila.menteia.cerbo.timis.Tipsistemo
 import java.lang.Exception
 
 data class SintaksoArbo(val radiko: String, val opcioj: List<SintaksoArbo>, val tipo: List<String> = listOf()) {

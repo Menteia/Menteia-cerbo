@@ -1,6 +1,5 @@
 package xyz.trankvila.menteia.tipsistemo
 
-import xyz.trankvila.menteia.cerbo.kiramis.Nombroj
 import java.time.ZoneId
 import java.util.*
 

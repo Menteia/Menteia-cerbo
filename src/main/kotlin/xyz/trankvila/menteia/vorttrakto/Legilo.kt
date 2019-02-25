@@ -1,6 +1,7 @@
 package xyz.trankvila.menteia.vorttrakto
 
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.*
 import kotlin.reflect.KClass
@@ -35,6 +36,9 @@ object Legilo {
                     val klaso = tipoj.getValue(vortoj.next())
                     val opcio = legi(frazo, vortoj)
                     return marisa(klaso, opcio)
+                }
+                tipo == paranas::class -> {
+                    return Memoro.lastaValuo ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(paranas()))))
                 }
                 else -> {
                     val bezonataj = tipo.primaryConstructor!!.parameters

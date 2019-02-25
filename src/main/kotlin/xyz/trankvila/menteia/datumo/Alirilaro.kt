@@ -9,7 +9,7 @@ interface Alirilaro {
     fun alportiLokon(nomo: String): Pair<String, String>
     fun alportiLumon(nomo: String): Int
     fun alportiTermostaton(nomo: String): Pair<String, String>
-    fun nombriListojn(): Int
+    fun nombri(tipo: String): Int
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
     fun kreiNomon(tipo: String): String

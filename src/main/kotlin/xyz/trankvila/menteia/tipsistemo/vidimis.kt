@@ -3,6 +3,7 @@ package xyz.trankvila.menteia.tipsistemo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.memoro.Memoro
 import kotlin.reflect.full.isSubclassOf
 
 abstract class _negiTipo(
@@ -52,7 +53,7 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
         val _valuo = _valuo.await()
         return when (_valuo) {
             is vanemis.tadumis<*> -> {
-                val respondo = if (_valuo._valuo()) {
+                val respondo = if (_valuo._valuigi()) {
                     _valuo
                 } else {
                     klos(_valuo)
@@ -80,14 +81,17 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
             }
             is vanemis.fragemis<*> -> {
                 val demando = _valuo._valuo
+                if (demando is timis?) {
+                    Memoro.lastaValuo = demando
+                }
                 when (demando) {
                     is des -> {
                         when (demando._objekto) {
                             is _negiTipo -> {
-                                negi(to(demando, demando._valuigi() as renas))
+                                negi(to(paranas(), demando._valuigi() as renas))
                             }
                             is _sagiTipo -> {
-                                sagi(to(demando, demando._valuigi() as renas))
+                                sagi(to(paranas(), demando._valuigi() as renas))
                             }
                             else -> throw Exception("Ne eblas respondi al $this")
                         }
@@ -95,15 +99,15 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
                     is _negiTipo -> {
                         val rezulto = demando._simpligi()
                         return if (rezulto == null) {
-                            negi(klos(sindis(demando)))
+                            negi(klos(sindis(paranas())))
                         } else {
-                            negi(to(demando, rezulto))
+                            negi(to(paranas(), rezulto))
                         }
                     }
                     is _sagiTipo -> {
                         val rezulto = demando._simpligi()
                         if (rezulto != null) {
-                            sagi(to(demando, rezulto))
+                            sagi(to(paranas(), rezulto))
                         } else {
                             sagi(klos(sindis(demando)))
                         }

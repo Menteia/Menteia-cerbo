@@ -95,3 +95,13 @@ class furika(val _aĵo: _forigibla): gremis(_aĵo::class, _aĵo) {
         }
     }
 }
+
+class tremos(val _tipo: KClass<out timis>): _negiTipo(_tipo) {
+    override suspend fun _valuigi(): Int {
+        return alirilaro.nombri(_tipo.simpleName!!)
+    }
+
+    override suspend fun _simpligi(): timis? {
+        return lemis.ciferigi(_valuigi().toBigInteger())
+    }
+}

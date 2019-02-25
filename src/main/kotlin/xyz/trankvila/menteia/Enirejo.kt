@@ -5,9 +5,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
 import com.twilio.Twilio
+import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import io.ktor.application.call
 import io.ktor.application.install
@@ -38,7 +38,6 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
 import paroladoj
 import paroli
-import xyz.trankvila.menteia.cerbo.Cerbo
 import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
@@ -156,6 +155,14 @@ fun main() {
             post("/sms") {
                 val peto = call.receiveParameters()
                 val enhavo = peto["Body"]!!
+                Agordo.sendiMesaĝon.set {
+                    val mesaĝo = Message.creator(
+                            PhoneNumber(peto["From"]!!),
+                            PhoneNumber("+15206268342"),
+                            it.toString()
+                    ).create()
+                    println("Sendis ${mesaĝo.sid}")
+                }
                 try {
                     val arbo = Legilo.legi(enhavo)
                     call.respondText(arbo._valuigi()!!.toString())
@@ -181,7 +188,7 @@ fun idKontrolo(idToken: String): String? {
 
 fun sendiMesaĝon(enhavo: String, al: String, paroloID: String? = null) {
     val rezulto = FirebaseMessaging.getInstance().send(
-            Message.builder()
+            com.google.firebase.messaging.Message.builder()
                     .setNotification(
                             Notification(
                                     "Respondo de Menteia cerbo",
