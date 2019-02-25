@@ -51,12 +51,16 @@ object Legilo {
                 }
             }
         } catch (e: ClassNotFoundException) {
-            val vorto = Vortaro.alporti().getValue(sekva)
-            val klaso = tipoj.getValue(vorto.tipo)
-            if (lokajKlasoj.contains(klaso)) {
-                return lokajObjektoj.getValue(vorto.vorto)
+            val vorto = Vortaro.alporti()[sekva]
+            return if (vorto != null) {
+                val klaso = tipoj.getValue(vorto.tipo)
+                if (lokajKlasoj.contains(klaso)) {
+                    return lokajObjektoj.getValue(vorto.vorto)
+                }
+                klaso.primaryConstructor!!.call(sekva)
+            } else {
+                _nomitaAĵo(sekva)
             }
-            return klaso.primaryConstructor!!.call(sekva)
         }
     }
 

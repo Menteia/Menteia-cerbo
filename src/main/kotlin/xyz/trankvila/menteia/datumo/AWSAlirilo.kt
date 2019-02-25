@@ -1,14 +1,20 @@
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.future.await
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.parse
 import org.dom4j.DocumentHelper
 import org.dom4j.QName
 import software.amazon.awssdk.core.SdkBytes
+import software.amazon.awssdk.core.async.AsyncResponseTransformer
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
+import software.amazon.awssdk.services.polly.PollyAsyncClient
 import software.amazon.awssdk.services.polly.PollyClient
 import software.amazon.awssdk.services.polly.model.OutputFormat
 import software.amazon.awssdk.services.polly.model.SynthesizeSpeechRequest
@@ -20,24 +26,36 @@ import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
 import xyz.trankvila.menteia.vorttrakto.elparolado
 import xyz.trankvila.menteia.vorttrakto.interpaŭzoj
 import java.lang.Exception
+import java.nio.ByteBuffer
 import java.nio.file.FileSystems
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
-val polly = PollyClient.builder()
+val polly = PollyAsyncClient.builder()
         .region(Region.US_WEST_2)
         .build()
 
-internal fun paroli(arbo: timis): ByteArray {
+data class Parolado(val id: UUID, val enhavo: ByteArray, val dato: LocalDate)
+val paroladoj = ConcurrentHashMap<UUID, Deferred<Parolado>>()
+
+internal fun paroli(arbo: timis): UUID {
     val petoXML = kreiXML(arbo)
     val respondo = polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
             .outputFormat(OutputFormat.OGG_VORBIS)
             .text(petoXML)
             .voiceId(VoiceId.IVY)
             .textType(TextType.SSML)
-            .build()
+            .build(),
+            AsyncResponseTransformer.toBytes()
     )
-    return respondo.readBytes()
+    val id = UUID.randomUUID()
+    paroladoj[id] = GlobalScope.async {
+        val rezulto = respondo.await().asByteArray()
+        Parolado(id, rezulto, LocalDate.now())
+    }
+    return id
 }
 
 private val mallongaspiro = 14

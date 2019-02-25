@@ -27,12 +27,7 @@ class Listo(override val nomo: String) : NomitaAĵo {
         }
 
         fun kurimis(listoNomo: SintaksoArbo, aĵo: SintaksoArbo): Pair<String, Certeco> {
-            val listo = alirilaro.alportiListon(listoNomo.radiko)
-            if (listo.contains(aĵo.toString())) {
-                return "paranas" to Certeco.Negi
-            } else {
-                return "klos paranas" to Certeco.Negi
-            }
+            TODO()
         }
 
         fun tremos(aĵo: SintaksoArbo): Pair<String, Certeco> {
@@ -46,37 +41,15 @@ class Listo(override val nomo: String) : NomitaAĵo {
         }
 
         fun karema(listoNomo: SintaksoArbo, aĵo: SintaksoArbo, nombro: SintaksoArbo): Pair<String, Certeco> {
-            val listo = alirilaro.alportiListon(listoNomo.radiko)
-            val indekso = Nombroj.legiNombron(nombro).toInt()
-            if (indekso !in 0..listo.size) {
-                throw MenteiaEksepcio("klos pokes $nombro mira ${Nombroj.nombrigi(listo.size)}")
-            }
-            val novaListo = listo.toMutableList().apply {
-                add(indekso, aĵo.toString())
-            }
-            alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-            return "to des $listoNomo las $nombro $aĵo" to Certeco.Megi
+            TODO()
         }
 
         fun kirema(listoNomo: SintaksoArbo, aĵo: SintaksoArbo): Pair<String, Certeco> {
-            val listo = alirilaro.alportiListon(listoNomo.radiko)
-            val novaListo = listo.toMutableList().apply {
-                add(aĵo.toString())
-            }
-            alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-            return "to des $listoNomo las ${Nombroj.nombrigi(novaListo.size-1)} $aĵo" to Certeco.Megi
+            TODO()
         }
 
         fun karisi(listoNomo: SintaksoArbo, aĵo: SintaksoArbo): Pair<String, Certeco> {
-            val nomo = listoNomo.radiko
-            val listo = alirilaro.alportiListon(listoNomo.radiko)
-            val novaListo = listo.toMutableList()
-            if (novaListo.remove(aĵo.toString())) {
-                alirilaro.redaktiListon(listoNomo.radiko, novaListo)
-                return "klos kurimis $nomo $aĵo" to Certeco.Megi
-            } else {
-                throw MenteiaEksepcio("klos kurimis $listoNomo $aĵo")
-            }
+            TODO()
         }
 
         fun marina(tipo: SintaksoArbo): Pair<String, Certeco> {
@@ -90,17 +63,12 @@ class Listo(override val nomo: String) : NomitaAĵo {
         }
 
         suspend fun vidina(listoNomo: SintaksoArbo, sekvaMesaĝo: (String) -> Job): Pair<String, Certeco> {
-            val listo = alirilaro.alportiListon(listoNomo.radiko)
-            val respondoj = listo.map {
-                Cerbo.trakti(it, sekvaMesaĝo).toString()
-            }
-            return Iloj.listigi(respondoj) to Certeco.Pegi
+            TODO()
         }
     }
 
     override fun priskribi(): Pair<String, Certeco> {
-        val listo = alirilaro.alportiListon(nomo)
-        return Iloj.listigi(listo) to Certeco.Negi
+        TODO()
     }
 
     override suspend fun invoke(eco: SintaksoArbo): Pair<String, Certeco> {
@@ -112,17 +80,10 @@ class Listo(override val nomo: String) : NomitaAĵo {
     }
 
     private fun diremi(): Pair<String, Certeco> {
-        val listo = alirilaro.alportiListon(nomo)
-        return Nombroj.nombrigi(listo.size) to Certeco.Negi
+        TODO()
     }
 
     private fun las(nombro: SintaksoArbo): Pair<String, Certeco> {
-        val indekso = Nombroj.legiNombron(nombro).toInt()
-        val listo = alirilaro.alportiListon(nomo)
-        if (indekso in 0 until listo.size) {
-            return listo[indekso] to Certeco.Negi
-        } else {
-            throw MenteiaEksepcio("klos tinas des $nomo las $nombro")
-        }
+        TODO()
     }
 }

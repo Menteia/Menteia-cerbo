@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.io.ByteArrayInputStream
 import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
+import paroladoj
 import paroli
 import xyz.trankvila.menteia.cerbo.Cerbo
 import xyz.trankvila.menteia.datumo.Sekretoj
@@ -44,6 +45,10 @@ import xyz.trankvila.menteia.tipsistemo.timis
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
+import java.util.*
+
+@Serializable
+data class Respondo(val teksto: String, val UUID: String)
 
 fun main() {
     val ids = mutableMapOf<String, String>()
@@ -77,18 +82,23 @@ fun main() {
                         try {
                             val peto = call.receiveText()
                             Agordo.sendiMesaĝon.set {
-                                sendiMesaĝon(it, ids.getValue(uid))
+                                val paroloID = paroli(it)
+                                sendiMesaĝon(it.toString(), ids.getValue(uid), paroloID.toString())
                             }
-                            val respondo = Legilo.legi(peto)._valuigi()
-                            if (respondo !is timis) {
-                                throw Exception("kalkulis: $respondo")
-                            } else {
-                                sendiMesaĝon(respondo.toString(), ids.getValue(uid))
-                                call.respond(HttpStatusCode.NoContent)
+                            try {
+                                val respondo = Legilo.legi(peto)._valuigi()
+                                if (respondo !is timis) {
+                                    throw Exception("kalkulis: $respondo")
+                                } else {
+                                    val paroloID = paroli(respondo)
+                                    call.respondText(JSON.stringify(Respondo.serializer(), Respondo(respondo.toString(), paroloID.toString())),
+                                            ContentType.Application.Json)
+                                }
+                            } catch (e: MenteiaTipEkcepcio) {
+                                val paroloID = paroli(e._mesaĝo)
+                                call.respondText(JSON.stringify(Respondo.serializer(), Respondo(e._mesaĝo.toString(), paroloID.toString())),
+                                        ContentType.Application.Json)
                             }
-                        } catch (e: MenteiaTipEkcepcio) {
-                            sendiMesaĝon(e._mesaĝo.toString(), ids.getValue(uid))
-                            call.respond(HttpStatusCode.NoContent)
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
                             call.respondText(
@@ -99,16 +109,22 @@ fun main() {
                     }
                 }
             }
-            post("/paroli") {
+            get("/paroli") {
                 val xtoken = call.parameters["token"]
+                val id = call.parameters["id"]
                 if (xtoken == null) {
                     call.respond(HttpStatusCode.Unauthorized)
+                } else if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest)
                 } else {
-                    val peto = call.receiveText()
-                    val respondo = Legilo.legi(peto)
-                    val parolado = paroli(respondo)
-                    println("Parolas $peto")
-                    call.respondBytes(parolado, ContentType.Audio.OGG)
+                    val uuid = UUID.fromString(id)
+                    val parolado = paroladoj.remove(uuid)
+                    if (parolado == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                    } else {
+                        println("Parolas $id")
+                        call.respondBytes(parolado.await().enhavo, ContentType.Audio.OGG)
+                    }
                 }
             }
             post("/sciigi") {
@@ -153,7 +169,7 @@ fun idKontrolo(idToken: String): String? {
     }
 }
 
-fun sendiMesaĝon(enhavo: String, al: String) {
+fun sendiMesaĝon(enhavo: String, al: String, paroloID: String? = null) {
     val rezulto = FirebaseMessaging.getInstance().send(
             Message.builder()
                     .setNotification(
@@ -162,6 +178,7 @@ fun sendiMesaĝon(enhavo: String, al: String) {
                                     enhavo
                             )
                     )
+                    .putData("paroloID", paroloID ?: "")
                     .setToken(al)
                     .build()
     )

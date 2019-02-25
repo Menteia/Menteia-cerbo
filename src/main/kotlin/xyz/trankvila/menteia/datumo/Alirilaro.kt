@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.util.*
 
 interface Alirilaro {
-    fun alportiListon(nomo: String): List<String>
+    fun alportiListon(nomo: String): List<String>?
     fun alportiLokon(nomo: String): Pair<String, String>
     fun alportiLumon(nomo: String): Int
     fun alportiTermostaton(nomo: String): Pair<String, String>
@@ -13,7 +13,7 @@ interface Alirilaro {
     fun redaktiListon(nomo: String, enhavo: List<String>)
     fun ĉiujListoj(): Map<String, List<String>>
     fun kreiNomon(tipo: String): String
-    fun kreiListon(tipo: String): String
+    fun kreiListon(nomo: String): String
     fun forigiListon(nomo: String)
     fun forigiTempoŝaltilon(nomo: String)
 

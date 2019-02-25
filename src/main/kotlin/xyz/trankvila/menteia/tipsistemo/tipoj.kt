@@ -14,5 +14,6 @@ val tipoj: Map<String, KClass<out timis>> = mapOf(
         "kredimis" to kredimis::class,
         "nomis nevum" to `nomis nevum`::class,
         "teremis" to teremis::class,
-        "sanimis" to sanimis::class
+        "sanimis" to sanimis::class,
+        "talimis" to talimis::class
 )

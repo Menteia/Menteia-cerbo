@@ -51,4 +51,4 @@ class tres(morem: timis, ponem: KClass<*>): vanemis.tadumis<timis>(
         morem, Legilo._nomoKunTipaktantoj(ponem)
 )
 
-class sindis(_aĵo: timis?): vanemis.tadumis<timis>({ _aĵo != null }, _aĵo)
+class sindis(_aĵo: timis?): vanemis.tadumis<timis>({ _aĵo != null && _aĵo !is _nomitaAĵo }, _aĵo)

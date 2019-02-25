@@ -6,15 +6,22 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.BadResponseStatusException
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
+import io.ktor.http.Parameters
 import kotlinx.coroutines.io.readUTF8Line
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
+import software.amazon.awssdk.services.ssm.SsmClient
+import software.amazon.awssdk.services.ssm.model.GetParametersRequest
+import software.amazon.awssdk.services.ssm.model.ParameterType
 import java.lang.Exception
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -30,8 +37,11 @@ object RealaAlirilaro : Alirilaro {
     private val lambda = LambdaClient.builder()
             .region(Region.US_EAST_1)
             .build()
+    val ssm = SsmClient.builder()
+            .region(Region.US_WEST_2)
+            .build()
 
-    override fun alportiListon(nomo: String): List<String> {
+    override fun alportiListon(nomo: String): List<String>? {
         val respondo = db.query(QueryRequest.builder()
                 .tableName("Menteia-datumejo")
                 .expressionAttributeValues(mapOf(":nomo" to AttributeValue.builder().s(nomo).build()))
@@ -41,7 +51,7 @@ object RealaAlirilaro : Alirilaro {
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la liston nomita ${nomo}")
         }
-        return respondo.items()[0]["enhavo"]!!.l().map {
+        return respondo.items()[0]["enhavo"]?.l()?.map {
             it.s()
         }
     }
@@ -183,14 +193,13 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override fun kreiListon(tipo: String): String {
-        val nomo = kreiNomon("brodimis $tipo")
+    override fun kreiListon(nomo: String): String {
         db.updateItem(UpdateItemRequest.builder()
                 .tableName("Menteia-datumejo")
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
-                .updateExpression("set enhavo = :e")
+                .updateExpression("set valuo = :e")
                 .expressionAttributeValues(mapOf(
                         ":e" to AttributeValue.builder().l(listOf()).build()
                 ))
@@ -217,9 +226,9 @@ object RealaAlirilaro : Alirilaro {
     override fun forigiTempoŝaltilon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
                 .tableName("Menteia-datumejo")
-                .conditionExpression("begins_with(tipo, :t)")
+                .conditionExpression("tipo = :t")
                 .expressionAttributeValues(mapOf(
-                        ":t" to AttributeValue.builder().s("samona").build()
+                        ":t" to AttributeValue.builder().s("sanimis").build()
                 ))
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
@@ -374,4 +383,55 @@ object RealaAlirilaro : Alirilaro {
             }
         }
     }
+
+    suspend fun refreshHueToken() {
+        val response = ssm.getParameters(
+                GetParametersRequest.builder()
+                        .names(
+                                "/External/Hue/drakoni/RefreshToken",
+                                "/External/Hue/drakoni/Authorization"
+                        )
+                        .withDecryption(true)
+                        .build()
+        )
+        val refreshToken = response.parameters()[1].value()
+        val authorization = response.parameters()[0].value()
+
+        HttpClient(Apache).use {
+            try {
+                val update = it.post<String>("https://api.meethue.com/oauth2/refresh") {
+                    parameter("grant_type", "refresh_token")
+                    header("Authorization", authorization)
+                    body = FormDataContent(Parameters.build {
+                        append("refresh_token", refreshToken)
+                    })
+                }
+                println(update)
+                val newTokens: HueAuthResponse = JSON.nonstrict.parse(HueAuthResponse.serializer(), update)
+                ssm.putParameter {
+                    it.name("/External/Hue/drakoni/RefreshToken")
+                    it.type(ParameterType.SECURE_STRING)
+                    it.value(newTokens.refresh_token)
+                    it.overwrite(true)
+                }
+                ssm.putParameter {
+                    it.name("/External/Hue/drakoni/Token")
+                    it.type(ParameterType.SECURE_STRING)
+                    it.value(newTokens.access_token)
+                    it.overwrite(true)
+                }
+            } catch (e: BadResponseStatusException) {
+                println(e.response.content.readUTF8Line())
+            }
+        }
+    }
 }
+
+@Serializable
+data class HueAuthResponse(
+        val access_token: String,
+        val access_token_expires_in: String,
+        val refresh_token: String,
+        val refresh_token_expires_in: String,
+        val token_type: String
+)
