@@ -156,9 +156,10 @@ fun main() {
                 val peto = call.receiveParameters()
                 val enhavo = peto["Body"]!!
                 Agordo.sendiMesaĝon.set {
+                    println("Sendas mesaĝo al ${peto["From"]}")
                     val mesaĝo = Message.creator(
                             PhoneNumber(peto["From"]!!),
-                            PhoneNumber("+15206268342"),
+                            PhoneNumber("+15206368342"),
                             it.toString()
                     ).create()
                     println("Sendis ${mesaĝo.sid}")

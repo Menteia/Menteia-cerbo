@@ -77,7 +77,7 @@ object Sekretoj {
                 })
                 .withDecryption(true)
                 .build()).parameters()
-        return valuoj[0].value() to valuoj[1].value()
+        return valuoj[1].value() to valuoj[0].value()
     }
 
     val HereCredentials: Pair<String, String>
