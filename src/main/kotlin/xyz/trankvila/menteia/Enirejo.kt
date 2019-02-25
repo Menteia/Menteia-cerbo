@@ -29,6 +29,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ import kotlinx.serialization.json.JSON
 import paroladoj
 import paroli
 import xyz.trankvila.menteia.cerbo.Cerbo
+import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.tipsistemo.MenteiaTipEkcepcio
@@ -46,12 +48,20 @@ import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.util.*
+import java.util.concurrent.Executors
+import kotlin.concurrent.scheduleAtFixedRate
 
 @Serializable
 data class Respondo(val teksto: String, val UUID: String)
 
 fun main() {
     val ids = mutableMapOf<String, String>()
+    Timer().scheduleAtFixedRate(3600000 * 24, 3600000 * 24) {
+        GlobalScope.launch {
+            println("Updating Hue tokens")
+            RealaAlirilaro.refreshHueToken()
+        }
+    }
 
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
