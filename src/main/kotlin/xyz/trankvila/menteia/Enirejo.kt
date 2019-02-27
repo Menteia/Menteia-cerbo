@@ -41,11 +41,15 @@ import paroli
 import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.MenteiaTipEkcepcio
+import xyz.trankvila.menteia.tipsistemo._tempoŝaltilo
+import xyz.trankvila.menteia.tipsistemo.sanimis
 import xyz.trankvila.menteia.tipsistemo.timis
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.scheduleAtFixedRate
@@ -170,6 +174,22 @@ fun main() {
                 } catch (e: Exception) {
                     e.printStackTrace()
                     call.respondText("veguna")
+                }
+            }
+            get("/sanimis") {
+                val xtoken = call.parameters["token"]
+                if (xtoken == null || idKontrolo(xtoken) == null) {
+                    call.respond(HttpStatusCode.Unauthorized)
+                } else {
+                    val tempoŝaltiloj = lokajObjektoj.filterValues {
+                        it is sanimis
+                    }.map {
+                        val tempoŝaltilo = it.value as sanimis
+                        _tempoŝaltilo(tempoŝaltilo._nomo, tempoŝaltilo.celo.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                    }
+                    call.respondText(
+                            JSON.stringify(_tempoŝaltilo.serializer().list, tempoŝaltiloj)
+                    )
                 }
             }
         }

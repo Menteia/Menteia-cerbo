@@ -1,9 +1,11 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import kotlinx.serialization.Serializable
 import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.sendiMesaĝon
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalUnit
@@ -14,7 +16,7 @@ import java.util.concurrent.TimeUnit
 interface _forigibla: renas
 
 class sanimis(val _nomo: String, _daŭro: teremis): _negiTipo(), _forigibla {
-    val celo = ZonedDateTime.now().plus(_daŭro._valuo)
+    val celo = ZonedDateTime.now().plus(_daŭro._valuo).withNano(0)
     val _sciigoj = mutableListOf<ScheduledFuture<*>>()
 
     companion object {
@@ -75,3 +77,6 @@ class sanimis(val _nomo: String, _daŭro: teremis): _negiTipo(), _forigibla {
         }
     }
 }
+
+@Serializable
+data class _tempoŝaltilo(val _nomo: String, val _fino: String)
