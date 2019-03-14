@@ -4,25 +4,12 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.memoro.Memoro
+import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.isSubclassOf
 
-abstract class _negiTipo(
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
-): timis(morem, ponem, forem)
-
-abstract class _sagiTipo(
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
-): timis(morem, ponem, forem)
-
 abstract class vidimis(
-        val _valuo: Deferred<vanemis>,
-        ponem: Any? = null,
-        forem: Any? = null
-): timis(_valuo, ponem, forem) {
+        val _valuo: Deferred<vanemis>
+): timis() {
     override suspend fun _valuigi(): Any? {
         return _valuo.await()._valuigi()
     }
@@ -52,67 +39,49 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
     override suspend fun _valuigi(): vidimis {
         val _valuo = _valuo.await()
         return when (_valuo) {
-            is vanemis.tadumis<*> -> {
+            is vanemis.tadumis -> {
                 val respondo = if (_valuo._valuigi()) {
                     _valuo
                 } else {
                     klos(_valuo)
                 }
-                return when (_valuo._frazo) {
-                    is des -> {
-                        when (_valuo._frazo._objekto) {
-                            is _sagiTipo -> {
-                                sagi(respondo)
-                            }
-                            is _negiTipo -> {
-                                negi(respondo)
-                            }
-                            else -> throw Exception("Ne eblas simpligi $this")
-                        }
-                    }
-                    is _sagiTipo -> {
+                val frazo = _valuo._frazo
+                return when (frazo._tipo) {
+                    _certeco.sagi -> {
                         sagi(respondo)
                     }
-                    is _negiTipo -> {
+                    _certeco.negi -> {
                         negi(respondo)
                     }
-                    else -> throw Exception("Ne eblas simpligi $this")
+                    else -> throw Exception("pegi ne estas ebla: $respondo")
                 }
             }
-            is vanemis.fragemis<*> -> {
+            is vanemis.fragemis -> {
                 val demando = _valuo._valuo
-                if (demando is timis?) {
-                    Memoro.lastaValuo = demando
-                }
-                when (demando) {
-                    is des -> {
-                        when (demando._objekto) {
-                            is _negiTipo -> {
-                                negi(to(paranas(), demando._valuigi() as renas))
-                            }
-                            is _sagiTipo -> {
-                                sagi(to(paranas(), demando._valuigi() as renas))
-                            }
-                            else -> throw Exception("Ne eblas respondi al $this")
-                        }
-                    }
-                    is _negiTipo -> {
+                when (demando._tipo) {
+                    _certeco.negi -> {
                         val rezulto = demando._simpligi()
-                        return if (rezulto == null) {
+                        if (demando is timis) {
+                            Memoro.lastaValuo = demando
+                        }
+                        if (rezulto == null) {
                             negi(klos(sindis(paranas())))
                         } else {
                             negi(to(paranas(), rezulto))
                         }
                     }
-                    is _sagiTipo -> {
+                    _certeco.sagi -> {
                         val rezulto = demando._simpligi()
+                        if (demando is timis) {
+                            Memoro.lastaValuo = demando
+                        }
                         if (rezulto != null) {
                             sagi(to(paranas(), rezulto))
                         } else {
                             sagi(klos(sindis(demando)))
                         }
                     }
-                    else -> throw Exception("Ne eblas respondi al $this")
+                    else -> throw Exception("pegi ne estas ebla: $demando")
                 }
             }
         }
@@ -123,16 +92,17 @@ class keli(val _ago: gremis): vidimis(_ago._ekruli()) {
     override suspend fun _valuigi(): vidimis {
         val rezulto = _valuo.await()
         return when (rezulto) {
-            is vanemis.tadumis<*> -> {
-                val objekto = _ago._frazo
-                when {
-                    objekto.isSubclassOf(_negiTipo::class) -> {
+            is vanemis.tadumis -> {
+                when (rezulto._frazo._tipo) {
+                    _certeco.negi -> {
                         megi(rezulto)
                     }
-                    objekto.isSubclassOf(_sagiTipo::class) -> {
+                    _certeco.sagi -> {
                         regi(rezulto)
                     }
-                    else -> throw Exception("Ne eblas montri la rezulton de $_ago")
+                    _certeco.pegi -> {
+                        pegi(rezulto)
+                    }
                 }
             }
             else -> throw Exception("Ne eblas ekruli la agon $_ago")
@@ -140,12 +110,12 @@ class keli(val _ago: gremis): vidimis(_ago._ekruli()) {
     }
 }
 
-class negi(morem: vanemis.tadumis<out timis>): vidimis(CompletableDeferred(morem))
+class negi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 
-class sagi(morem: vanemis.tadumis<out timis>): vidimis(CompletableDeferred(morem))
+class sagi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 
-class megi(morem: vanemis.tadumis<out timis>): vidimis(CompletableDeferred(morem))
+class megi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 
-class regi(morem: vanemis.tadumis<out timis>): vidimis(CompletableDeferred(morem))
+class regi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 
-class pegi(morem: vanemis.tadumis<out timis>): vidimis(CompletableDeferred(morem))
+class pegi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))

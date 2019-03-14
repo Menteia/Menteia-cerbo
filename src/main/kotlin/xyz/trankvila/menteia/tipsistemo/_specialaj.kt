@@ -1,19 +1,19 @@
 package xyz.trankvila.menteia.tipsistemo
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KClass
-import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.*
 
-class _nomitaAĵo(val _nomo: String): timis(
-        _nomo
-) {
+/**
+ * Reprezentas vorton, kiu ne ekzistas sendependece
+ * @property _nomo la vorto
+ */
+class _nomitaAĵo(val _nomo: String): timis() {
     override suspend fun _valuigi(): String {
         return _nomo
     }
@@ -29,7 +29,12 @@ class _nomitaAĵo(val _nomo: String): timis(
     }
 }
 
-class des(val _objekto: timis, val _eco: String): timis(
+/**
+ * Indikas econ de objekto
+ * @property _objekto la objekto kiu devas enhavi la donitan econ
+ * @property _eco la nomo de la eco
+ */
+class des(val _objekto: renas, val _eco: _nomitaAĵo): timis(
         _objekto, _eco
 ) {
     override suspend fun _valuigi(): timis? {
@@ -38,22 +43,30 @@ class des(val _objekto: timis, val _eco: String): timis(
 
     override suspend fun _simpligi(): timis? {
         val eco = _objekto::class.declaredMemberFunctions.find {
-            it.name == _eco
+            it.name == _eco._nomo
         } ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(this))))
         return eco.callSuspend(_objekto) as timis?
     }
 }
 
-class miris(val _objekto: timis, val _eco: String, val _valuo: timis): gremis(
-        _objekto::class, _objekto, _eco, _valuo
+/**
+ * Agordi econ de objekto per la donita valuo
+ * @property _objekto la bojekto kiu devas enhavi la donitan econ
+ * @property _eco la nomo de la eco
+ * @property _valuo la nova valuo por la eco
+ */
+class miris(val _objekto: timis, val _eco: _nomitaAĵo, val _valuo: timis): gremis(
+        _objekto, _eco, _valuo
 ) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
+    override val _tipo = _objekto._tipo
+
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
         val eco = _objekto::class.declaredMemberFunctions.find {
-            it.name == _eco && it.parameters.size == 2
+            it.name == _eco._nomo && it.parameters.size == 2
         } ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(des(_objekto, _eco)))))
         return GlobalScope.async {
             val rezulto = eco.callSuspend(_objekto, _valuo)
-            if (rezulto is vanemis.tadumis<*>) {
+            if (rezulto is vanemis.tadumis) {
                 rezulto
             } else {
                 throw Exception("Nekonata rezulto: $rezulto")
@@ -62,46 +75,97 @@ class miris(val _objekto: timis, val _eco: String, val _valuo: timis): gremis(
     }
 }
 
-class marina(val _tipo: KClass<out timis>): gremis(
-        _tipo, _tipo.simpleName
-) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        val nomo = alirilaro.kreiNomon(_tipo.simpleName!!)
-        val aĵo = _tipo.primaryConstructor!!.call(nomo)
-        return CompletableDeferred(sindis(aĵo))
+/**
+ * Krei novas objekton sen opcioj
+ * @property _klaso la klaso de la objekto
+ */
+class marina(val _klaso: remis): gremis(_klaso) {
+    override val _tipo = _certeco.negi
+
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
+            val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
+                it.name == "_krei"
+            }.callSuspend(_klaso._klaso.companionObjectInstance, nomo) as renas
+            sindis(aĵo)
+        }
+
     }
 }
 
-class marisa(val _tipo: KClass<out timis>, val _opcio: timis): gremis(
-        _tipo, _tipo.simpleName, _opcio
-) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        val nomo = alirilaro.kreiNomon(_tipo.simpleName!!)
-        val aĵo = _tipo.primaryConstructor!!.call(nomo, _opcio)
-        return CompletableDeferred(sindis(aĵo))
-    }
-}
+class marisa(val _klaso: remis, val _opcio: timis): gremis(_klaso, _opcio) {
+    override val _tipo = _certeco.negi
 
-class furika(val _aĵo: _forigibla): gremis(_aĵo::class, _aĵo) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        return when (_aĵo) {
-            is sanimis -> {
-                _aĵo._forigiSciigojn()
-                alirilaro.forigiTempoŝaltilon(_aĵo._nomo)
-                lokajObjektoj.remove(_aĵo._nomo)
-                CompletableDeferred(klos(sindis(_aĵo)))
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            try {
+                val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
+                val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
+                    it.name == "_krei"
+                }.callSuspend(_klaso._klaso.companionObjectInstance, nomo, _opcio) as renas
+                sindis(aĵo)
+            } catch (e: InvocationTargetException) {
+                e.targetException.printStackTrace()
+                throw e
             }
-            else -> throw Exception("$_aĵo ne estas forigebla")
         }
     }
 }
 
-class tremos(val _tipo: KClass<out timis>): _negiTipo(_tipo) {
+class furika(val _aĵo: _forigebla): gremis(_aĵo) {
+    override val _tipo = _certeco.negi
+
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            when (_aĵo) {
+                is sanimis -> {
+                    _aĵo._forigiSciigojn()
+                    alirilaro.forigiTempoŝaltilon(_aĵo._nomo)
+                    lokajObjektoj.remove(_aĵo._nomo)
+                    klos(sindis(_aĵo))
+                }
+                is talimis -> {
+                    alirilaro.forigiListon(_aĵo._nomo)
+                    klos(sindis(_aĵo))
+                }
+                is brenimis -> {
+                    _aĵo._forigi()
+                    alirilaro.forigiEventon(_aĵo.nomo)
+                    klos(sindis(_aĵo))
+                }
+                else -> throw Exception("$_aĵo ne estas forigebla")
+            }
+        }
+    }
+}
+
+class tremos(val _klaso: remis): timis(_klaso) {
+    override val _tipo = _certeco.negi
     override suspend fun _valuigi(): Int {
-        return alirilaro.nombri(_tipo.simpleName!!)
+        return alirilaro.nombri(this._klaso._klaso.simpleName!!)
     }
 
-    override suspend fun _simpligi(): timis? {
+    override suspend fun _simpligi(): timis {
         return lemis.ciferigi(_valuigi().toBigInteger())
+    }
+}
+
+class drumos(val _klaso: remis): timis(_klaso) {
+    override val _tipo = _certeco.negi
+    override suspend fun _valuigi(): List<String> {
+        return alirilaro.nomi(_klaso._klaso.simpleName!!)
+    }
+
+    override suspend fun _simpligi(): timis {
+        return brotas.igiListon(_valuigi().map {
+            _nomitaAĵo(it)
+        })
+    }
+}
+
+class remis(val _klaso: KClass<out timis>): timis() {
+    override suspend fun _valuigi(): KClass<out timis> {
+        return _klaso
     }
 }

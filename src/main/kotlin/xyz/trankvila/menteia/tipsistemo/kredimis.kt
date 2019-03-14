@@ -7,7 +7,9 @@ interface kredrimis : renas
 
 interface kresimis : renas
 
-class kredimis(val nomo: String): _sagiTipo(), nadimis {
+class kredimis(val nomo: String): timis(), nadimis {
+    override val _tipo = _certeco.sagi
+
     override suspend fun _valuigi(): Any? {
         return this
     }
@@ -23,30 +25,30 @@ class kredimis(val nomo: String): _sagiTipo(), nadimis {
         }
     }
 
-    suspend fun gremina(_agordo: kresimis): vanemis.tadumis<timis> {
+    suspend fun gremina(_agordo: kresimis): vanemis.tadumis {
         val (key, id) = alirilaro.alportiTermostaton(nomo)
         when (_agordo) {
             is maraga -> {
                 alirilaro.setThermostatMode(key, id, "eco")
             }
             is saresa -> {
-                alirilaro.setThermostatMode(key, id, "heat", _agordo.temperaturo._valuo.bigDecimalValue())
+                alirilaro.setThermostatMode(key, id, "heat", _agordo.temperaturo._valuo._valuigi().bigDecimalValue())
             }
             is silega -> {
-                alirilaro.setThermostatMode(key, id, "cool", _agordo.temperaturo._valuo.bigDecimalValue())
+                alirilaro.setThermostatMode(key, id, "cool", _agordo.temperaturo._valuo._valuigi().bigDecimalValue())
             }
             is sasigas -> {
                 alirilaro.setThermostatMode(
                         key,
                         id,
                         "heat-cool",
-                        _agordo.temperaturo1._valuo.bigDecimalValue(),
-                        _agordo.temperaturo2._valuo.bigDecimalValue()
+                        _agordo.temperaturo1._valuo._valuigi().bigDecimalValue(),
+                        _agordo.temperaturo2._valuo._valuigi().bigDecimalValue()
                 )
             }
             else -> throw Exception("Ne konita modo: $_agordo")
         }
-        return to(des(this, "gremina"), _agordo)
+        return to(des(this, _nomitaAĵo("gremina")), _agordo)
     }
 
     suspend fun gremina(): kresimis {

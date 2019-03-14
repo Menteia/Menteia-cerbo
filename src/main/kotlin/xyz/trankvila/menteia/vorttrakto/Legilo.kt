@@ -5,6 +5,7 @@ import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.*
 import kotlin.reflect.KClass
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -17,28 +18,8 @@ object Legilo {
             val tipo = Class.forName("xyz.trankvila.menteia.tipsistemo.$sekva").kotlin
             when {
                 tipo.isAbstract -> TODO()
-                tipo == des::class -> {
-                    val objekto = legi(frazo, vortoj)
-                    val eco = vortoj.next()
-                    return des(objekto, eco)
-                }
-                tipo == miris::class -> {
-                    val objekto = legi(frazo, vortoj)
-                    val eco = vortoj.next()
-                    val valuo = legi(frazo, vortoj)
-                    return miris(objekto, eco, valuo)
-                }
-                tipo == marina::class -> {
-                    val klaso = tipoj.getValue(vortoj.next())
-                    return marina(klaso)
-                }
-                tipo == marisa::class -> {
-                    val klaso = tipoj.getValue(vortoj.next())
-                    val opcio = legi(frazo, vortoj)
-                    return marisa(klaso, opcio)
-                }
-                tipo == paranas::class -> {
-                    return Memoro.lastaValuo ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(paranas()))))
+                tipo.isSubclassOf(_kreebla::class) -> {
+                    return remis(tipo as KClass<out timis>)
                 }
                 else -> {
                     val bezonataj = tipo.primaryConstructor!!.parameters
@@ -48,7 +29,7 @@ object Legilo {
                     opcioj.forEachIndexed { index, opcio ->
                         val bezonata = bezonataj[index].type.jvmErasure
                         if (!bezonata.isInstance(opcio)) {
-                            throw MenteiaTipEkcepcio(pegi(klos(tres(opcio, bezonata))))
+                            throw MenteiaTipEkcepcio(pegi(klos(tres(opcio, remis(bezonata as KClass<out timis>)))))
                         }
                     }
                     return tipo.primaryConstructor!!.call(*opcioj.toTypedArray()) as timis

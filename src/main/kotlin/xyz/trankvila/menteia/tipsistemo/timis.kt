@@ -4,16 +4,25 @@ import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
 import xyz.trankvila.menteia.vorttrakto.interpaŭzoj
 
+enum class _certeco {
+    negi,
+    sagi,
+    pegi
+}
+
 interface renas {
     suspend fun _valuigi(): Any?
     suspend fun _simpligi(): timis?
+    val _tipo: _certeco
 }
 
 abstract class timis(
-        val morem: Any? = null,
-        val ponem: Any? = null,
-        val forem: Any? = null
+        val morem: renas? = null,
+        val ponem: renas? = null,
+        val forem: renas? = null
 ): renas {
+    override val _tipo: _certeco get() = throw Exception("${this::class.simpleName} ne havas certeco")
+
     suspend fun _egala(other: Any?): Boolean {
         return when (other) {
             is timis -> {

@@ -2,35 +2,37 @@ package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.vorttrakto.Legilo
+import java.lang.Exception
 
-class talimis(val _nomo: String): _negiTipo() {
-    var enhavo = alirilaro.alportiListon(_nomo)?.map {
-        Legilo.legi(it)
-    }?.toMutableList()
-
-    init {
-        if (enhavo == null) {
-            alirilaro.kreiListon(_nomo)
-            enhavo = mutableListOf()
+class talimis(val _nomo: String): timis(), _forigebla, _kreebla {
+    companion object {
+        suspend fun _krei(nomo: String): talimis {
+            alirilaro.kreiListon(nomo)
+            return talimis(nomo)
         }
     }
 
-    fun diremi(): kamis {
-        return lemis.ciferigi(enhavo!!.size.toBigInteger())
+    override val _tipo = _certeco.negi
+    var enhavo = GlobalScope.async {
+        alirilaro.alportiListon(_nomo).map {
+            Legilo.legi(it)
+        }.toMutableList()
     }
 
-    override suspend fun _valuigi(): List<timis>? {
-        return enhavo
+    suspend fun diremi(): kamis {
+        return lemis.ciferigi(enhavo.await().size.toBigInteger())
+    }
+
+    override suspend fun _valuigi(): List<timis> {
+        return enhavo.await()
     }
 
     override suspend fun _simpligi(): timis? {
-        return if (enhavo == null) {
-            null
-        } else {
-            brotas.igiListon(enhavo!!)
-        }
+        return brotas.igiListon(enhavo.await())
     }
 
     override fun toString(): String {
@@ -44,9 +46,10 @@ class talimis(val _nomo: String): _negiTipo() {
     }
 }
 
-class las(val _listo: talimis, val _indekso: kamis): _negiTipo(_listo, _indekso) {
+class las(val _listo: talimis, val _indekso: kamis): timis(_listo, _indekso) {
+    override val _tipo = _certeco.negi
     override suspend fun _valuigi(): timis {
-        return _listo.enhavo!![_indekso._valuo.numeratorAsInt]
+        return _listo.enhavo.await()[_indekso._valuigi().numeratorAsInt]
     }
 
     override suspend fun _simpligi(): timis {
@@ -54,39 +57,76 @@ class las(val _listo: talimis, val _indekso: kamis): _negiTipo(_listo, _indekso)
     }
 }
 
-class karema(val _listo: talimis, val _aĵo: timis, val _loko: kamis): gremis(_listo::class, _listo, _aĵo, _loko) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        _listo.enhavo!!.add(_loko._valuo.numeratorAsInt, _aĵo)
-        alirilaro.redaktiListon(_listo._nomo, _listo.enhavo!!.map {
-            it.toString()
-        })
-        return CompletableDeferred(to(las(_listo, _loko), _aĵo))
+class karema(val _listo: talimis, val _aĵo: timis, val _loko: kamis): gremis(_listo, _aĵo, _loko) {
+    override val _tipo = _certeco.negi
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            val listo = _listo.enhavo.await()
+            listo.add(_loko._valuigi().numeratorAsInt, _aĵo)
+            alirilaro.redaktiListon(_listo._nomo, listo.map {
+                it.toString()
+            })
+            to(las(_listo, _loko), _aĵo)
+        }
     }
 }
 
-class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo::class) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        _listo.enhavo!!.add(_aĵo)
-        alirilaro.redaktiListon(_listo._nomo, _listo.enhavo!!.map {
-            it.toString()
-        })
-        return CompletableDeferred(to(las(_listo, lemis.ciferigi(_listo.enhavo!!.size.toBigInteger())), _aĵo))
+class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
+    override val _tipo = _certeco.negi
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            val listo = _listo.enhavo.await()
+            listo.add(_aĵo)
+            alirilaro.redaktiListon(_listo._nomo, listo.map {
+                it.toString()
+            })
+            to(las(_listo, lemis.ciferigi(listo.size.toBigInteger())), _aĵo)
+        }
     }
 }
 
-class kurinis(_listo: talimis, _aĵo: timis): vanemis.tadumis<timis>({
-    _listo.enhavo!!.contains(_aĵo)
-}, _listo, _listo, _aĵo)
+class kurinis(val _listo: talimis, val _aĵo: timis): vanemis.tadumis(_listo, _aĵo) {
+    override val _valuo: Deferred<Boolean>
+        get() = GlobalScope.async {
+            _listo.enhavo.await().contains(_aĵo)
+        }
+}
 
-class karisi(val _listo: talimis, val _aĵo: timis): gremis(_listo::class) {
-    override fun _ekruli(): Deferred<vanemis.tadumis<out timis>> {
-        val sukcesa = _listo.enhavo!!.remove(_aĵo)
-        if (sukcesa) {
-            return CompletableDeferred(to(des(_listo, "direma"),
-                    lemis.ciferigi(_listo.enhavo!!.size.toBigInteger()))
-            )
-        } else {
-            throw MenteiaTipEkcepcio(pegi(klos(kurinis(_listo, _aĵo))))
+class karisi(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
+    override val _tipo = _certeco.negi
+
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            val listo = _listo.enhavo.await()
+            val sukcesa = listo.remove(_aĵo)
+            if (sukcesa) {
+                alirilaro.redaktiListon(_listo._nomo, listo.map {
+                    it.toString()
+                })
+                to(des(_listo, _nomitaAĵo("direma")),
+                        lemis.ciferigi(listo.size.toBigInteger())
+                )
+            } else {
+                throw MenteiaTipEkcepcio(pegi(klos(kurinis(_listo, _aĵo))))
+            }
+        }
+    }
+}
+
+class vidina(val _listo: talimis): gremis(_listo) {
+    override val _tipo = _certeco.pegi
+
+    override fun _ekruli(): Deferred<vanemis.tadumis> {
+        return GlobalScope.async {
+            val rezulto = _listo.enhavo.await().map {
+                val r = it._simpligi()!!
+                if (r is vanemis.tadumis) {
+                    r
+                } else {
+                    throw Exception("Kalkulis: $it")
+                }
+            }
+            tinas(brotas.igiListon(rezulto))
         }
     }
 }

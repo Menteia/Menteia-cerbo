@@ -2,9 +2,9 @@ package xyz.trankvila.menteia.tipsistemo
 
 abstract class brodimis<morum: timis>(
         val _listo: List<morum>,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
 ) : timis(morem, ponem, forem) {
     override suspend fun _valuigi(): List<morum> {
         return _listo

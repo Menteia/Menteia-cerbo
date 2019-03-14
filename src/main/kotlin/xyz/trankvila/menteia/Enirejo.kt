@@ -1,6 +1,16 @@
 package xyz.trankvila.menteia
 
+import com.google.api.client.auth.oauth2.StoredCredential
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.util.store.DataStore
+import com.google.api.client.util.store.DataStoreFactory
+import com.google.api.client.util.store.MemoryDataStoreFactory
+import com.google.api.services.calendar.CalendarScopes
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.auth.oauth2.MemoryTokensStorage
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -11,6 +21,7 @@ import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.features.origin
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.cio.websocket.CloseReason
@@ -27,12 +38,15 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.url
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.io.ByteArrayInputStream
 import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON

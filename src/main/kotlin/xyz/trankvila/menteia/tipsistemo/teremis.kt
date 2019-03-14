@@ -1,29 +1,35 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import kotlinx.coroutines.runBlocking
 import java.time.Duration
 
 abstract class teremis(
-        val _valuo: Duration,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
 ): timis(morem, ponem, forem) {
+    protected abstract val _daŭro: Duration
+
     override suspend fun _valuigi(): Duration {
-        return _valuo
+        return _daŭro
     }
 }
 
-class trinis(morem: girimis): teremis(
-        Duration.ofSeconds(morem._valuo.numeratorAsLong),
-        morem
-)
+class trinis(morem: girimis): teremis(morem) {
+    override val _daŭro = runBlocking {
+        Duration.ofSeconds(morem._valuigi().numeratorAsLong)
+    }
 
-class nires(morem: girimis): teremis(
-        Duration.ofMinutes(morem._valuo.numeratorAsLong),
-        morem
-)
+}
 
-class gomos(morem: girimis): teremis(
-        Duration.ofHours(morem._valuo.numeratorAsLong),
-        morem
-)
+class nires(morem: girimis): teremis(morem) {
+    override val _daŭro = runBlocking {
+        Duration.ofMinutes(morem._valuigi().numeratorAsLong)
+    }
+}
+
+class gomos(morem: girimis): teremis(morem) {
+    override val _daŭro = runBlocking {
+        Duration.ofHours(morem._valuigi().numeratorAsLong)
+    }
+}

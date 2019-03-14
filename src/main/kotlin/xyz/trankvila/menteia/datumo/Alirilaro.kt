@@ -5,17 +5,21 @@ import java.time.LocalDate
 import java.util.*
 
 interface Alirilaro {
-    fun alportiListon(nomo: String): List<String>?
-    fun alportiLokon(nomo: String): Pair<String, String>
-    fun alportiLumon(nomo: String): Int
-    fun alportiTermostaton(nomo: String): Pair<String, String>
-    fun nombri(tipo: String): Int
-    fun redaktiListon(nomo: String, enhavo: List<String>)
-    fun ĉiujListoj(): Map<String, List<String>>
-    fun kreiNomon(tipo: String): String
-    fun kreiListon(nomo: String): String
-    fun forigiListon(nomo: String)
-    fun forigiTempoŝaltilon(nomo: String)
+    suspend fun alportiListon(nomo: String): List<String>?
+    suspend fun alportiLokon(nomo: String): Pair<String, String>
+    suspend fun alportiLumon(nomo: String): Int
+    suspend fun alportiTermostaton(nomo: String): Pair<String, String>
+    suspend fun nombri(tipo: String): Int
+    suspend fun nomi(tipo: String): List<String>
+    suspend fun redaktiListon(nomo: String, enhavo: List<String>)
+    suspend fun ĉiujListoj(): Map<String, List<String>>
+    suspend fun kreiNomon(tipo: String): String
+    suspend fun kreiListon(nomo: String): String
+    suspend fun forigiListon(nomo: String)
+    suspend fun forigiTempoŝaltilon(nomo: String)
+    suspend fun kreiEventon(nomo: String, id: String)
+    suspend fun alportiEventon(nomo: String): String
+    suspend fun forigiEventon(nomo: String)
 
     suspend fun getThermostatState(id: String, key: String): ThermostatState
     suspend fun setThermostatTemperature(id: String, targetTemperature: BigDecimal)

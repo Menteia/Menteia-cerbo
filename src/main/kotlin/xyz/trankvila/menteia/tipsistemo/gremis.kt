@@ -4,14 +4,15 @@ import kotlinx.coroutines.Deferred
 import kotlin.reflect.KClass
 
 abstract class gremis(
-        val _frazo: KClass<out renas>,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
 ): timis(morem, ponem, forem) {
+    abstract override val _tipo: _certeco
+
     override suspend fun _valuigi(): Nothing {
         throw Exception("Ago ne havas valuon")
     }
 
-    abstract fun _ekruli(): Deferred<vanemis.tadumis<out timis>>
+    abstract fun _ekruli(): Deferred<vanemis.tadumis>
 }

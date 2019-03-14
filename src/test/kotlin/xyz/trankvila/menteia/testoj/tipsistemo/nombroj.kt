@@ -58,14 +58,16 @@ object NombrojTesto {
 
     @Test
     fun aliaj() {
-        assertEquals(generas(pona(), fora()), poneras(fora()))
-        assertEquals(liris(pona(), sina()), generas(nona(), fora()))
-        assertEquals(dreta(poni(mira())), prena(pona()))
-        assertEquals(poneras(ponega(pona())), glima(pona()))
-        assertEquals(BigFraction(-5), runBlocking { gulos(sina())._valuigi() })
-        assertEquals(ponega(poni(mira())), runBlocking { poni(miri(miri(miri(mira()))))._simpligi()} )
-        assertEquals(sini(liri(mira())), lemis.ciferigi(BigInteger.valueOf(560)))
-        assertEquals(liris(fori(mira()), sina()), lemis.nombrigi(BigDecimal.valueOf(20.5), 1))
+        runBlocking {
+            assertEquals(generas(pona(), fora())._valuigi(), poneras(fora())._valuigi())
+            assertEquals(liris(pona(), sina())._valuigi(), generas(nona(), fora())._valuigi())
+            assertEquals(dreta(poni(mira()))._valuigi(), prena(pona())._valuigi())
+            assertEquals(poneras(ponega(pona()))._valuigi(), glima(pona())._valuigi())
+            assertEquals(BigFraction(-5), gulos(sina())._valuigi())
+            assertEquals(ponega(poni(mira()))._valuigi(), poni(miri(miri(miri(mira()))))._simpligi()._valuigi())
+            assertEquals(sini(liri(mira()))._valuigi(), lemis.ciferigi(BigInteger.valueOf(560))._valuigi())
+            assertEquals(liris(fori(mira()), sina())._valuigi(), lemis.nombrigi(BigDecimal.valueOf(20.5), 1)._valuigi())
+        }
     }
 
     @Test
@@ -76,6 +78,8 @@ object NombrojTesto {
 
     @Test
     fun operacioj() {
-        assertEquals(ponega(pona()), taris(teri(miri(mira())), liri(miri(mira()))))
+        runBlocking {
+            assertEquals(ponega(pona())._valuigi(), taris(teri(miri(mira())), liri(miri(mira())))._valuigi())
+        }
     }
 }

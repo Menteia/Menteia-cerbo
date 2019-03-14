@@ -1,9 +1,9 @@
 package xyz.trankvila.menteia.tipsistemo
 
 abstract class lunimis(
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
 ): timis(morem, ponem, forem) {
     override suspend fun _valuigi(): String {
         return this::class.simpleName!!

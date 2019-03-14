@@ -1,23 +1,25 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
-import xyz.trankvila.menteia.sendiMesaĝon
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-interface _forigibla: renas
+interface _forigebla: renas
+interface _kreebla: renas
 
-class sanimis(val _nomo: String, _daŭro: teremis): _negiTipo(), _forigibla {
-    val celo = ZonedDateTime.now().plus(_daŭro._valuo).withNano(0)
+class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebla {
+    val celo = runBlocking {
+        ZonedDateTime.now().plus(_daŭro._valuigi()).withNano(0)
+    }
     val _sciigoj = mutableListOf<ScheduledFuture<*>>()
+    override val _tipo = _certeco.negi
 
     companion object {
         val horloĝilo = Executors.newScheduledThreadPool(10)
@@ -26,21 +28,23 @@ class sanimis(val _nomo: String, _daŭro: teremis): _negiTipo(), _forigibla {
 
     init {
         val sendilo = Agordo.sendiMesaĝon.get()
-        val daŭro = _daŭro._valuo
+        val daŭro = runBlocking { _daŭro._valuigi() }
 
         for (m in memorigo) {
             if (daŭro.seconds > m * 60) {
                 _sciigoj.add(horloĝilo.schedule({
-                    sendilo(negi(to(des(this, "sasara"), nires(lemis.ciferigi(m.toBigInteger())))))
+                    sendilo(negi(to(des(this, _nomitaAĵo("sasara")), nires(lemis.ciferigi(m.toBigInteger())))))
                 }, ZonedDateTime.now().until(celo.minusMinutes(m.toLong()), ChronoUnit.MILLIS), TimeUnit.MILLISECONDS))
             } else {
                 break
             }
         }
         _sciigoj.add(horloĝilo.schedule({
-            alirilaro.forigiTempoŝaltilon(_nomo)
-            lokajObjektoj.remove(_nomo)
-            sendilo(pegi(klos(sindis(this))))
+            runBlocking {
+                alirilaro.forigiTempoŝaltilon(_nomo)
+                lokajObjektoj.remove(_nomo)
+                sendilo(pegi(klos(sindis(this@sanimis))))
+            }
         }, ZonedDateTime.now().until(celo, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS))
         lokajObjektoj[_nomo] = this
     }
@@ -79,4 +83,4 @@ class sanimis(val _nomo: String, _daŭro: teremis): _negiTipo(), _forigibla {
 }
 
 @Serializable
-data class _tempoŝaltilo(val _nomo: String, val _fino: String)
+internal data class _tempoŝaltilo(val _nomo: String, val _fino: String)

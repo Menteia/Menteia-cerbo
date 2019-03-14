@@ -9,6 +9,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.3'
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
     }
 }
 
@@ -25,11 +26,18 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: "io.spring.dependency-management"
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
-
+apply plugin: 'org.jetbrains.dokka'
 
 mainClassName = 'xyz.trankvila.menteia.EnirejoKt'
 
 sourceCompatibility = 1.8
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+    
+    includeNonPublic = false
+}
 
 repositories {
     mavenCentral()
@@ -65,6 +73,9 @@ dependencies {
     compile group: "com.twilio.sdk", name: "twilio", version: "7.35.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.0'
     implementation 'com.google.firebase:firebase-admin:6.7.0'
+    compile 'com.google.api-client:google-api-client:1.23.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    compile 'com.google.apis:google-api-services-calendar:v3-rev305-1.23.0'
 }
 
 compileKotlin {

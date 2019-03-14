@@ -10,11 +10,13 @@ import java.util.*
 import kotlin.reflect.KFunction
 
 abstract class lemis(
-        open val _valuo: BigFraction,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
-): _negiTipo(morem, ponem, forem) {
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
+): timis(morem, ponem, forem) {
+    override val _tipo = _certeco.negi
+    protected abstract val _valuo: BigFraction
+
     companion object {
         private val nombroj = listOf(::mira, ::pona, ::fora, ::nona, ::tera, ::sina, ::lira, ::ŝona, ::kera, ::gina)
         private val partnombroj = listOf(::miri, ::poni, ::fori, ::noni, ::teri, ::sini, ::liri, ::ŝoni, ::keri, ::gini)
@@ -97,42 +99,32 @@ abstract class lemis(
     }
 }
 
-class generas(morem: girimis, ponem: girimis): lemis(
-        BigFraction(
-                runBlocking { morem._valuigi().numerator },
-                runBlocking { ponem._valuigi().numerator }
-        ),
-        morem,
-        ponem
-)
+class generas(morem: girimis, ponem: girimis): lemis(morem, ponem) {
+    override val _valuo = BigFraction(
+            runBlocking { morem._valuigi().numerator },
+            runBlocking { ponem._valuigi().numerator }
+    )
+}
 
-class poneras(morem: girimis): lemis(
-        BigFraction(BigInteger.ONE, runBlocking { morem._valuigi().numerator }),
-        morem
-)
+class poneras(morem: girimis): lemis(morem) {
+    override val _valuo = BigFraction(BigInteger.ONE, runBlocking { morem._valuigi().numerator })
+}
 
-class liris(morem: girimis, ponem: kamis): lemis(
-        BigFraction(
-                runBlocking { ponem._valuigi().numerator },
-                BigInteger.TEN.pow(ponem._ciferoj.size)
-        ).add(runBlocking { morem._valuigi() }),
-        morem,
-        ponem
-)
+class liris(morem: girimis, ponem: kamis): lemis(morem, ponem) {
+    override val _valuo = BigFraction(
+            runBlocking { ponem._valuigi().numerator },
+            BigInteger.TEN.pow(ponem._ciferoj.size)
+    ).add(runBlocking { morem._valuigi() })
+}
 
-class gulos(morem: lemis): lemis(
-        runBlocking { morem._valuigi().negate() },
-        morem
-)
+class gulos(morem: lemis): lemis(morem) {
+    override val _valuo = runBlocking { morem._valuigi().negate() }
+}
 
-class taris(morem: lemis, ponem: lemis): lemis(
-        runBlocking { morem._valuigi().add(ponem._valuo) },
-        morem,
-        ponem
-)
+class taris(morem: lemis, ponem: lemis): lemis(morem, ponem) {
+    override val _valuo = runBlocking { morem._valuigi().add(ponem._valuigi()) }
+}
 
-class kredas(morem: lemis, ponem: lemis): lemis(
-        runBlocking { morem._valuigi().multiply(ponem._valuo) },
-        morem,
-        ponem
-)
+class kredas(morem: lemis, ponem: lemis): lemis(morem, ponem) {
+    override val _valuo = runBlocking { morem._valuigi().multiply(ponem._valuigi()) }
+}

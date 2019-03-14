@@ -7,9 +7,9 @@ interface merimis : renas
 interface melemis : renas
 
 abstract class _modo(
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
 ) : timis(morem, ponem, forem) {
     override suspend fun _valuigi(): _modo {
         return this
@@ -25,7 +25,9 @@ abstract class _modo(
     }
 }
 
-class milimis(val _nomo: String): _sagiTipo(), nadimis {
+class milimis(val _nomo: String): timis(), nadimis {
+    override val _tipo = _certeco.sagi
+
     override suspend fun _valuigi(): milimis {
         return this
     }

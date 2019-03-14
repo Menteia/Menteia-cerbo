@@ -11,12 +11,15 @@ import io.ktor.client.request.forms.formData
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.Parameters
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.io.readUTF8Line
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.*
+import software.amazon.awssdk.services.lambda.LambdaAsyncClient
 import software.amazon.awssdk.services.lambda.LambdaClient
 import software.amazon.awssdk.services.lambda.model.InvokeRequest
 import software.amazon.awssdk.services.ssm.SsmClient
@@ -31,40 +34,42 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 object RealaAlirilaro : Alirilaro {
-    private val db = DynamoDbClient.builder()
+    private val db = DynamoDbAsyncClient.builder()
             .region(Region.US_WEST_2)
             .build()
-    private val lambda = LambdaClient.builder()
+    private val lambda = LambdaAsyncClient.builder()
             .region(Region.US_EAST_1)
             .build()
     val ssm = SsmClient.builder()
             .region(Region.US_WEST_2)
             .build()
 
-    override fun alportiListon(nomo: String): List<String>? {
+    private val tabeloNomo = "Menteia-datumejo"
+
+    override suspend fun alportiListon(nomo: String): List<String> {
         val respondo = db.query(QueryRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .expressionAttributeValues(mapOf(":nomo" to AttributeValue.builder().s(nomo).build()))
                 .keyConditionExpression("vorto = :nomo")
                 .build()
-        )
+        ).await()
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la liston nomita ${nomo}")
         }
-        return respondo.items()[0]["enhavo"]?.l()?.map {
+        return respondo.items()[0]["enhavo"]!!.l().map {
             it.s()
         }
     }
 
-    override fun alportiLokon(nomo: String): Pair<String, String> {
+    override suspend fun alportiLokon(nomo: String): Pair<String, String> {
         val respondo = db.query(QueryRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .keyConditionExpression("vorto = :nomo")
                 .expressionAttributeValues(mapOf(
                         ":nomo" to AttributeValue.builder().s(nomo).build()
                 ))
                 .build()
-        )
+        ).await()
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la lokon $nomo")
         }
@@ -76,9 +81,9 @@ object RealaAlirilaro : Alirilaro {
         return koordinatoj[0].n() to koordinatoj[1].n()
     }
 
-    override fun alportiLumon(nomo: String): Int {
+    override suspend fun alportiLumon(nomo: String): Int {
         val respondo = db.query(QueryRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .keyConditionExpression("vorto = :nomo")
                 .filterExpression("tipo = :tipo")
                 .expressionAttributeValues(mapOf(
@@ -86,7 +91,7 @@ object RealaAlirilaro : Alirilaro {
                         ":tipo" to AttributeValue.builder().s("milimis").build()
                 ))
                 .build()
-        )
+        ).await()
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la lumon $nomo")
         }
@@ -95,9 +100,9 @@ object RealaAlirilaro : Alirilaro {
         return id.toInt()
     }
 
-    override fun alportiTermostaton(nomo: String): Pair<String, String> {
+    override suspend fun alportiTermostaton(nomo: String): Pair<String, String> {
         val respondo = db.query(QueryRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .keyConditionExpression("vorto = :nomo")
                 .filterExpression("tipo = :tipo")
                 .expressionAttributeValues(mapOf(
@@ -105,7 +110,7 @@ object RealaAlirilaro : Alirilaro {
                         ":tipo" to AttributeValue.builder().s("kredimis").build()
                 ))
                 .build()
-        )
+        ).await()
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la termostaton $nomo")
         }
@@ -113,21 +118,38 @@ object RealaAlirilaro : Alirilaro {
         return valuo[0].s() to valuo[1].s()
     }
 
-    override fun nombri(tipo: String): Int {
+    override suspend fun nombri(tipo: String): Int {
         val respondo = db.scan(ScanRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .filterExpression("tipo = :t")
                 .expressionAttributeValues(mapOf(
                         ":t" to AttributeValue.builder().s(tipo).build()
                 ))
                 .select(Select.COUNT)
-                .build())
+                .build()).await()
         return respondo.count()
     }
 
-    override fun redaktiListon(nomo: String, enhavo: List<String>) {
+    override suspend fun nomi(tipo: String): List<String> {
+        val rezulto = mutableListOf<String>()
+        db.scanPaginator {
+            it.tableName(tabeloNomo)
+            it.filterExpression("tipo = :t")
+            it.expressionAttributeValues(
+                    mapOf(":t" to AttributeValue.builder().s(tipo).build())
+            )
+            it.projectionExpression("vorto")
+        }.subscribe {
+            it.items().forEach {
+                rezulto.add(it["vorto"]!!.s())
+            }
+        }.await()
+        return rezulto
+    }
+
+    override suspend fun redaktiListon(nomo: String, enhavo: List<String>) {
         db.updateItem(UpdateItemRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
@@ -139,34 +161,34 @@ object RealaAlirilaro : Alirilaro {
                                 }
                         ).build()
                 )).build()
-        )
+        ).await()
     }
 
-    override fun ĉiujListoj(): Map<String, List<String>> {
+    override suspend fun ĉiujListoj(): Map<String, List<String>> {
         val listoj = mutableMapOf<String, List<String>>()
-        val respondo = db.scanPaginator(ScanRequest.builder()
-                .tableName("Menteia-datumejo")
+        db.scanPaginator(ScanRequest.builder()
+                .tableName(tabeloNomo)
                 .filterExpression("begins_with(tipo, :nomo) and attribute_exists(enhavo)")
                 .expressionAttributeValues(mapOf(
                         ":nomo" to AttributeValue.builder().s("brodimis").build()
                 ))
                 .build()
-        )
-        respondo.forEach {
+        ).subscribe {
             it.items().forEach {
                 listoj[it["vorto"]!!.s()] = it["enhavo"]!!.l().map {
                     it.s()
                 }
             }
-        }
+        }.await()
         return listoj
     }
 
-    override fun kreiNomon(tipo: String): String {
+    override suspend fun kreiNomon(tipo: String): String {
         funkcio@ while (true) {
             val respondo = lambda.invoke(InvokeRequest.builder()
                     .functionName("Menteia-vortilo")
                     .build())
+                    .await()
                     .payload()
                     .asUtf8String()
             val vorto = respondo.substring(1..respondo.length-2)
@@ -178,13 +200,13 @@ object RealaAlirilaro : Alirilaro {
             }
             try {
                 db.putItem(PutItemRequest.builder()
-                        .tableName("Menteia-datumejo")
+                        .tableName(tabeloNomo)
                         .conditionExpression("attribute_not_exists(vorto)")
                         .item(mapOf(
                                 "vorto" to AttributeValue.builder().s(vorto).build(),
                                 "tipo" to AttributeValue.builder().s(tipo).build()
                         ))
-                        .build())
+                        .build()).await()
                 Vortaro.alporti(alporti = true)
                 return vorto
             } catch (e: ConditionalCheckFailedException) {
@@ -193,9 +215,9 @@ object RealaAlirilaro : Alirilaro {
         }
     }
 
-    override fun kreiListon(nomo: String): String {
+    override suspend fun kreiListon(nomo: String): String {
         db.updateItem(UpdateItemRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
@@ -204,13 +226,14 @@ object RealaAlirilaro : Alirilaro {
                         ":e" to AttributeValue.builder().l(listOf()).build()
                 ))
                 .build())
+                .await()
         Vortaro.alporti(alporti = true)
         return nomo
     }
 
-    override fun forigiListon(nomo: String) {
+    override suspend fun forigiListon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .conditionExpression("begins_with(tipo, :t) and attribute_exists(enhavo)")
                 .expressionAttributeValues(mapOf(
                         ":t" to AttributeValue.builder().s("brodimis").build()
@@ -219,13 +242,13 @@ object RealaAlirilaro : Alirilaro {
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
                 .build()
-        )
+        ).await()
         Vortaro.alporti(alporti = true)
     }
 
-    override fun forigiTempoŝaltilon(nomo: String) {
+    override suspend fun forigiTempoŝaltilon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
-                .tableName("Menteia-datumejo")
+                .tableName(tabeloNomo)
                 .conditionExpression("tipo = :t")
                 .expressionAttributeValues(mapOf(
                         ":t" to AttributeValue.builder().s("sanimis").build()
@@ -234,8 +257,46 @@ object RealaAlirilaro : Alirilaro {
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
                 .build()
-        )
+        ).await()
         Vortaro.alporti(alporti = true)
+    }
+
+    override suspend fun kreiEventon(nomo: String, id: String) {
+        db.updateItem {
+            it.tableName(tabeloNomo)
+            it.key(mapOf(
+                    "vorto" to AttributeValue.builder().s(nomo).build()
+            ))
+            it.updateExpression("set valuo = :e")
+            it.expressionAttributeValues(mapOf(
+                    ":e" to AttributeValue.builder().s(id).build()
+            ))
+        }.await()
+        Vortaro.alporti(alporti = true)
+    }
+
+    override suspend fun alportiEventon(nomo: String): String {
+        val respondo = db.getItem {
+            it.tableName(tabeloNomo)
+            it.key(mapOf(
+                    "vorto" to AttributeValue.builder().s(nomo).build()
+            ))
+            it.projectionExpression("valuo")
+        }.await()
+        return respondo.item()["valuo"]!!.s()
+    }
+
+    override suspend fun forigiEventon(nomo: String) {
+        db.deleteItem {
+            it.tableName(tabeloNomo)
+            it.key(mapOf(
+                    "vorto" to AttributeValue.builder().s(nomo).build()
+            ))
+            it.conditionExpression("tipo = :t")
+            it.expressionAttributeValues(mapOf(
+                    ":t" to AttributeValue.builder().s("brenimis").build()
+            ))
+        }.await()
     }
 
     override suspend fun getThermostatState(id: String, key: String): ThermostatState {
@@ -277,9 +338,9 @@ object RealaAlirilaro : Alirilaro {
                     body = TextContent("{\"hvac_mode\": \"$mode\"}", ContentType.Application.Json)
                 }
                 if (additionalBodyContent != null){
-                    it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
+                    it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/$id")) {
                         headers {
-                            append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                            append("Authorization", "Bearer $key")
                         }
                         body = TextContent(additionalBodyContent, ContentType.Application.Json)
                     }

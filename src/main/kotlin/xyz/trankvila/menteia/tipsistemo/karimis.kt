@@ -5,11 +5,13 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 abstract class karimis(
-        val _valuo: LocalDate,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
-): _negiTipo(morem, ponem, forem) {
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
+): timis(morem, ponem, forem) {
+    override val _tipo = _certeco.sagi
+    protected abstract val _valuo: LocalDate
+
     override suspend fun _valuigi(): LocalDate {
         return _valuo
     }
@@ -35,11 +37,29 @@ abstract class karimis(
     }
 }
 
-class karima(morem: kamis, ponem: kamis, forem: kamis): sadimis<kamis, kamis, kamis>(morem, ponem, forem)
+class karima(morem: kamis, ponem: kamis, forem: kamis): sadimis<kamis, kamis, kamis>(morem, ponem, forem) {
+    companion object {
+        fun igi(date: LocalDate): karima {
+            val dato = SilicanDate.fromGregorian(date)
+            return karima(
+                    lemis.ciferigi(dato.year.toBigInteger()),
+                    lemis.ciferigi(dato.month.toBigInteger()),
+                    lemis.ciferigi(dato.day.toBigInteger())
+            )
+        }
+    }
+}
 
-class fidinas: karimis(LocalDate.now())
+class fidinas: karimis() {
+    override val _valuo = LocalDate.now()
+}
 
-class fitam(morem: lemis): karimis(LocalDate.now().plusDays(morem._valuo.numerator.toLong()), morem)
+class fitam(morem: lemis): karimis(morem) {
+    override val _valuo: LocalDate =
+            runBlocking {
+                LocalDate.now().plusDays(morem._valuigi().numerator.toLong())
+            }
+}
 
 val syncPoint = LocalDate.of(2018, 1, 1)
 const val syncDayNumber = 12018 * 364 + 7 * ((12018 / 5) - (12018 / 40) + (12018 / 400))

@@ -3,22 +3,29 @@ package xyz.trankvila.menteia.tipsistemo
 import org.apache.commons.math3.fraction.BigFraction
 
 abstract class kiremis(
-        val _faktoro: Int,
-        val _ciferoj: List<Int>,
-        morem: Any? = null,
-        ponem: Any? = null,
-        forem: Any? = null
-) : lemis(
-        BigFraction(
-            _ciferoj.fold(0) { acc, i ->
-                acc * 10 + i
-            },
-            _faktoro
-    ), morem, ponem, forem
-)
+        morem: renas? = null,
+        ponem: renas? = null,
+        forem: renas? = null
+) : lemis(morem, ponem, forem) {
+    protected abstract val _faktoro: Int
+    protected abstract val _ciferoj: List<Int>
 
-class prena(morem: kamis): kiremis(10, morem._ciferoj, morem)
+    override val _valuo get() = BigFraction(
+            _ciferoj.fold(0) { acc, i -> acc * 10 + i }, _faktoro
+    )
+}
 
-class dreta(morem: kamis): kiremis(100, morem._ciferoj, morem)
+class prena(morem: kamis): kiremis(morem) {
+    override val _faktoro = 10
+    override val _ciferoj = morem._ciferoj
+}
 
-class glima(morem: kamis): kiremis(1000, morem._ciferoj, morem)
+class dreta(morem: kamis): kiremis( morem) {
+    override val _faktoro = 100
+    override val _ciferoj = morem._ciferoj
+}
+
+class glima(morem: kamis): kiremis(morem) {
+    override val _faktoro = 1000
+    override val _ciferoj = morem._ciferoj
+}

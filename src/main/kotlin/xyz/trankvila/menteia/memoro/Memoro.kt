@@ -5,5 +5,5 @@ import xyz.trankvila.menteia.tipsistemo.vanemis
 
 object Memoro {
     var lastaValuo: timis? = null
-    var lastaFrazo: vanemis.tadumis<timis>? = null
+    var lastaFrazo: vanemis.tadumis? = null
 }
