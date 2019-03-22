@@ -58,9 +58,6 @@ internal fun paroli(arbo: timis): UUID {
     return id
 }
 
-private val mallongaspiro = 14
-private val longaspiro = 19
-
 private fun kreiXML(frazo: timis): String {
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
@@ -79,25 +76,10 @@ private fun kreiXML(frazo: timis): String {
                     .addAttribute("ph", pravigiIPA(vortoj, ipa).joinToString(" "))
             when (it) {
                 "!interpaŭzo" -> {
-                    if (spiro > mallongaspiro) {
-                        spiro = 0
-                        xmlRadiko.addElement(QName("amazon:breath"))
-                    } else {
-                        xmlRadiko.addElement("break").addAttribute("strength", "weak")
-                    }
+                    xmlRadiko.addElement("break").addAttribute("strength", "weak")
                 }
                 "!antaŭpaŭzo" -> {
-                    if (spiro > mallongaspiro) {
-                        spiro = 0
-                        xmlRadiko.addElement(QName("amazon:breath"))
-                    } else if (spiro > longaspiro) {
-                        spiro = 0
-                        xmlRadiko.addElement(QName("amazon:breath"))
-                                .addAttribute("volume", "x-loud")
-                                .addAttribute("duration", "long")
-                    } else {
-                        xmlRadiko.addElement("break")
-                    }
+                    xmlRadiko.addElement("break")
                 }
             }
             vortoj.clear()

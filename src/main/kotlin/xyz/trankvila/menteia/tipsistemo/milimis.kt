@@ -1,29 +1,12 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._modo
 
 interface merimis : renas
 
 interface melemis : renas
-
-abstract class _modo(
-        morem: renas? = null,
-        ponem: renas? = null,
-        forem: renas? = null
-) : timis(morem, ponem, forem) {
-    override suspend fun _valuigi(): _modo {
-        return this
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return when (other) {
-            is _modo -> {
-                this::class == other::class
-            }
-            else -> super.equals(other)
-        }
-    }
-}
 
 class milimis(val _nomo: String): timis(), nadimis {
     override val _tipo = _certeco.sagi

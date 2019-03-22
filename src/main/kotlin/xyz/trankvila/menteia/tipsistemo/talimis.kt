@@ -1,10 +1,13 @@
 package xyz.trankvila.menteia.tipsistemo
 
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._forigebla
+import xyz.trankvila.menteia.tipsistemo.interna._kreebla
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.lang.Exception
 
@@ -33,6 +36,11 @@ class talimis(val _nomo: String): timis(), _forigebla, _kreebla {
 
     override suspend fun _simpligi(): timis? {
         return brotas.igiListon(enhavo.await())
+    }
+
+    override suspend fun _forigi(): vanemis.tadumis {
+        alirilaro.forigiListon(_nomo)
+        return klos(sindis(this))
     }
 
     override fun toString(): String {

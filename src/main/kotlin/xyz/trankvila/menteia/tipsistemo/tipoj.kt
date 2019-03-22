@@ -2,7 +2,7 @@ package xyz.trankvila.menteia.tipsistemo
 
 import kotlin.reflect.KClass
 
-val tipoj: Map<String, KClass<out timis>> = mapOf(
+internal val tipoj: Map<String, KClass<out timis>> = mapOf(
         "brodimis" to brodimis::class,
         "girimis" to girimis::class,
         "kamis" to kamis::class,

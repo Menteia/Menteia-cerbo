@@ -2,12 +2,10 @@ package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.runBlocking
 import org.apache.commons.math3.fraction.BigFraction
-import java.lang.Exception
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
-import java.util.*
-import kotlin.reflect.KFunction
 
 abstract class lemis(
         morem: renas? = null,

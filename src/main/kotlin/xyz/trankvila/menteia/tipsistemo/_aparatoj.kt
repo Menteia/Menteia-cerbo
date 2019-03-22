@@ -4,6 +4,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 
 interface nadimis : renas
 

@@ -1,14 +1,8 @@
 package xyz.trankvila.menteia.tipsistemo
 
-import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
 import xyz.trankvila.menteia.vorttrakto.interpaŭzoj
-
-enum class _certeco {
-    negi,
-    sagi,
-    pegi
-}
 
 interface renas {
     suspend fun _valuigi(): Any?
@@ -71,4 +65,4 @@ abstract class timis(
     }
 }
 
-class MenteiaTipEkcepcio(val _mesaĝo: timis): Exception(_mesaĝo.toString())
+internal class MenteiaTipEkcepcio(val _mesaĝo: timis): Exception(_mesaĝo.toString())

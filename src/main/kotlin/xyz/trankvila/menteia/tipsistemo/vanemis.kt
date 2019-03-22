@@ -3,10 +3,8 @@ package xyz.trankvila.menteia.tipsistemo
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import xyz.trankvila.menteia.memoro.Memoro
-import xyz.trankvila.menteia.vorttrakto.Legilo
-import kotlin.reflect.KClass
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 
 sealed class vanemis(
         morem: renas? = null,

@@ -4,8 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.memoro.Memoro
-import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.isSubclassOf
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 
 abstract class vidimis(
         val _valuo: Deferred<vanemis>

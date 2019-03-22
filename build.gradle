@@ -37,6 +37,11 @@ dokka {
     outputDirectory = "$buildDir/javadoc"
     
     includeNonPublic = false
+
+    packageOptions {
+        prefix = "xyz.trankvila.menteia.tipsistemo.interna"
+        suppress = true
+    }
 }
 
 repositories {

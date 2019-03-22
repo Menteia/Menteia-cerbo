@@ -1,6 +1,9 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._modo
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import java.lang.Exception
 
 interface kredrimis : renas

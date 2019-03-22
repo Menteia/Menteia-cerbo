@@ -55,6 +55,7 @@ import paroli
 import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.datumo.authenticate
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.MenteiaTipEkcepcio
 import xyz.trankvila.menteia.tipsistemo._tempoŝaltilo
@@ -79,15 +80,23 @@ fun main() {
             RealaAlirilaro.refreshHueToken()
         }
     }
+    Timer().scheduleAtFixedRate(3600000 * 3, 3600000 * 3) {
+        GlobalScope.launch {
+            authenticate()
+        }
+    }
 
     FirebaseApp.initializeApp(FirebaseOptions.builder()
             .setCredentials(
-//                    GoogleCredentials.fromStream(
-//                            FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
-//                    )
-                    GoogleCredentials.fromStream(
-                            ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
-                    )
+                    if (System.getenv("IS_HEROKU") != null) {
+                        GoogleCredentials.fromStream(
+                                ByteArrayInputStream(System.getenv("FIREBASE_CONFIG").toByteArray())
+                        )
+                    } else {
+                        GoogleCredentials.fromStream(
+                                FileInputStream("menteia-firebase-adminsdk-7y32e-149f25a3cb.json")
+                        )
+                    }
             )
             .setDatabaseUrl("https://menteia.firebaseio.com")
             .build()

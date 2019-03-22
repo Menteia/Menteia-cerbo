@@ -1,9 +1,9 @@
 package xyz.trankvila.menteia.vorttrakto
 
-import xyz.trankvila.menteia.datumo.alirilaro
-import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.*
+import xyz.trankvila.menteia.tipsistemo.interna._kreebla
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor

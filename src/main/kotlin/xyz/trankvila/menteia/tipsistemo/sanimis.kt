@@ -5,14 +5,15 @@ import kotlinx.serialization.Serializable
 import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._forigebla
+import xyz.trankvila.menteia.tipsistemo.interna._kreebla
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-
-interface _forigebla: renas
-interface _kreebla: renas
 
 class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebla {
     val celo = runBlocking {
@@ -61,7 +62,14 @@ class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebl
         }
     }
 
-    fun _forigiSciigojn() {
+    override suspend fun _forigi(): vanemis.tadumis {
+        _forigiSciigojn()
+        alirilaro.forigiTempoŝaltilon(_nomo)
+        lokajObjektoj.remove(_nomo)
+        return klos(sindis(this))
+    }
+
+    private fun _forigiSciigojn() {
         _sciigoj.forEach {
             it.cancel(false)
         }

@@ -10,18 +10,26 @@ import kotlinx.coroutines.*
 import kotlinx.io.ByteArrayInputStream
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.jackson
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._forigebla
+import xyz.trankvila.menteia.tipsistemo.interna._kreebla
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import xyz.trankvila.menteia.transport
 import java.io.FileInputStream
 import java.time.*
 import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalField
 import java.util.*
 
 class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
     companion object {
         val calendarID = "dsn2ij1hfhe9b8ob9qm58b397c@group.calendar.google.com"
         val credentials = GoogleCredential.fromStream(
-                ByteArrayInputStream(System.getenv("GOOGLE_SERVICE_ACCOUNT").toByteArray())
-//                FileInputStream("Menteia-2193c8a41ecb.json")
+                if (System.getenv("IS_HEROKU") != null) {
+                    ByteArrayInputStream(System.getenv("GOOGLE_SERVICE_ACCOUNT").toByteArray())
+                } else {
+                    FileInputStream("Menteia-2193c8a41ecb.json")
+                }
         ).createScoped(listOf(CalendarScopes.CALENDAR))
         val service = Calendar.Builder(
                 transport,
@@ -58,7 +66,7 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
     override suspend fun _simpligi(): sadika<_nomitaAĵo, divis<karima, ŝanamis>, teremis> {
         val evento = _valuigi()
         val nomo = evento.summary.split(" - ")[0]
-        val comenco = ZonedDateTime.ofInstant(
+        val komenco = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(evento.start.dateTime.value),
                 ZoneId.of("America/Toronto")
         )
@@ -66,17 +74,39 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
                 Instant.ofEpochMilli(evento.end.dateTime.value),
                 ZoneId.of("America/Toronto")
         )
-        val minutoj = comenco.until(fino, ChronoUnit.MINUTES)
+        val minutoj = komenco.until(fino, ChronoUnit.MINUTES)
         val daŭro = if (minutoj % 60 == 0L) {
             gomos(lemis.ciferigi((minutoj / 60).toBigInteger()))
         } else {
             nires(lemis.ciferigi(minutoj.toBigInteger()))
         }
-        return sadika(_nomitaAĵo(nomo), divis(karima.igi(comenco.toLocalDate()), ŝanamis.igi(comenco.toLocalTime())), daŭro)
+        return sadika(_nomitaAĵo(nomo), divis(karima.igi(komenco.toLocalDate()), ŝanamis.igi(komenco.toLocalTime())), daŭro)
     }
 
-    suspend fun _forigi() {
+    override suspend fun _forigi(): vanemis.tadumis {
         service.events().delete(calendarID, alirilaro.alportiEventon(nomo)).execute()
+        alirilaro.forigiEventon(nomo)
+        return klos(sindis(this))
+    }
+
+    suspend fun medisas(morem: ŝanamis): vanemis.tadumis {
+        val evento = _valuigi()
+        val dato = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(evento.start.dateTime.value),
+                ZoneId.of("America/Toronto")
+        )
+        val fino = ZonedDateTime.ofInstant(
+                Instant.ofEpochMilli(evento.end.dateTime.value),
+                ZoneId.of("America/Toronto")
+        )
+        val horo = morem._valuigi()
+        val novaKomenco = dato.withHour(horo.hour).withMinute(horo.minute)
+        val diferenco = novaKomenco.until(dato, ChronoUnit.MINUTES)
+        val novaFino = fino.minusMinutes(diferenco)
+        evento.start = EventDateTime().setDateTime(DateTime(novaKomenco.toInstant().toEpochMilli()))
+        evento.end = EventDateTime().setDateTime(DateTime(novaFino.toInstant().toEpochMilli()))
+        service.events().update(calendarID, evento.id, evento).execute()
+        return to(this, _simpligi())
     }
 
     override fun toString(): String {
@@ -87,5 +117,25 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
         return sequence {
             yield(nomo)
         }
+    }
+}
+
+class brema(morem: karimis): timis(morem) {
+    override val _tipo = _certeco.negi
+    val dato = runBlocking {  morem._valuigi() }
+
+    override suspend fun _valuigi(): List<Event> {
+        val eventoj = brenimis.service.events().list(brenimis.calendarID)
+                .setTimeMin(DateTime(ZonedDateTime.of(dato, LocalTime.MIDNIGHT, ZoneId.of("America/Toronto")).toInstant().toEpochMilli()))
+                .setTimeMax(DateTime(ZonedDateTime.of(dato.plusDays(1), LocalTime.MIDNIGHT, ZoneId.of("America/Toronto")).toInstant().toEpochMilli()))
+                .execute()
+        return eventoj.items
+    }
+
+    override suspend fun _simpligi(): brodimis<divimis<_nomitaAĵo, ŝanamis>> {
+        val eventoj = _valuigi()
+        return brotas.igiListon(eventoj.map {
+            divis(_nomitaAĵo(it.summary.split(" - ")[0]), ŝanamis.igi(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it.start.dateTime.value), ZoneId.of("America/Toronto")).toLocalTime()))
+        })
     }
 }

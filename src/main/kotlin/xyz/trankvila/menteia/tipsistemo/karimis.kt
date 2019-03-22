@@ -1,6 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -61,13 +62,13 @@ class fitam(morem: lemis): karimis(morem) {
             }
 }
 
-val syncPoint = LocalDate.of(2018, 1, 1)
-const val syncDayNumber = 12018 * 364 + 7 * ((12018 / 5) - (12018 / 40) + (12018 / 400))
-const val daysIn400Years = 400 * 364 + 7 * (400 / 5 - 400 / 40 + 1)
-const val daysIn40Years = 40 * 364 + 7 * (40 / 5 - 1)
-const val daysIn5Years = 5 * 364 + 7
+internal val syncPoint = LocalDate.of(2018, 1, 1)
+internal const val syncDayNumber = 12018 * 364 + 7 * ((12018 / 5) - (12018 / 40) + (12018 / 400))
+internal const val daysIn400Years = 400 * 364 + 7 * (400 / 5 - 400 / 40 + 1)
+internal const val daysIn40Years = 40 * 364 + 7 * (40 / 5 - 1)
+internal const val daysIn5Years = 5 * 364 + 7
 
-data class SilicanDate(val year: Int, val month: Int, val day: Int) {
+internal data class SilicanDate(val year: Int, val month: Int, val day: Int) {
     companion object {
         fun fromGregorian(date: LocalDate): SilicanDate {
             val difference = ChronoUnit.DAYS.between(syncPoint, date)

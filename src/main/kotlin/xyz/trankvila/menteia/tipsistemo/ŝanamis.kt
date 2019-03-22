@@ -1,10 +1,9 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.*
 
 abstract class ŝanamis(
         morem: renas? = null,

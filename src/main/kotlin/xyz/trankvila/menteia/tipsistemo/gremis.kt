@@ -1,7 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
-import kotlin.reflect.KClass
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 
 abstract class gremis(
         morem: renas? = null,

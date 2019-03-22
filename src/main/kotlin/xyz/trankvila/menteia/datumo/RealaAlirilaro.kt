@@ -56,7 +56,7 @@ object RealaAlirilaro : Alirilaro {
         if (respondo.count() != 1) {
             throw Exception("Ne eblis trovi la liston nomita ${nomo}")
         }
-        return respondo.items()[0]["enhavo"]!!.l().map {
+        return respondo.items()[0]["valuo"]!!.l().map {
             it.s()
         }
     }
@@ -153,7 +153,7 @@ object RealaAlirilaro : Alirilaro {
                 .key(mapOf(
                         "vorto" to AttributeValue.builder().s(nomo).build()
                 ))
-                .updateExpression("set enhavo = :e")
+                .updateExpression("set valuo = :e")
                 .expressionAttributeValues(mapOf(
                         ":e" to AttributeValue.builder().l(
                                 enhavo.map {
@@ -168,14 +168,14 @@ object RealaAlirilaro : Alirilaro {
         val listoj = mutableMapOf<String, List<String>>()
         db.scanPaginator(ScanRequest.builder()
                 .tableName(tabeloNomo)
-                .filterExpression("begins_with(tipo, :nomo) and attribute_exists(enhavo)")
+                .filterExpression("tipo = :nomo")
                 .expressionAttributeValues(mapOf(
                         ":nomo" to AttributeValue.builder().s("brodimis").build()
                 ))
                 .build()
         ).subscribe {
             it.items().forEach {
-                listoj[it["vorto"]!!.s()] = it["enhavo"]!!.l().map {
+                listoj[it["vorto"]!!.s()] = it["valuo"]!!.l().map {
                     it.s()
                 }
             }
@@ -234,7 +234,7 @@ object RealaAlirilaro : Alirilaro {
     override suspend fun forigiListon(nomo: String) {
         db.deleteItem(DeleteItemRequest.builder()
                 .tableName(tabeloNomo)
-                .conditionExpression("begins_with(tipo, :t) and attribute_exists(enhavo)")
+                .conditionExpression("tipo = :t")
                 .expressionAttributeValues(mapOf(
                         ":t" to AttributeValue.builder().s("brodimis").build()
                 ))

@@ -1,7 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import xyz.trankvila.menteia.datumo.alirilaro
-import kotlin.math.roundToInt
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
 
 class krumis(val _nomo: String): timis() {
     override val _tipo = _certeco.sagi

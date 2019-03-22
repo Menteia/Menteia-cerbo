@@ -5,29 +5,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.memoro.lokajObjektoj
+import xyz.trankvila.menteia.tipsistemo.interna._certeco
+import xyz.trankvila.menteia.tipsistemo.interna._forigebla
+import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.*
-
-/**
- * Reprezentas vorton, kiu ne ekzistas sendependece
- * @property _nomo la vorto
- */
-class _nomitaAĵo(val _nomo: String): timis() {
-    override suspend fun _valuigi(): String {
-        return _nomo
-    }
-
-    override fun toString(): String {
-        return _nomo
-    }
-
-    override fun traversi(): Sequence<String> {
-        return sequence {
-            yield(_nomo)
-        }
-    }
-}
 
 /**
  * Indikas econ de objekto
@@ -37,6 +20,8 @@ class _nomitaAĵo(val _nomo: String): timis() {
 class des(val _objekto: renas, val _eco: _nomitaAĵo): timis(
         _objekto, _eco
 ) {
+    override val _tipo = _objekto._tipo
+
     override suspend fun _valuigi(): timis? {
         return _simpligi()
     }
@@ -118,24 +103,7 @@ class furika(val _aĵo: _forigebla): gremis(_aĵo) {
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
         return GlobalScope.async {
-            when (_aĵo) {
-                is sanimis -> {
-                    _aĵo._forigiSciigojn()
-                    alirilaro.forigiTempoŝaltilon(_aĵo._nomo)
-                    lokajObjektoj.remove(_aĵo._nomo)
-                    klos(sindis(_aĵo))
-                }
-                is talimis -> {
-                    alirilaro.forigiListon(_aĵo._nomo)
-                    klos(sindis(_aĵo))
-                }
-                is brenimis -> {
-                    _aĵo._forigi()
-                    alirilaro.forigiEventon(_aĵo.nomo)
-                    klos(sindis(_aĵo))
-                }
-                else -> throw Exception("$_aĵo ne estas forigebla")
-            }
+            _aĵo._forigi()
         }
     }
 }
