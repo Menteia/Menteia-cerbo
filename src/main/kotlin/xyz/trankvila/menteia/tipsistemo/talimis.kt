@@ -10,6 +10,7 @@ import xyz.trankvila.menteia.tipsistemo.interna._kreebla
 import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.lang.Exception
+import java.math.BigInteger
 
 class talimis(val _nomo: String): timis(), _forigebla, _kreebla {
     companion object {
@@ -88,7 +89,7 @@ class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
             alirilaro.redaktiListon(_listo._nomo, listo.map {
                 it.toString()
             })
-            to(las(_listo, lemis.ciferigi(listo.size.toBigInteger())), _aĵo)
+            to(las(_listo, lemis.ciferigi(listo.size.toBigInteger().minus(BigInteger.ONE))), _aĵo)
         }
     }
 }
@@ -127,11 +128,13 @@ class vidina(val _listo: talimis): gremis(_listo) {
     override fun _ekruli(): Deferred<vanemis.tadumis> {
         return GlobalScope.async {
             val rezulto = _listo.enhavo.await().map {
-                val r = it._simpligi()!!
-                if (r is vanemis.tadumis) {
-                    r
-                } else {
-                    throw Exception("Kalkulis: $it")
+                when (it) {
+                    is gremis -> it._ekruli().await()
+                    is vanemis.fragemis -> {
+                        val rezulto = it._valuo._simpligi() ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(it))))
+                        to(it._valuo as timis, rezulto)
+                    }
+                    else -> throw Exception("Kalkulis: ${it._simpligi()}")
                 }
             }
             tinas(brotas.igiListon(rezulto))

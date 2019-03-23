@@ -28,10 +28,9 @@ sealed class vanemis(
 
     abstract class fragemis(
             val _valuo: renas,
-            morem: renas? = null,
             ponem: renas? = null,
             forem: renas? = null
-    ): vanemis(morem, ponem, forem)
+    ): vanemis(_valuo, ponem, forem)
 }
 
 class to(val _valuo1: timis, val _valuo2: renas): vanemis.tadumis(_valuo1, _valuo2) {

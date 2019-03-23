@@ -92,7 +92,7 @@ class keli(val _ago: gremis): vidimis(_ago._ekruli()) {
         val rezulto = _valuo.await()
         return when (rezulto) {
             is vanemis.tadumis -> {
-                when (rezulto._frazo._tipo) {
+                when (_ago._tipo) {
                     _certeco.negi -> {
                         megi(rezulto)
                     }
