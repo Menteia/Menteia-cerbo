@@ -1,5 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import xyz.trankvila.menteia.Agordo
@@ -25,6 +27,10 @@ class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebl
     companion object {
         val horloĝilo = Executors.newScheduledThreadPool(10)
         val memorigo = mutableListOf(1, 5, 10, 30, 60)
+
+        suspend fun _krei(nomo: String, opcio: teremis): sanimis {
+            return sanimis(nomo, opcio)
+        }
     }
 
     init {
@@ -41,7 +47,7 @@ class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebl
             }
         }
         _sciigoj.add(horloĝilo.schedule({
-            runBlocking {
+            GlobalScope.launch {
                 alirilaro.forigiTempoŝaltilon(_nomo)
                 lokajObjektoj.remove(_nomo)
                 sendilo(pegi(klos(sindis(this@sanimis))))

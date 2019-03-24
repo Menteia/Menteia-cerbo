@@ -20,26 +20,26 @@ import com.google.api.services.calendar.model.EventDateTime
 import com.twilio.Twilio
 import com.twilio.rest.api.v2010.account.Message
 import com.twilio.type.PhoneNumber
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.memoro.Konversacio
 import xyz.trankvila.menteia.tipsistemo.*
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import kotlin.reflect.KParameter
 
-val transport = GoogleNetHttpTransport.newTrustedTransport()
-val jackson = JacksonFactory.getDefaultInstance()
-
-fun main() {
-    brenimis.service.events().list(brenimis.calendarID).execute().items.forEach {
-        println(it)
+fun main() = runBlocking {
+    val konversacio = Konversacio()
+    launch {
+        "doni ko lurina sitana".splitToSequence(" ").forEach {
+            konversacio.eniri(it)
+        }
     }
-    brenimis.service.events().delete(brenimis.calendarID, "ug7qm0fndkbeajn43rmj1bv0oo").execute()
-    brenimis.service.events().delete(brenimis.calendarID, "mttitdhqqpsir8noncor9noluk").execute()
-    brenimis.service.events().list(brenimis.calendarID).execute().items.forEach {
-        println(it)
-    }
+    println("...")
+    println(konversacio.fini()._valuigi().toString())
 }

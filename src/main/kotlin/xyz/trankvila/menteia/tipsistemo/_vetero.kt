@@ -1,9 +1,9 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.VeteraDatumo.hereKodoj
 import xyz.trankvila.menteia.datumo.WeatherItemsType
 import xyz.trankvila.menteia.datumo.alirilaro
@@ -12,7 +12,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 class lemona(_loko: sinemis): _vetero(_loko) {
-    override val _loko: Deferred<Pair<String, String>> = GlobalScope.async {
+    override val _loko: Deferred<Pair<String, String>> = Agordo.konteksto.get().async {
         alirilaro.alportiLokon(_loko._nomo)
     }
 
@@ -33,7 +33,7 @@ class lemona(_loko: sinemis): _vetero(_loko) {
 }
 
 class lurina(_loko: sinemis, _dato: karimis): _vetero(_loko, _dato) {
-    override val _loko: Deferred<Pair<String, String>> = GlobalScope.async {
+    override val _loko: Deferred<Pair<String, String>> = Agordo.konteksto.get().async {
         alirilaro.alportiLokon(_loko._nomo)
     }
     override val _dato = runBlocking { _dato._valuigi() }

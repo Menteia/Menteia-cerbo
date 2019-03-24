@@ -1,10 +1,9 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
+import xyz.trankvila.menteia.Agordo
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
-import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import xyz.trankvila.menteia.tipsistemo.interna._forigebla
 import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
@@ -49,7 +48,7 @@ class miris(val _objekto: timis, val _eco: _nomitaAĵo, val _valuo: timis): grem
         val eco = _objekto::class.declaredMemberFunctions.find {
             it.name == _eco._nomo && it.parameters.size == 2
         } ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(des(_objekto, _eco)))))
-        return GlobalScope.async {
+        return Agordo.konteksto.get().async {
             val rezulto = eco.callSuspend(_objekto, _valuo)
             if (rezulto is vanemis.tadumis) {
                 rezulto
@@ -68,7 +67,7 @@ class marina(val _klaso: remis): gremis(_klaso) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return GlobalScope.async {
+        return Agordo.konteksto.get().async {
             val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
             val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
                 it.name == "_krei"
@@ -83,7 +82,7 @@ class marisa(val _klaso: remis, val _opcio: timis): gremis(_klaso, _opcio) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return GlobalScope.async {
+        return Agordo.konteksto.get().async {
             try {
                 val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
                 val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
@@ -102,7 +101,7 @@ class furika(val _aĵo: _forigebla): gremis(_aĵo) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return GlobalScope.async {
+        return Agordo.konteksto.get().async {
             _aĵo._forigi()
         }
     }
@@ -135,5 +134,16 @@ class drumos(val _klaso: remis): timis(_klaso) {
 class remis(val _klaso: KClass<out timis>): timis() {
     override suspend fun _valuigi(): KClass<out timis> {
         return _klaso
+    }
+
+    override fun toString(): String {
+        return "${this::class.simpleName} ${_klaso.simpleName}"
+    }
+
+    override fun traversi(): Sequence<String> {
+        return sequence {
+            yield(this@remis::class.simpleName!!)
+            yield(_klaso.simpleName!!)
+        }
     }
 }

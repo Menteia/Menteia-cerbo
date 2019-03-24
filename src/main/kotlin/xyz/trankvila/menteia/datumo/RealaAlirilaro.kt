@@ -314,9 +314,10 @@ object RealaAlirilaro : Alirilaro {
 
     override suspend fun setThermostatTemperature(id: String, targetTemperature: BigDecimal) {
         HttpClient(Apache).use {
+            val key = Sekretoj.NestKey(id)
             it.put<String>(URL("https://developer-api.nest.com/devices/thermostats/${Sekretoj.NestDeviceID(id)}")) {
                 headers {
-                    append("Authorization", "Bearer ${Sekretoj.NestKey(id)}")
+                    append("Authorization", "Bearer $key")
                 }
                 body = TextContent("{\"target_temperature_c\": ${targetTemperature.toPlainString()}", ContentType.Application.Json)
             }
@@ -367,7 +368,7 @@ object RealaAlirilaro : Alirilaro {
             val response = it.get<String>(
                     URL("https://weather.api.here.com/weather/1.0/report.json")
             ) {
-                val (appid, appcode) = Sekretoj.HereCredentials
+                val (appid, appcode) = Sekretoj.HereCredentials.await()
                 parameter("app_id", appid)
                 parameter("app_code", appcode)
                 parameter("product", "observation")
@@ -385,7 +386,7 @@ object RealaAlirilaro : Alirilaro {
             val response = it.get<String>(
                     URL("https://weather.api.here.com/weather/1.0/report.json")
             ) {
-                val (appid, appcode) = Sekretoj.HereCredentials
+                val (appid, appcode) = Sekretoj.HereCredentials.await()
                 parameter("app_id", appid)
                 parameter("app_code", appcode)
                 parameter("product", "forecast_7days_simple")
@@ -407,20 +408,22 @@ object RealaAlirilaro : Alirilaro {
 
     override suspend fun getLightBulbState(id: Int): LightBulbState {
         HttpClient(Apache).use {
+            val token = Sekretoj.HueToken()
             val response = it.get<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/$id") {
                 headers {
-                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                    append("Authorization", "Bearer ${token}")
                 }
-            }
+        }
             return JSON.nonstrict.parse(HueResponse.serializer(), response).state
         }
     }
 
     override suspend fun setLightBulbOn(id: Int, on: Boolean) {
         HttpClient(Apache).use {
+            val token = Sekretoj.HueToken()
             it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/$id/state") {
                 headers {
-                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                    append("Authorization", "Bearer $token")
                 }
                 body = TextContent("{\"on\": $on}", ContentType.Application.Json)
             }
@@ -429,11 +432,12 @@ object RealaAlirilaro : Alirilaro {
 
     override suspend fun setLightBulbBrightness(name: String, brightness: BigDecimal) {
         HttpClient(Apache).use {
+            val token = Sekretoj.HueToken()
             it.put<String>("https://api.meethue.com/bridge/${Sekretoj.HueUsername()}/lights/${
             Sekretoj.HueLightID(name)
             }/state") {
                 headers {
-                    append("Authorization", "Bearer ${Sekretoj.HueToken()}")
+                    append("Authorization", "Bearer $token")
                 }
                 body = TextContent(if (brightness == BigDecimal.ZERO) {
                     "{\"on\": false}"

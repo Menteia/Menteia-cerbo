@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.polly.model.OutputFormat
 import software.amazon.awssdk.services.polly.model.SynthesizeSpeechRequest
 import software.amazon.awssdk.services.polly.model.TextType
 import software.amazon.awssdk.services.polly.model.VoiceId
+import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.tipsistemo.timis
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj

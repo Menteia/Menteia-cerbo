@@ -3,11 +3,12 @@ package xyz.trankvila.menteia.tipsistemo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
+import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.tipsistemo.interna._certeco
 
 abstract class vidimis(
-        val _valuo: Deferred<vanemis>
+        open val _valuo: Deferred<vanemis>
 ): timis() {
     override suspend fun _valuigi(): Any? {
         return _valuo.await()._valuigi()
@@ -34,7 +35,9 @@ abstract class vidimis(
     }
 }
 
-class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
+abstract class _eniro(override val _valuo: Deferred<vanemis>): vidimis(_valuo)
+
+class doni(morem: vanemis): _eniro(CompletableDeferred(morem)) {
     override suspend fun _valuigi(): vidimis {
         val _valuo = _valuo.await()
         return when (_valuo) {
@@ -87,7 +90,7 @@ class doni(morem: vanemis): vidimis(CompletableDeferred(morem)) {
     }
 }
 
-class keli(val _ago: gremis): vidimis(_ago._ekruli()) {
+class keli(val _ago: gremis): _eniro(_ago._ekruli()) {
     override suspend fun _valuigi(): vidimis {
         val rezulto = _valuo.await()
         return when (rezulto) {
@@ -118,3 +121,9 @@ class megi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 class regi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
 
 class pegi(morem: vanemis.tadumis): vidimis(CompletableDeferred(morem))
+
+class meli(morem: remis): timis(morem) {
+    override suspend fun _valuigi(): Any? {
+        throw Exception("meli ne havas valuon")
+    }
+}

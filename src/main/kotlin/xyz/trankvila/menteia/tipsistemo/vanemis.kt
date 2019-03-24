@@ -3,6 +3,7 @@ package xyz.trankvila.menteia.tipsistemo
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.memoro.Memoro
 import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
 
@@ -35,7 +36,7 @@ sealed class vanemis(
 
 class to(val _valuo1: timis, val _valuo2: renas): vanemis.tadumis(_valuo1, _valuo2) {
     override val _valuo: Deferred<Boolean>
-        get() = GlobalScope.async {
+        get() = Agordo.konteksto.get().async {
             _valuo1._egala(_valuo2)
         }
 }

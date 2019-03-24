@@ -1,6 +1,8 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.DateTime
 import com.google.api.services.calendar.Calendar
 import com.google.api.services.calendar.CalendarScopes
@@ -9,17 +11,19 @@ import com.google.api.services.calendar.model.EventDateTime
 import kotlinx.coroutines.*
 import kotlinx.io.ByteArrayInputStream
 import xyz.trankvila.menteia.datumo.alirilaro
-import xyz.trankvila.menteia.jackson
 import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import xyz.trankvila.menteia.tipsistemo.interna._forigebla
 import xyz.trankvila.menteia.tipsistemo.interna._kreebla
 import xyz.trankvila.menteia.tipsistemo.interna._nomitaAĵo
-import xyz.trankvila.menteia.transport
 import java.io.FileInputStream
 import java.time.*
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalField
 import java.util.*
+
+
+val transport = GoogleNetHttpTransport.newTrustedTransport()
+val jackson = JacksonFactory.getDefaultInstance()
 
 class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
     companion object {

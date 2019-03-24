@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia.tipsistemo
 
+import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.memoro.Memoro
 import kotlin.reflect.full.primaryConstructor
 
