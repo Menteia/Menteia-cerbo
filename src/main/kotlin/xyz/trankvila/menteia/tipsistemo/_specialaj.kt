@@ -1,6 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
 import xyz.trankvila.menteia.Agordo
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.datumo.alirilaro
@@ -48,7 +49,7 @@ class miris(val _objekto: timis, val _eco: _nomitaAĵo, val _valuo: timis): grem
         val eco = _objekto::class.declaredMemberFunctions.find {
             it.name == _eco._nomo && it.parameters.size == 2
         } ?: throw MenteiaTipEkcepcio(pegi(klos(sindis(des(_objekto, _eco)))))
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val rezulto = eco.callSuspend(_objekto, _valuo)
             if (rezulto is vanemis.tadumis) {
                 rezulto
@@ -67,7 +68,7 @@ class marina(val _klaso: remis): gremis(_klaso) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
             val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
                 it.name == "_krei"
@@ -82,7 +83,7 @@ class marisa(val _klaso: remis, val _opcio: timis): gremis(_klaso, _opcio) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             try {
                 val nomo = alirilaro.kreiNomon(_klaso._klaso.simpleName!!)
                 val aĵo = _klaso._klaso.companionObject!!.declaredMemberFunctions.single {
@@ -101,7 +102,7 @@ class furika(val _aĵo: _forigebla): gremis(_aĵo) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             _aĵo._forigi()
         }
     }

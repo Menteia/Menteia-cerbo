@@ -1,6 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.alirilaro
@@ -13,7 +14,7 @@ class buvi(val nadimis: nadimis): gremis(nadimis) {
     override val _tipo = _certeco.sagi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             when (nadimis) {
                 is milimis -> {
                     val nomo = nadimis._nomo
@@ -31,7 +32,7 @@ class mavi(val nadimis: nadimis): gremis(nadimis) {
     override val _tipo = _certeco.sagi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             when (nadimis) {
                 is milimis -> {
                     val nomo = nadimis._nomo

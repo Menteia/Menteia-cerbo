@@ -1,6 +1,7 @@
 package xyz.trankvila.menteia.tipsistemo
 
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.trankvila.menteia.Agordo
 import xyz.trankvila.menteia.datumo.alirilaro
@@ -21,7 +22,7 @@ class talimis(val _nomo: String): timis(), _forigebla, _kreebla {
     }
 
     override val _tipo = _certeco.negi
-    var enhavo = Agordo.konteksto.get().async {
+    var enhavo = GlobalScope.async {
         alirilaro.alportiListon(_nomo).map {
             Legilo.legi(it)
         }.toMutableList()
@@ -69,7 +70,7 @@ class las(val _listo: talimis, val _indekso: kamis): timis(_listo, _indekso) {
 class karema(val _listo: talimis, val _aĵo: timis, val _loko: kamis): gremis(_listo, _aĵo, _loko) {
     override val _tipo = _certeco.negi
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val listo = _listo.enhavo.await()
             listo.add(_loko._valuigi().numeratorAsInt, _aĵo)
             alirilaro.redaktiListon(_listo._nomo, listo.map {
@@ -83,7 +84,7 @@ class karema(val _listo: talimis, val _aĵo: timis, val _loko: kamis): gremis(_l
 class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
     override val _tipo = _certeco.negi
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val listo = _listo.enhavo.await()
             listo.add(_aĵo)
             alirilaro.redaktiListon(_listo._nomo, listo.map {
@@ -96,7 +97,7 @@ class kirema(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
 
 class kurinis(val _listo: talimis, val _aĵo: timis): vanemis.tadumis(_listo, _aĵo) {
     override val _valuo: Deferred<Boolean>
-        get() = Agordo.konteksto.get().async {
+        get() = GlobalScope.async {
             _listo.enhavo.await().contains(_aĵo)
         }
 }
@@ -105,7 +106,7 @@ class karisi(val _listo: talimis, val _aĵo: timis): gremis(_listo) {
     override val _tipo = _certeco.negi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val listo = _listo.enhavo.await()
             val sukcesa = listo.remove(_aĵo)
             if (sukcesa) {
@@ -126,7 +127,7 @@ class vidina(val _listo: talimis): gremis(_listo) {
     override val _tipo = _certeco.pegi
 
     override fun _ekruli(): Deferred<vanemis.tadumis> {
-        return Agordo.konteksto.get().async {
+        return GlobalScope.async {
             val rezulto = _listo.enhavo.await().map {
                 when (it) {
                     is gremis -> it._ekruli().await()

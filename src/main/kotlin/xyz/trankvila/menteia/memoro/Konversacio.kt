@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.jvmErasure
 class Konversacio() {
     private val kanalo = Channel<String>()
     private val sekvaBezonata = Channel<KClass<out timis>?>()
-    private val kompletaFrazo = Agordo.konteksto.get().async {
+    private val kompletaFrazo = GlobalScope.async {
         legi()
     }
 

@@ -34,13 +34,12 @@ class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebl
     }
 
     init {
-        val sendilo = Agordo.sendiMesaĝon.get()
         val daŭro = runBlocking { _daŭro._valuigi() }
 
         for (m in memorigo) {
             if (daŭro.seconds > m * 60) {
                 _sciigoj.add(horloĝilo.schedule({
-                    sendilo(negi(to(des(this, _nomitaAĵo("sasara")), nires(lemis.ciferigi(m.toBigInteger())))))
+                    Agordo.sendiMesaĝon(negi(to(des(this, _nomitaAĵo("sasara")), nires(lemis.ciferigi(m.toBigInteger())))))
                 }, ZonedDateTime.now().until(celo.minusMinutes(m.toLong()), ChronoUnit.MILLIS), TimeUnit.MILLISECONDS))
             } else {
                 break
@@ -50,7 +49,7 @@ class sanimis(val _nomo: String, _daŭro: teremis): timis(), _forigebla, _kreebl
             GlobalScope.launch {
                 alirilaro.forigiTempoŝaltilon(_nomo)
                 lokajObjektoj.remove(_nomo)
-                sendilo(pegi(klos(sindis(this@sanimis))))
+                Agordo.sendiMesaĝon(pegi(klos(sindis(this@sanimis))))
             }
         }, ZonedDateTime.now().until(celo, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS))
         lokajObjektoj[_nomo] = this

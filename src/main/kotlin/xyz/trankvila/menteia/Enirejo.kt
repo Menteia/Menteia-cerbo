@@ -76,7 +76,7 @@ data class Respondo(val teksto: String, val UUID: String)
 fun main() {
     val ids = mutableMapOf<String, String>()
     Timer().scheduleAtFixedRate(3600000 * 24, 3600000 * 24) {
-        Agordo.konteksto.get().launch {
+        GlobalScope.launch {
             println("Updating Hue tokens")
             RealaAlirilaro.refreshHueToken()
         }
@@ -118,9 +118,11 @@ fun main() {
                     } else {
                         try {
                             val peto = call.receiveText()
-                            Agordo.sendiMesaĝon.set {
-                                val paroloID = paroli(it)
-                                sendiMesaĝon(it.toString(), ids.getValue(uid), paroloID.toString())
+                            Agordo.sendiMesaĝon = {
+                                GlobalScope.launch {
+                                    val paroloID = paroli(it)
+                                    sendiMesaĝon(it.toString(), ids.getValue(uid), paroloID.toString())
+                                }
                             }
                             try {
                                 val respondo = Legilo.legi(peto)._valuigi()
@@ -183,14 +185,14 @@ fun main() {
             post("/sms") {
                 val peto = call.receiveParameters()
                 val enhavo = peto["Body"]!!
-                Agordo.sendiMesaĝon.set {
-                    println("Sendas mesaĝo al ${peto["From"]}")
-                    val mesaĝo = Message.creator(
-                            PhoneNumber(peto["From"]!!),
-                            PhoneNumber("+15206368342"),
-                            it.toString()
-                    ).create()
-                    println("Sendis ${mesaĝo.sid}")
+                Agordo.sendiMesaĝon = {
+                    GlobalScope.launch {
+                        Message.creator(
+                                PhoneNumber(peto["From"]!!),
+                                PhoneNumber("+15206368342"),
+                                it.toString()
+                        ).create()
+                    }
                 }
                 try {
                     val arbo = Legilo.legi(enhavo)
@@ -248,9 +250,8 @@ fun main() {
                                         "im" -> {
                                             if (mesaĝoEvento.user != null) {
                                                 launch {
-                                                    Agordo.konteksto.set(this)
-                                                    Agordo.sendiMesaĝon.set {
-                                                        launch {
+                                                    Agordo.sendiMesaĝon = {
+                                                        GlobalScope.launch {
                                                             println("Sendas: $it")
                                                             sendMessage(mesaĝoEvento.channel, it.toString())
                                                         }

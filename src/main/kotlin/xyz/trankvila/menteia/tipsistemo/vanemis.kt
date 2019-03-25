@@ -36,7 +36,7 @@ sealed class vanemis(
 
 class to(val _valuo1: timis, val _valuo2: renas): vanemis.tadumis(_valuo1, _valuo2) {
     override val _valuo: Deferred<Boolean>
-        get() = Agordo.konteksto.get().async {
+        get() = GlobalScope.async {
             _valuo1._egala(_valuo2)
         }
 }
