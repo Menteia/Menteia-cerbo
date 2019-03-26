@@ -34,6 +34,7 @@ import io.ktor.http.cio.websocket.readText
 import io.ktor.request.header
 import io.ktor.request.receiveParameters
 import io.ktor.request.receiveText
+import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.response.respondBytes
 import io.ktor.response.respondText
@@ -46,6 +47,8 @@ import io.ktor.util.url
 import io.ktor.websocket.WebSockets
 import io.ktor.websocket.webSocket
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.io.ByteArrayInputStream
@@ -61,6 +64,7 @@ import xyz.trankvila.menteia.tipsistemo.*
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
+import java.nio.channels.ClosedChannelException
 import java.security.MessageDigest
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -73,8 +77,9 @@ import kotlin.reflect.KClass
 @Serializable
 data class Respondo(val teksto: String, val UUID: String)
 
+val ids = mutableMapOf<String, String>()
+
 fun main() {
-    val ids = mutableMapOf<String, String>()
     Timer().scheduleAtFixedRate(3600000 * 24, 3600000 * 24) {
         GlobalScope.launch {
             println("Updating Hue tokens")
@@ -162,12 +167,14 @@ fun main() {
                         call.respond(HttpStatusCode.NotFound)
                     } else {
                         println("Parolas $id")
+                        call.response.header("Access-Control-Allow-Origin", "http://localhost:3000")
                         call.respondBytes(parolado.await().enhavo, ContentType.Audio.OGG)
                     }
                 }
             }
             post("/sciigi") {
                 val xtoken = call.parameters["token"]
+                call.response.header("Access-Control-Allow-Origin", "http://localhost:3000")
                 if (xtoken == null) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } else {
@@ -253,7 +260,7 @@ fun main() {
                                                     Agordo.sendiMesaĝon = {
                                                         GlobalScope.launch {
                                                             println("Sendas: $it")
-                                                            sendMessage(mesaĝoEvento.channel, it.toString())
+                                                            sendMessage(mesaĝoEvento.channel, it)
                                                         }
                                                     }
                                                     try {
@@ -262,13 +269,18 @@ fun main() {
                                                                     SlackKonversacio.eniri(s)
                                                                 }
                                                         if (bezonata == null) {
-                                                            sendMessage(mesaĝoEvento.channel, SlackKonversacio.fini()._valuigi().toString())
+                                                            val respondo = SlackKonversacio.fini()._valuigi()
+                                                            if (respondo is timis) {
+                                                                sendMessage(mesaĝoEvento.channel, respondo)
+                                                            } else {
+                                                                sendMessage(mesaĝoEvento.channel, respondo.toString())
+                                                            }
                                                             SlackKonversacio = Konversacio()
                                                         } else {
-                                                            sendMessage(mesaĝoEvento.channel, meli(remis(bezonata)).toString())
+                                                            sendMessage(mesaĝoEvento.channel, meli(remis(bezonata)))
                                                         }
                                                     } catch (e: MenteiaTipEkcepcio) {
-                                                        sendMessage(mesaĝoEvento.channel, e._mesaĝo.toString())
+                                                        sendMessage(mesaĝoEvento.channel, e._mesaĝo)
                                                         SlackKonversacio = Konversacio()
                                                     } catch (e: java.lang.Exception) {
                                                         e.printStackTrace()

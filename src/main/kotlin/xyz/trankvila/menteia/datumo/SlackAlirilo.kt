@@ -8,6 +8,10 @@ import io.ktor.client.request.post
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import kotlinx.serialization.Optional
+import paroli
+import xyz.trankvila.menteia.ids
+import xyz.trankvila.menteia.sendiMesaĝon
+import xyz.trankvila.menteia.tipsistemo.timis
 import java.util.*
 
 open class SlackEvent(
@@ -35,6 +39,14 @@ data class SlackMessage(
         val text: String,
         val channel: String
 )
+
+suspend fun sendMessage(user: String, message: timis) {
+    val id = paroli(message)
+    ids.forEach { _, u ->
+        sendiMesaĝon(id.toString(), u, id.toString())
+    }
+    sendMessage(user, message.toString())
+}
 
 suspend fun sendMessage(user: String, message: String) {
     HttpClient(Apache).use {
