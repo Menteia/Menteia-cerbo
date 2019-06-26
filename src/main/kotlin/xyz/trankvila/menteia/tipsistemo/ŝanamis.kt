@@ -5,6 +5,8 @@ import xyz.trankvila.menteia.tipsistemo.interna._certeco
 import java.time.LocalTime
 import java.time.ZoneId
 
+val timezone = ZoneId.of("America/Vancouver")
+
 abstract class ŝanamis(
         morem: renas? = null,
         ponem: renas? = null,
@@ -45,7 +47,7 @@ abstract class ŝanamis(
 }
 
 class geradas: ŝanamis() {
-    override val _horo = LocalTime.now(ZoneId.of("America/Toronto"))
+    override val _horo = LocalTime.now(timezone)
 }
 
 class valima(morem: kamis, ponem: kamis): ŝanamis(morem, ponem) {

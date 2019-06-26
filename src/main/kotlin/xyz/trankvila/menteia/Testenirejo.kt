@@ -25,6 +25,7 @@ import kotlinx.coroutines.runBlocking
 import xyz.trankvila.menteia.datumo.RealaAlirilaro
 import xyz.trankvila.menteia.datumo.Sekretoj
 import xyz.trankvila.menteia.datumo.alirilaro
+import xyz.trankvila.menteia.datumo.getAccessToken
 import xyz.trankvila.menteia.memoro.Konversacio
 import xyz.trankvila.menteia.tipsistemo.*
 import xyz.trankvila.menteia.vorttrakto.Legilo
@@ -34,12 +35,5 @@ import java.time.ZonedDateTime
 import kotlin.reflect.KParameter
 
 fun main() = runBlocking {
-    val konversacio = Konversacio()
-    launch {
-        "doni ko lurina sitana".splitToSequence(" ").forEach {
-            konversacio.eniri(it)
-        }
-    }
-    println("...")
-    println(konversacio.fini()._valuigi().toString())
+    getAccessToken()
 }

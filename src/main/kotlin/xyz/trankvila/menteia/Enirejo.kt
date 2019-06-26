@@ -1,5 +1,6 @@
 package xyz.trankvila.menteia
 
+import ch.qos.logback.classic.Level
 import com.google.api.client.auth.oauth2.StoredCredential
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
@@ -40,6 +41,7 @@ import io.ktor.response.respondBytes
 import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -55,6 +57,7 @@ import kotlinx.io.ByteArrayInputStream
 import kotlinx.serialization.*
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.json.JsonObject
+import org.slf4j.LoggerFactory
 import paroladoj
 import paroli
 import xyz.trankvila.menteia.datumo.*
@@ -69,6 +72,7 @@ import java.security.MessageDigest
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.logging.Logger
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.concurrent.scheduleAtFixedRate
@@ -78,11 +82,11 @@ import kotlin.reflect.KClass
 data class Respondo(val teksto: String, val UUID: String)
 
 val ids = mutableMapOf<String, String>()
+internal val logger = LoggerFactory.getLogger("Enirejo")
 
 fun main() {
     Timer().scheduleAtFixedRate(3600000 * 24, 3600000 * 24) {
         GlobalScope.launch {
-            println("Updating Hue tokens")
             RealaAlirilaro.refreshHueToken()
         }
     }
@@ -109,6 +113,7 @@ fun main() {
     )
     val (sid, token) = runBlocking { Sekretoj.TwilioCredentials() }
     Twilio.init(sid, token)
+    runBlocking { getAccessToken() }
     val servilo = embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 7777) {
         install(WebSockets)
         routing {
@@ -130,7 +135,11 @@ fun main() {
                                 }
                             }
                             try {
-                                val respondo = Legilo.legi(peto)._valuigi()
+                                val konversacio = Konversacio()
+                                peto.splitToSequence(" ").forEach {
+                                    konversacio.eniri(it)
+                                }
+                                val respondo = konversacio.fini()._valuigi()
                                 if (respondo !is timis) {
                                     throw Exception("kalkulis: $respondo")
                                 } else {
@@ -166,7 +175,7 @@ fun main() {
                     if (parolado == null) {
                         call.respond(HttpStatusCode.NotFound)
                     } else {
-                        println("Parolas $id")
+                        logger.info("Parolas $id")
                         call.response.header("Access-Control-Allow-Origin", "http://localhost:3000")
                         call.respondBytes(parolado.await().enhavo, ContentType.Audio.OGG)
                     }
@@ -174,7 +183,6 @@ fun main() {
             }
             post("/sciigi") {
                 val xtoken = call.parameters["token"]
-                call.response.header("Access-Control-Allow-Origin", "http://localhost:3000")
                 if (xtoken == null) {
                     call.respond(HttpStatusCode.Unauthorized)
                 } else {
@@ -184,8 +192,9 @@ fun main() {
                     } else {
                         val firebaseDeviceID = call.receiveText()
                         ids[uid] = firebaseDeviceID
-                        println("Konektis: $firebaseDeviceID")
+                        logger.debug("Konektis: $firebaseDeviceID")
                         call.respond(HttpStatusCode.NoContent)
+                        sendADMMessage(ADMMessage("Test"), firebaseDeviceID)
                     }
                 }
             }
@@ -238,8 +247,6 @@ fun main() {
                         "%02x".format(it)
                     }}"
                     if (res != s) {
-                        println(res)
-                        println(s)
                         throw java.lang.Exception("Slack signature verification failed")
                     }
                     val evento = SlackEventAdapter.fromJson(peto)!!
@@ -259,7 +266,7 @@ fun main() {
                                                 launch {
                                                     Agordo.sendiMesaĝon = {
                                                         GlobalScope.launch {
-                                                            println("Sendas: $it")
+                                                            logger.info("Sendas: $it")
                                                             sendMessage(mesaĝoEvento.channel, it)
                                                         }
                                                     }
@@ -300,6 +307,39 @@ fun main() {
                 }
                 call.respond(HttpStatusCode.OK)
             }
+            route("alirilo") {
+                get("now") {
+                    val xtoken = call.parameters["token"]
+                    if (xtoken == null || idKontrolo(xtoken) == null) {
+                        call.respond(HttpStatusCode.Unauthorized)
+                    } else {
+                        val respondo = doni(ko(geradas()))._valuigi()
+                        val id = paroli(respondo)
+                        val parolado = paroladoj.remove(id)!!.await()
+                        call.respondBytes(parolado.enhavo, ContentType.Audio.OGG)
+                    }
+                }
+                get("today") {
+                    val xtoken = call.parameters["token"]
+                    if (xtoken == null || idKontrolo(xtoken) == null) {
+                        call.respond(HttpStatusCode.Unauthorized)
+                    } else {
+                        val respondo = doni(ko(fidinas()))._valuigi()
+                        val id = paroli(respondo)
+                        val parolado = paroladoj.remove(id)!!.await()
+                        call.respondBytes(parolado.enhavo, ContentType.Audio.OGG)
+                    }
+                }
+                get("temperature") {
+                    val xtoken = call.parameters["token"]
+                    if (xtoken == null || idKontrolo(xtoken) == null) {
+                        call.respond(HttpStatusCode.Unauthorized)
+                    } else {
+                        val respondo = alirilaro.getWeatherStationState()
+                        call.respondText(respondo.body.devices[0].dashboard_data.Temperature.toString())
+                    }
+                }
+            }
         }
     }
     servilo.start(wait = true)
@@ -328,5 +368,5 @@ fun sendiMesaĝon(enhavo: String, al: String, paroloID: String? = null) {
                     .setToken(al)
                     .build()
     )
-    println("Sendis: $rezulto")
+    logger.info("Sendis: $rezulto")
 }

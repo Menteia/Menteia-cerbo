@@ -15,6 +15,7 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.io.readUTF8Line
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import org.slf4j.LoggerFactory
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -43,6 +44,7 @@ object RealaAlirilaro : Alirilaro {
     val ssm = SsmClient.builder()
             .region(Region.US_WEST_2)
             .build()
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val tabeloNomo = "Menteia-datumejo"
 
@@ -347,8 +349,7 @@ object RealaAlirilaro : Alirilaro {
                     }
                 }
             } catch (e: BadResponseStatusException) {
-                println(e.response.content.readUTF8Line())
-                throw e
+                logger.error(e.response.content.readUTF8Line(), e)
             }
         }
     }
@@ -444,7 +445,6 @@ object RealaAlirilaro : Alirilaro {
                 } else {
                     "{\"on\": true, \"bri\": ${(brightness * BigDecimal(254)).toInt()}}"
                 }, ContentType.Application.Json)
-                println(body.toString())
             }
         }
     }
@@ -471,7 +471,6 @@ object RealaAlirilaro : Alirilaro {
                         append("refresh_token", refreshToken)
                     })
                 }
-                println(update)
                 val newTokens: HueAuthResponse = JSON.nonstrict.parse(HueAuthResponse.serializer(), update)
                 ssm.putParameter {
                     it.name("/External/Hue/drakoni/RefreshToken")
@@ -486,7 +485,7 @@ object RealaAlirilaro : Alirilaro {
                     it.overwrite(true)
                 }
             } catch (e: BadResponseStatusException) {
-                println(e.response.content.readUTF8Line())
+                logger.error(e.response.content.readUTF8Line(), e)
             }
         }
     }

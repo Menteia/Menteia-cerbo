@@ -46,7 +46,7 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
             val _nomo = opcioj._valuo1
             val tempo = ZonedDateTime.of(
                     LocalDateTime.of(opcioj._valuo2._valuo1._valuigi(), opcioj._valuo2._valuo2._valuigi()),
-                    ZoneId.of("America/Toronto")
+                    timezone
             )
             val fino = tempo.plus(opcioj._valuo3._valuigi())
 
@@ -72,11 +72,11 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
         val nomo = evento.summary.split(" - ")[0]
         val komenco = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(evento.start.dateTime.value),
-                ZoneId.of("America/Toronto")
+                timezone
         )
         val fino = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(evento.end.dateTime.value),
-                ZoneId.of("America/Toronto")
+                timezone
         )
         val minutoj = komenco.until(fino, ChronoUnit.MINUTES)
         val daŭro = if (minutoj % 60 == 0L) {
@@ -97,11 +97,11 @@ class brenimis(val nomo: String): timis(), _kreebla, _forigebla {
         val evento = _valuigi()
         val dato = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(evento.start.dateTime.value),
-                ZoneId.of("America/Toronto")
+                timezone
         )
         val fino = ZonedDateTime.ofInstant(
                 Instant.ofEpochMilli(evento.end.dateTime.value),
-                ZoneId.of("America/Toronto")
+                timezone
         )
         val horo = morem._valuigi()
         val novaKomenco = dato.withHour(horo.hour).withMinute(horo.minute)
@@ -130,8 +130,8 @@ class brema(morem: karimis): timis(morem) {
 
     override suspend fun _valuigi(): List<Event> {
         val eventoj = brenimis.service.events().list(brenimis.calendarID)
-                .setTimeMin(DateTime(ZonedDateTime.of(dato, LocalTime.MIDNIGHT, ZoneId.of("America/Toronto")).toInstant().toEpochMilli()))
-                .setTimeMax(DateTime(ZonedDateTime.of(dato.plusDays(1), LocalTime.MIDNIGHT, ZoneId.of("America/Toronto")).toInstant().toEpochMilli()))
+                .setTimeMin(DateTime(ZonedDateTime.of(dato, LocalTime.MIDNIGHT, timezone).toInstant().toEpochMilli()))
+                .setTimeMax(DateTime(ZonedDateTime.of(dato.plusDays(1), LocalTime.MIDNIGHT, timezone).toInstant().toEpochMilli()))
                 .execute()
         return eventoj.items
     }
@@ -139,7 +139,7 @@ class brema(morem: karimis): timis(morem) {
     override suspend fun _simpligi(): brodimis<divimis<_nomitaAĵo, ŝanamis>> {
         val eventoj = _valuigi()
         return brotas.igiListon(eventoj.map {
-            divis(_nomitaAĵo(it.summary.split(" - ")[0]), ŝanamis.igi(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it.start.dateTime.value), ZoneId.of("America/Toronto")).toLocalTime()))
+            divis(_nomitaAĵo(it.summary.split(" - ")[0]), ŝanamis.igi(ZonedDateTime.ofInstant(Instant.ofEpochMilli(it.start.dateTime.value), timezone).toLocalTime()))
         })
     }
 }

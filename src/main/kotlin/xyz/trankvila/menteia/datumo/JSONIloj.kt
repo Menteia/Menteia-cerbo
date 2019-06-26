@@ -11,3 +11,6 @@ val SlackChallengeAdatper = moshi.adapter(SlackChallenge::class.java)
 val SlackEventAdapter = moshi.adapter(SlackEvent::class.java)
 val SlackMessageEventAdapter = moshi.adapter(MessageEvent::class.java)
 val SlackMessageAdapter = moshi.adapter(SlackMessage::class.java)
+
+val ADMAccessTokenResponseAdapter = moshi.adapter(AccessTokenResponse::class.java)
+val ADMRequestAdapter = moshi.adapter(ADMRequest::class.java)

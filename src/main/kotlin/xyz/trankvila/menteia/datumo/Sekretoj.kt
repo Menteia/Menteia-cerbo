@@ -132,4 +132,29 @@ object Sekretoj {
 
     // Necesa pro Netatmo
     val session = mutableMapOf<String, String>()
+
+    var admid: String? = null
+    var admsecret: String? = null
+
+    val ADMClientID get() = GlobalScope.async {
+        if (admid == null) {
+            admid = ssm.getParameter {
+                it.name("/Internal/ADM/ClientID")
+                it.withDecryption(true)
+            }.await().parameter().value()
+        }
+        admid!!
+    }
+
+    val ADMClientSecret get() = GlobalScope.async {
+        if (admsecret == null) {
+            admsecret = ssm.getParameter {
+                it.name("/Internal/ADM/ClientSecret")
+                it.withDecryption(true)
+            }.await().parameter().value()
+        }
+        admsecret!!
+    }
+
+    var admtoken: String = ""
 }

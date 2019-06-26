@@ -4,6 +4,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.future.await
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.JsonUnknownKeyException
 import kotlinx.serialization.parse
 import org.dom4j.DocumentHelper
 import org.dom4j.QName
@@ -121,11 +122,11 @@ private fun igiIPA(vortoj: String): List<String> {
             .payload(SdkBytes.fromUtf8String("{\"IPA\":\"$vortoj\"}"))
             .build()
     )
-    val enhavo = JSON.parse(Respondenhavo.serializer(), respondo.payload().asUtf8String())
-    if (enhavo.ĈuValida) {
-        return enhavo.IPA
+    val respondteksto = respondo.payload().asUtf8String()
+    val enhavo = JSON.parse(Respondenhavo.serializer(), respondteksto)
+    return if (enhavo.ĈuValida) {
+        enhavo.IPA
     } else {
-        println(vortoj)
         throw Exception(enhavo.Kialo)
     }
 }

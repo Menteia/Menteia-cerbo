@@ -14,8 +14,11 @@ import kotlinx.coroutines.io.readUTF8Line
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import org.slf4j.LoggerFactory
 import java.lang.Exception
 import java.net.URL
+
+internal val logger = LoggerFactory.getLogger("NetatmoAlirilo")
 
 @Serializable
 data class ModuleDashboardData(
@@ -89,7 +92,7 @@ suspend fun authenticate(): String {
             return datumo.access_token
         }
     } catch (e: BadResponseStatusException) {
-        println(e.response.content.readUTF8Line())
+        logger.error(e.response.content.readUTF8Line())
         throw e
     }
 }
