@@ -377,7 +377,7 @@ object RealaAlirilaro : Alirilaro {
                 parameter("latitude", location.first)
                 parameter("longitude", location.second)
             }
-            val parsed = JSON.nonstrict.parse(ObservationResponse.serializer(), response)
+            val parsed = ObservationResponseAdapter.fromJson(response)!!
             return parsed.observations.location[0].observation[0]
         }
     }
@@ -395,7 +395,7 @@ object RealaAlirilaro : Alirilaro {
                 parameter("latitude", location.first)
                 parameter("longitude", location.second)
             }
-            val parsed: ForecastResponse = JSON.nonstrict.parse(ForecastResponse.serializer(), response)
+            val parsed: ForecastResponse = ForecastResponseAdapter.fromJson(response) ?: return null
             val format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
             DateTimeFormatter.ISO_OFFSET_DATE_TIME
             parsed.dailyForecasts.forecastLocation.forecast.forEach {

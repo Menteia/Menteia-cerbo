@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.polly.model.SynthesizeSpeechRequest
 import software.amazon.awssdk.services.polly.model.TextType
 import software.amazon.awssdk.services.polly.model.VoiceId
 import xyz.trankvila.menteia.Agordo
+import xyz.trankvila.menteia.logger
 import xyz.trankvila.menteia.tipsistemo.timis
 import xyz.trankvila.menteia.vorttrakto.SintaksoArbo
 import xyz.trankvila.menteia.vorttrakto.antaŭpaŭzoj
@@ -43,6 +44,7 @@ data class Parolado(val id: UUID, val enhavo: ByteArray, val dato: LocalDate)
 val paroladoj = ConcurrentHashMap<UUID, Deferred<Parolado>>()
 
 internal fun paroli(arbo: timis): UUID {
+    logger.debug("Parolas $arbo")
     val petoXML = kreiXML(arbo)
     val respondo = polly.synthesizeSpeech(SynthesizeSpeechRequest.builder()
             .outputFormat(OutputFormat.OGG_VORBIS)

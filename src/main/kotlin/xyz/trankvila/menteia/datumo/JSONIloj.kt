@@ -14,3 +14,6 @@ val SlackMessageAdapter = moshi.adapter(SlackMessage::class.java)
 
 val ADMAccessTokenResponseAdapter = moshi.adapter(AccessTokenResponse::class.java)
 val ADMRequestAdapter = moshi.adapter(ADMRequest::class.java)
+
+val ForecastResponseAdapter = moshi.adapter(ForecastResponse::class.java)
+val ObservationResponseAdapter = moshi.adapter(ObservationResponse::class.java)
