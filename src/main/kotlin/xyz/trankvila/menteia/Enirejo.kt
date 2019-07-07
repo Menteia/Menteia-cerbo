@@ -263,6 +263,7 @@ fun main() {
                                     when (mesaĝoEvento.channel_type) {
                                         "im" -> {
                                             if (mesaĝoEvento.user != null) {
+                                                logger.debug("Ricevis mesaĝo: <${mesaĝoEvento.text}> de ${mesaĝoEvento.user}")
                                                 launch {
                                                     Agordo.sendiMesaĝon = {
                                                         GlobalScope.launch {

@@ -82,6 +82,9 @@ class Konversacio() {
         } catch (e: InvocationTargetException) {
             e.targetException.printStackTrace()
             throw e.targetException
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
         }
     }
 }
