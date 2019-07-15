@@ -2,6 +2,7 @@ package xyz.trankvila.menteia.datumo
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import xyz.trankvila.menteia.vojoj.AliriloRespondo
 
 private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -17,3 +18,5 @@ val ADMRequestAdapter = moshi.adapter(ADMRequest::class.java)
 
 val ForecastResponseAdapter = moshi.adapter(ForecastResponse::class.java)
 val ObservationResponseAdapter = moshi.adapter(ObservationResponse::class.java)
+
+val AliriloRespondoAdapter = moshi.adapter(AliriloRespondo::class.java)

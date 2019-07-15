@@ -64,6 +64,9 @@ import xyz.trankvila.menteia.datumo.*
 import xyz.trankvila.menteia.memoro.Konversacio
 import xyz.trankvila.menteia.memoro.lokajObjektoj
 import xyz.trankvila.menteia.tipsistemo.*
+import xyz.trankvila.menteia.vojoj.aliriloVojoj
+import xyz.trankvila.menteia.vojoj.respondiVojoj
+import xyz.trankvila.menteia.vojoj.slackVojoj
 import xyz.trankvila.menteia.vorttrakto.Legilo
 import java.io.FileInputStream
 import java.nio.ByteBuffer
@@ -117,51 +120,7 @@ fun main() {
     val servilo = embeddedServer(Netty, port = System.getenv("PORT")?.toInt() ?: 7777) {
         install(WebSockets)
         routing {
-            post("/respondi") {
-                val xtoken = call.parameters["token"]
-                if (xtoken == null) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                } else {
-                    val uid = idKontrolo(xtoken)
-                    if (uid == null || !ids.containsKey(uid)) {
-                        call.respond(HttpStatusCode.Unauthorized)
-                    } else {
-                        try {
-                            val peto = call.receiveText()
-                            Agordo.sendiMesaĝon = {
-                                GlobalScope.launch {
-                                    val paroloID = paroli(it)
-                                    sendiMesaĝon(it.toString(), ids.getValue(uid), paroloID.toString())
-                                }
-                            }
-                            try {
-                                val konversacio = Konversacio()
-                                peto.splitToSequence(" ").forEach {
-                                    konversacio.eniri(it)
-                                }
-                                val respondo = konversacio.fini()._valuigi()
-                                if (respondo !is timis) {
-                                    throw Exception("kalkulis: $respondo")
-                                } else {
-                                    val paroloID = paroli(respondo)
-                                    call.respondText(JSON.stringify(Respondo.serializer(), Respondo(respondo.toString(), paroloID.toString())),
-                                            ContentType.Application.Json)
-                                }
-                            } catch (e: MenteiaTipEkcepcio) {
-                                val paroloID = paroli(e._mesaĝo)
-                                call.respondText(JSON.stringify(Respondo.serializer(), Respondo(e._mesaĝo.toString(), paroloID.toString())),
-                                        ContentType.Application.Json)
-                            }
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
-                            call.respondText(
-                                    "vaguna (${e.message})",
-                                    status = HttpStatusCode.BadRequest
-                            )
-                        }
-                    }
-                }
-            }
+            respondiVojoj()
             get("/paroli") {
                 val xtoken = call.parameters["token"]
                 val id = call.parameters["id"]
@@ -234,113 +193,8 @@ fun main() {
                     )
                 }
             }
-            post("/slack") {
-                try {
-                    val ts = call.request.header("X-Slack-Request-Timestamp")!!
-                    val s = call.request.header("X-Slack-Signature")!!
-                    val peto = call.receiveText()
-                    val sig = "v0:$ts:$peto"
-                    val key = SecretKeySpec(Sekretoj.SlackSigningKey.await().toByteArray(), "HmacSHA256")
-                    val mac = Mac.getInstance("HmacSHA256")
-                    mac.init(key)
-                    val res = "v0=${mac.doFinal(sig.toByteArray()).joinToString("") {
-                        "%02x".format(it)
-                    }}"
-                    if (res != s) {
-                        throw java.lang.Exception("Slack signature verification failed")
-                    }
-                    val evento = SlackEventAdapter.fromJson(peto)!!
-                    when (evento.type) {
-                        "url_verification" -> {
-                            val urlVerification = SlackChallengeAdatper.fromJson(peto)!!
-                            call.respondText(urlVerification.challenge)
-                        }
-                        "event_callback" -> {
-                            val realaEvento = SlackEventAdapter.fromJsonValue(evento.event)!!
-                            when (realaEvento.type) {
-                                "message" -> {
-                                    val mesaĝoEvento = SlackMessageEventAdapter.fromJsonValue(evento.event)!!
-                                    when (mesaĝoEvento.channel_type) {
-                                        "im" -> {
-                                            if (mesaĝoEvento.user != null) {
-                                                logger.debug("Ricevis mesaĝo: <${mesaĝoEvento.text}> de ${mesaĝoEvento.user}")
-                                                launch {
-                                                    Agordo.sendiMesaĝon = {
-                                                        GlobalScope.launch {
-                                                            logger.info("Sendas: $it")
-                                                            sendMessage(mesaĝoEvento.channel, it)
-                                                        }
-                                                    }
-                                                    try {
-                                                        val bezonata = mesaĝoEvento.text.splitToSequence(" ")
-                                                                .fold<String, KClass<out timis>?>(null) { _, s ->
-                                                                    SlackKonversacio.eniri(s)
-                                                                }
-                                                        if (bezonata == null) {
-                                                            val respondo = SlackKonversacio.fini()._valuigi()
-                                                            if (respondo is timis) {
-                                                                sendMessage(mesaĝoEvento.channel, respondo)
-                                                            } else {
-                                                                sendMessage(mesaĝoEvento.channel, respondo.toString())
-                                                            }
-                                                            SlackKonversacio = Konversacio()
-                                                        } else {
-                                                            sendMessage(mesaĝoEvento.channel, meli(remis(bezonata)))
-                                                        }
-                                                    } catch (e: MenteiaTipEkcepcio) {
-                                                        sendMessage(mesaĝoEvento.channel, e._mesaĝo)
-                                                        SlackKonversacio = Konversacio()
-                                                    } catch (e: java.lang.Exception) {
-                                                        e.printStackTrace()
-                                                        sendMessage(mesaĝoEvento.channel, e.message ?: e::class.simpleName!!)
-                                                        SlackKonversacio = Konversacio()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                }
-                call.respond(HttpStatusCode.OK)
-            }
-            route("alirilo") {
-                get("now") {
-                    val xtoken = call.parameters["token"]
-                    if (xtoken == null || idKontrolo(xtoken) == null) {
-                        call.respond(HttpStatusCode.Unauthorized)
-                    } else {
-                        val respondo = doni(ko(geradas()))._valuigi()
-                        val id = paroli(respondo)
-                        val parolado = paroladoj.remove(id)!!.await()
-                        call.respondBytes(parolado.enhavo, ContentType.Audio.OGG)
-                    }
-                }
-                get("today") {
-                    val xtoken = call.parameters["token"]
-                    if (xtoken == null || idKontrolo(xtoken) == null) {
-                        call.respond(HttpStatusCode.Unauthorized)
-                    } else {
-                        val respondo = doni(ko(fidinas()))._valuigi()
-                        val id = paroli(respondo)
-                        val parolado = paroladoj.remove(id)!!.await()
-                        call.respondBytes(parolado.enhavo, ContentType.Audio.OGG)
-                    }
-                }
-                get("temperature") {
-                    val xtoken = call.parameters["token"]
-                    if (xtoken == null || idKontrolo(xtoken) == null) {
-                        call.respond(HttpStatusCode.Unauthorized)
-                    } else {
-                        val respondo = alirilaro.getWeatherStationState()
-                        call.respondText(respondo.body.devices[0].dashboard_data.Temperature.toString())
-                    }
-                }
-            }
+            slackVojoj()
+            aliriloVojoj()
         }
     }
     servilo.start(wait = true)

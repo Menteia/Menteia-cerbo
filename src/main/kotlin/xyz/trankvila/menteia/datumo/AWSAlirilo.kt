@@ -62,13 +62,13 @@ internal fun paroli(arbo: timis): UUID {
     return id
 }
 
-private fun kreiXML(frazo: timis): String {
+fun kreiXML(frazo: timis, demando: Boolean = false): String {
     val xml = DocumentHelper.createDocument()
     val xmlRadiko = xml.addElement("speak")
             .addElement(QName("amazon:effect"))
-            .addAttribute("vocal-tract-length", "+7%")
+            .addAttribute("vocal-tract-length", if (demando) "-5%" else "+7%")
             .addElement("prosody")
-            .addAttribute("rate", "70%")
+            .addAttribute("rate", if (demando) "90%" else "70%")
             .addAttribute("volume", "+6dB")
     val vortoj = mutableListOf<String>()
     var spiro = 0
