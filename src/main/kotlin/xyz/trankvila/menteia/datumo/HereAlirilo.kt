@@ -69,3 +69,10 @@ data class ForecastsType(
 data class ForecastResponse(
         val dailyForecasts: ForecastsType
 )
+
+data class IdleClockResponse(
+        val outdoorTemperature: String,
+        val outdoorCondition: String,
+        val indoorTemperature: Float,
+        val indoorHumidity: Float
+)

@@ -20,3 +20,4 @@ val ForecastResponseAdapter = moshi.adapter(ForecastResponse::class.java)
 val ObservationResponseAdapter = moshi.adapter(ObservationResponse::class.java)
 
 val AliriloRespondoAdapter = moshi.adapter(AliriloRespondo::class.java)
+val IdleClockResponseAdapter = moshi.adapter(IdleClockResponse::class.java)

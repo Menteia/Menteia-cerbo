@@ -16,6 +16,8 @@ import kreiXML
 import paroladoj
 import paroli
 import xyz.trankvila.menteia.datumo.AliriloRespondoAdapter
+import xyz.trankvila.menteia.datumo.IdleClockResponse
+import xyz.trankvila.menteia.datumo.IdleClockResponseAdapter
 import xyz.trankvila.menteia.datumo.alirilaro
 import xyz.trankvila.menteia.idKontrolo
 import xyz.trankvila.menteia.logger
@@ -105,6 +107,22 @@ fun Route.aliriloVojoj() {
             } else {
                 val respondo = alirilaro.getWeatherStationState()
                 call.respondText(respondo.body.devices[0].dashboard_data.Temperature.toString())
+            }
+        }
+        get("temperatures") {
+            val xtoken = call.parameters["token"]
+            if (xtoken == null || idKontrolo(xtoken) == null) {
+                call.respond(HttpStatusCode.Unauthorized)
+            } else {
+                val stacioRespondo = alirilaro.getWeatherStationState()
+                val temperaturo = alirilaro.getCurrentWeather(sinemis("mirenis")._valuigi())
+                val respondo = IdleClockResponse(
+                        temperaturo.temperature!!,
+                        temperaturo.iconName,
+                        stacioRespondo.body.devices[0].dashboard_data.Temperature,
+                        stacioRespondo.body.devices[0].dashboard_data.Humidity
+                )
+                call.respondText(IdleClockResponseAdapter.toJson(respondo), ContentType.Application.Json)
             }
         }
     }
