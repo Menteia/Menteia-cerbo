@@ -63,7 +63,7 @@ class fitam(morem: lemis): karimis(morem) {
 }
 
 internal val syncPoint = LocalDate.of(2018, 1, 1)
-internal const val syncDayNumber = 12018 * 364 + 7 * ((12018 / 5) - (12018 / 40) + (12018 / 400))
+internal const val syncDayNumber = 12017 * 364 + 7 * ((12017 / 5) - (12017 / 40) + (12017 / 400))
 internal const val daysIn400Years = 400 * 364 + 7 * (400 / 5 - 400 / 40 + 1)
 internal const val daysIn40Years = 40 * 364 + 7 * (40 / 5 - 1)
 internal const val daysIn5Years = 5 * 364 + 7
@@ -85,7 +85,7 @@ internal data class SilicanDate(val year: Int, val month: Int, val day: Int) {
             val dayOfYear = if (remainingYears == 6L) 364 + remainingDays else remainingDays
             val month = (dayOfYear / 28).toInt()
             val day = (dayOfYear % 28).toInt() + 1
-            return SilicanDate(year.toInt(), Math.min(month + 1, 13), if (month == 13) day + 28 else day)
+            return SilicanDate(year.toInt() + 1, Math.min(month + 1, 13), if (month == 13) day + 28 else day)
         }
     }
 }
